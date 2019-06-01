@@ -1,0 +1,2 @@
+# start server from hcli_core (call server.py's server variable)
+gunicorn --workers=5 --threads=2 'server:server'
