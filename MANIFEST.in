@@ -1,3 +1,2 @@
 # Include the license file
 include LICENSE.txt README.rst
-recursive-include huckle/data *
