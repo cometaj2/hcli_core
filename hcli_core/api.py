@@ -9,7 +9,7 @@ class HomeApi():
     def __init__(self):
         self.controller = hcli.HomeController()
 
-    def on_get(self, req, resp) -> None:
+    def on_get(self, req, resp):
         t = template.Template()
 
         serialized = hcli.HomeController.serialize(hcli.Home())
@@ -19,7 +19,7 @@ class DocumentApi():
     def __init__(self):
         self.controller = hcli.DocumentController()
 
-    def on_get(self, req, resp, cid) -> None:
+    def on_get(self, req, resp, cid):
         t = template.Template()
 
         print(cid)

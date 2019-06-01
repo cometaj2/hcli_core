@@ -8,7 +8,7 @@ import hcli
 
 def server():
     local = falcon.API()
-    local.add_route(hcli.HomeController().href, api.HomeApi())
-    local.add_route(hcli.DocumentController().href, api.DocumentApi())
+    local.add_route(hcli.HomeController().route, api.HomeApi())
+    local.add_route(hcli.DocumentController().route, api.DocumentApi())
     
     return local

@@ -9,6 +9,7 @@ class Home(object):
     None
 
 class HomeController(halogen.Schema):
+    route = "/hcli"
     href = "/hcli"
 
     self = halogen.Link(attr=lambda value: HomeController().href)
@@ -25,7 +26,7 @@ class HomeController(halogen.Schema):
         #        profile=lambda value: hcli.DocumentController().profile
         #)
         cli = halogen.Link(
-            attr=lambda value: hcli.DocumentController().href + "/" + HomeController.cid + "?" + HomeController.command
+            attr=lambda value: DocumentController().href + "/" + HomeController.cid + "?" + HomeController.command
         )
 
 class Document:
@@ -38,10 +39,12 @@ class Document:
         self.section = document['section']
 
 class DocumentController(halogen.Schema):
-    href = "/hcli/cli/{cid}"
-
+    route = "/hcli/cli/{cid}"
+    href = "/hcli/cli"
+    
     self = halogen.Link(attr=lambda value: DocumentController().href)
 
     name = halogen.Attr()
     hcli_version = halogen.Attr()
     section = halogen.Attr()
+    
