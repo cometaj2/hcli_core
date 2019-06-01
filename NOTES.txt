@@ -1,2 +1,11 @@
+# setup and activate the virtual environment for python3
+pip3 install virtualenv
+virtualenv -p python3 ~
+source ~/bin/activate
+
+# deactivate virtualenv
+deactivate
+
 # start server from hcli_core (call server.py's server variable)
 gunicorn --workers=5 --threads=2 'server:server'
+

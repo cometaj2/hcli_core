@@ -1,9 +1,9 @@
 import falcon
 import json
 import halogen
-import semantics
-import hcli
-import template
+from . import semantics
+from . import hcli
+from . import template
 
 class Home(object):
     None
