@@ -21,13 +21,6 @@ class DocumentLink:
         if uid != None:
             self.href = self.href + "/" + uid 
 
-class DocumentSchema(halogen.Schema):
-#    self = halogen.Link(attr=lambda value: DocumentLink("jsonf").href, profile=DocumentLink().profile)
-
-    name = halogen.Attr()
-    hcli_version = halogen.Attr()
-    section = halogen.Attr()
-
 class DocumentController:
     route = "/hcli/cli/{uid}"
     schema = None
