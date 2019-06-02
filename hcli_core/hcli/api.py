@@ -14,6 +14,7 @@ class DocumentApi:
     def on_get(self, req, resp, uid):
         t = template.Template()
         arg = t.findById(uid)
+        command = req.params['command']
 
-        serialized = document.DocumentController(uid).serialize()
+        serialized = document.DocumentController(uid, command).serialize()
         resp.body = json.dumps(serialized)
