@@ -16,7 +16,7 @@ class Document:
             self.section = document['section']
 
 class DocumentLink:
-    href = "/hcli/cli"
+    href = "http://127.0.0.1:8000/hcli/cli"
     profile = profile.ProfileLink().href + semantic.hcli_document_type
     
     def __init__(self, uid=None, command=None):

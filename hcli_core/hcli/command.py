@@ -1,5 +1,6 @@
 import halogen
 import template
+import urllib.parse
 from hcli import semantic
 from hcli import profile
 
@@ -14,23 +15,31 @@ class Command:
             self.description = command['description']
 
 class CommandLink:
-    href = "/hcli/cli/__cdef"
+    href = "http://127.0.0.1:8000/hcli/cli/__cdef"
     profile = profile.ProfileLink().href + semantic.hcli_command_type
     
     def __init__(self, uid=None, command=None, href=None):
-        if uid != None and command != None:
-            self.href = self.href + "/" + uid + "?command=" + command + "&href=" + href
+        if uid != None and command != None and href != None:
+            self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote(command) + "&href=" + href
 
 class CommandController:
     route = "/hcli/cli/__cdef/{uid}"
     schema = None
     uid = None
     command = None
+    href = None
+    com = None
 
     def __init__(self, uid=None, command=None, href=None):
-        if uid != None and command != None:
+        if uid != None and command != None and href != None:
             self.uid = uid
             self.command = command
+            self.href = href
+
+            t = template.Template()
+            arg = t.findById(uid);
+            self.com = t.findCommandForId(uid, href)
+            name = self.com['name']
             
             class CommandSchema(halogen.Schema):
                 self = halogen.Link(attr=lambda value: CommandLink(uid, command, href).href,
@@ -40,11 +49,7 @@ class CommandController:
                 hcli_version = halogen.Attr()
                 description = halogen.Attr()
 
-#        Template t = new Template();
-#        Argument arg = t.findById(id);
-#        
-#        Command com = t.findCommandForId(id, href);
-#        String name = com.getName();
+
 #        
 #        Representation resource = (new HCLICommand(com)).toResource();
 #        
@@ -61,7 +66,4 @@ class CommandController:
             self.schema = CommandSchema
 
     def serialize(self):
-        t = template.Template()
-        arg = t.findById(self.uid)
-
-        return self.schema.serialize(Command(arg))
+        return self.schema.serialize(Command(self.com))

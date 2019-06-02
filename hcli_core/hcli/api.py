@@ -3,6 +3,7 @@ import template
 import json
 from hcli import home
 from hcli import document
+from hcli import command as hcommand
 
 class HomeApi:
     def on_get(self, req, resp):
@@ -23,7 +24,6 @@ class CommandApi:
         t = template.Template()
         command = req.params['command']
         href = req.params['href']
-        com = t.findCommandForId(uid, href)
 
-        serialized = document.DocumentController(uid, command, href).serialize()
+        serialized = hcommand.CommandController(uid, command, href).serialize()
         resp.body = json.dumps(serialized)
