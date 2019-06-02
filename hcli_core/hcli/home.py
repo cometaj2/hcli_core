@@ -20,6 +20,6 @@ class HomeController(halogen.Schema):
         command = "command=" + root['name']
 
         cli = halogen.Link(
-                attr=lambda value: document.DocumentController.href + "/" + HomeController.cid + "?" + HomeController.command,
+                attr=lambda value: document.DocumentLink(HomeController.cid).href + "?" + HomeController.command,
                 profile=document.DocumentLink().profile
         )

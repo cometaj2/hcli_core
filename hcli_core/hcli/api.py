@@ -13,12 +13,7 @@ class HomeApi:
 class DocumentApi:
     def on_get(self, req, resp, uid):
         t = template.Template()
-
-        print(uid)
-        print(req.path)
-        print(req.get_param("command"))
-
         arg = t.findById(uid)
 
-        serialized = document.DocumentController.serialize(document.Document(arg))
+        serialized = document.DocumentController(uid).serialize()
         resp.body = json.dumps(serialized)
