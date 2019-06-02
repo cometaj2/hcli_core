@@ -4,11 +4,9 @@ import falcon
 import json
 import halogen
 import api
-import hcli
+from hcli import home
+from hcli import document
 
-def server():
-    local = falcon.API()
-    local.add_route(hcli.HomeController().route, api.HomeApi())
-    local.add_route(hcli.DocumentController().route, api.DocumentApi())
-    
-    return local
+server = falcon.API()
+server.add_route(home.HomeController().route, api.HomeApi())
+server.add_route(document.DocumentController().route, api.DocumentApi())

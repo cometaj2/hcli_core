@@ -2,21 +2,20 @@ import falcon
 import json
 import halogen
 import template
-import hcli
+from hcli import home
+from hcli import document
 
 class HomeApi():
     def __init__(self):
-        self.controller = hcli.HomeController()
+        self.controller = home.HomeController()
 
     def on_get(self, req, resp):
-        t = template.Template()
-
-        serialized = hcli.HomeController.serialize(hcli.Home())
+        serialized = home.HomeController.serialize(home.Home())
         resp.body = json.dumps(serialized)
 
 class DocumentApi():
     def __init__(self):
-        self.controller = hcli.DocumentController()
+        self.controller = document.DocumentController()
 
     def on_get(self, req, resp, cid):
         t = template.Template()
@@ -27,5 +26,5 @@ class DocumentApi():
 
         arg = t.findById("jsonf")
 
-        serialized = hcli.DocumentController.serialize(hcli.Document(arg))
+        serialized = document.DocumentController.serialize(document.Document(arg))
         resp.body = json.dumps(serialized)
