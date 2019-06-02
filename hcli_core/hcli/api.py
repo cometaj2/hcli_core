@@ -11,16 +11,14 @@ class HomeApi:
         resp.body = json.dumps(serialized)
 
 class DocumentApi:
-    def on_get(self, req, resp, cid):
+    def on_get(self, req, resp, uid):
         t = template.Template()
 
-       
-
-        print(cid)
+        print(uid)
         print(req.path)
         print(req.get_param("command"))
 
-        arg = t.findById("jsonf")
+        arg = t.findById(uid)
 
         serialized = document.DocumentController.serialize(document.Document(arg))
         resp.body = json.dumps(serialized)

@@ -14,17 +14,19 @@ class Document:
 class DocumentLink:
     href = None
     profile = None
+    uid = None
     
-    def __init__(self):
+    def __init__(self, uid=None):
         self.href = "/hcli/cli"
         self.profile = profile.ProfileLink().href + semantic.hcli_document_type
 
-class DocumentController(halogen.Schema):
-    route = DocumentLink().href + "/{cid}"
-    href = DocumentLink().href
-    profile = DocumentLink().profile
+        if uid != None:
+            self.uid = uid
 
-    self = halogen.Link(attr=lambda value: DocumentController.href, profile=profile)
+class DocumentController(halogen.Schema):
+    route = DocumentLink().href + "/{uid}"
+
+    self = halogen.Link(attr=lambda value: DocumentLink().href, profile=DocumentLink().profile)
 
     name = halogen.Attr()
     hcli_version = halogen.Attr()
