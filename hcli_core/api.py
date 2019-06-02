@@ -5,20 +5,16 @@ import template
 from hcli import home
 from hcli import document
 
-class HomeApi():
-    def __init__(self):
-        self.controller = home.HomeController()
-
+class HomeApi:
     def on_get(self, req, resp):
         serialized = home.HomeController.serialize(home.Home())
         resp.body = json.dumps(serialized)
 
-class DocumentApi():
-    def __init__(self):
-        self.controller = document.DocumentController()
-
+class DocumentApi:
     def on_get(self, req, resp, cid):
         t = template.Template()
+
+       
 
         print(cid)
         print(req.path)

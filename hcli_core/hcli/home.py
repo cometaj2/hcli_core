@@ -23,7 +23,3 @@ class HomeController(halogen.Schema):
                 attr=lambda value: document.DocumentController.href + "/" + HomeController.cid + "?" + HomeController.command,
                 profile=document.DocumentLink().profile
         )
-##        cli = halogen.Link(
-#            attr=lambda value: document.DocumentController.href + "/" + HomeController.cid + "?" + HomeController.command,
-#            profile="profile"
-#        )
