@@ -1,5 +1,5 @@
 import halogen
-import semantic
+from hcli import semantic
 from hcli import profile
 
 class Document:
