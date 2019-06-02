@@ -14,15 +14,12 @@ class Document:
             self.section = document['section']
 
 class DocumentLink:
-    uid = None
     href = "/hcli/cli"
-    profile = None
+    profile = profile.ProfileLink().href + semantic.hcli_document_type
     
     def __init__(self, uid=None):
         if uid != None:
-            self.uid = uid
             self.href = self.href + "/" + uid 
-            self.profile = profile.ProfileLink().href + semantic.hcli_document_type
 
 class DocumentSchema(halogen.Schema):
 #    self = halogen.Link(attr=lambda value: DocumentLink("jsonf").href, profile=DocumentLink().profile)
@@ -40,7 +37,8 @@ class DocumentController:
             self.uid = uid
             
             class DocumentSchema(halogen.Schema):
-                self = halogen.Link(attr=lambda value: DocumentLink(uid).href, profile=DocumentLink().profile)
+                self = halogen.Link(attr=lambda value: DocumentLink(uid).href,
+                                    profile=DocumentLink().profile)
 
                 name = halogen.Attr()
                 hcli_version = halogen.Attr()
