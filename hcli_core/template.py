@@ -18,11 +18,11 @@ class Template:
         except:
             None
 
-    """ We attempt to retrieves a specific command, identified by href, for a given command (cid) """
-    def findCommandForId(self, cid, href):
+    """ We attempt to retrieves a specific command, identified by href, for a given command (uid) """
+    def findCommandForId(self, uid, href):
         for index, i in enumerate(self.cli):
             arg = self.cli[index]
-            if arg['id'] == cid:
+            if arg['id'] == uid:
                 commands = arg['command']
 
                 for index, j in enumerate(commands):
@@ -32,11 +32,11 @@ class Template:
 
         return None
 
-    """ We attempt to find the command identified by cid """
-    def findById(self, cid):
+    """ We attempt to find the command identified by uid """
+    def findById(self, uid):
         for index, i in enumerate(self.cli):
             arg = self.cli[index]
-            if arg['id'] == cid:
+            if arg['id'] == uid:
                 return arg
  
         return None
@@ -44,19 +44,13 @@ class Template:
     def findRoot(self):
         return self.cli[0]
 
-#    public List<Command> findCommandsForId(String id)
-#    {
-#        for(int i = 0; i < this.getCLI().size(); i++)
-#        {
-#            Argument doc = this.getCLI().get(i);
-#            if(doc.getId().equals(id))
-#            {
-#                return doc.getCommand();
-#            }
-#        }
-#
-#        return null;
-#    }
+    def findCommandsForId(self, uid):
+        for index, i in enumerate(self.cli):
+            arg = self.cli[index]
+            if arg['id'] == uid:
+                return arg['command']
+        
+        return None
 
 #    public List<Option> findOptionsForId(String id)
 #    {
