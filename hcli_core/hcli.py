@@ -1,7 +1,7 @@
 import falcon
 import json
 import halogen
-import semantics
+import semantic
 import hcli
 import template
 
@@ -12,7 +12,7 @@ class HomeController(halogen.Schema):
     route = "/hcli"
     href = "/hcli"
 
-    self = halogen.Link(attr=lambda value: HomeController().href)
+    self = halogen.Link(attr=lambda value: HomeController.href)
 
     t = template.Template()
 
@@ -21,13 +21,20 @@ class HomeController(halogen.Schema):
         cid = root['id']
         command = "command=" + root['name']
 
-        #cli = halogen.Link(
-        #        attr=lambda value: hcli.DocumentController().href + "/" + HomeController.cid + "?" + HomeController.command,
-        #        profile=lambda value: hcli.DocumentController().profile
-        #)
+#        cli = halogen.Link(
+#                attr=lambda value: hcli.DocumentController().href + "/" + HomeController.cid + "?" + HomeController.command,
+#                profile=lambda value: hcli.DocumentController().profile
+#        )
         cli = halogen.Link(
-            attr=lambda value: DocumentController().href + "/" + HomeController.cid + "?" + HomeController.command
+            attr=lambda value: DocumentController.href + "/" + HomeController.cid + "?" + HomeController.command,
+            profile="profile"
         )
+
+class ProfileLink:
+    href = None
+    
+    def __init__(self):
+        self.href = "/hcli/profile"
 
 class Document:
     hcli_version = "1.0"
@@ -38,13 +45,21 @@ class Document:
         self.name = document['name']
         self.section = document['section']
 
-class DocumentController(halogen.Schema):
-    route = "/hcli/cli/{cid}"
-    href = "/hcli/cli"
+class DocumentLink:
+    href = None
+    profile = None
     
-    self = halogen.Link(attr=lambda value: DocumentController().href)
+    def __init__(self):
+        self.href = "/hcli/cli"
+        self.profile = ProfileLink().href + semantic.hcli_document_type
+
+class DocumentController(halogen.Schema):
+    route = DocumentLink().href + "/{cid}"
+    href = DocumentLink().href
+    profile = DocumentLink().profile
+
+    self = halogen.Link(attr=lambda value: DocumentController.href, profile=profile)
 
     name = halogen.Attr()
     hcli_version = halogen.Attr()
     section = halogen.Attr()
-    

@@ -1,7 +1,6 @@
 import falcon
 import json
 import halogen
-import semantics
 import template
 import hcli
 
