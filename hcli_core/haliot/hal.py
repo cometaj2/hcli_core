@@ -5,21 +5,15 @@ class Resource:
 
     def __init__(self, model):
         self._links = []
-        for attr, value in vars(model).items():
-            setattr(self, attr, value)
+        for key, value in vars(model).items():
+            setattr(self, key, value)
 
-    def Link(self, link):
+    def addLink(self, link):
         if link != None:
-            #for key, value in enumerate(link):
-            #    setattr(self._links, key, value)
             self._links.append(link)
-            #setattr(self._links, key="self" ,link)
+            #self._links.update(link)
 
     def toHALJSON(self):
-        #for index, i in enumerate(self._links):
-        #    self._links[index]
-        #    print(self._links[index])
-        
         return json.dumps(self, default=lambda o: o.__dict__, 
                           sort_keys=True,
                           indent=4)
