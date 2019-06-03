@@ -7,4 +7,4 @@ source ~/bin/activate
 deactivate
 
 # start server from hcli_core (call server.py's server variable)
-gunicorn --workers=5 --threads=2 "hcli_core:server()"
+gunicorn --workers=5 --threads=2 "hcli_core:server"

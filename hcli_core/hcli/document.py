@@ -1,4 +1,5 @@
 import halogen
+from haliot import hal
 import template
 import json
 from hcli import semantic
@@ -33,40 +34,51 @@ class DocumentController:
         if uid != None and command != None:
             self.uid = uid
             self.command = command
-            
-            class DocumentSchema(halogen.Schema):
-                self = halogen.Link(attr=lambda value: DocumentLink(uid, command).href,
-                                    profile=DocumentLink().profile)
 
-                name = halogen.Attr()
-                hcli_version = halogen.Attr()
-                section = halogen.Attr()
+            t = template.Template()
+            arg = t.findById(self.uid)
 
-                t = template.Template()
-                commands = t.findCommandsForId(uid)
+            rsrc = hal.Resource(Document(arg))
+            selflink = hal.Link(href=DocumentLink(uid, command).href)
+            profilelink = hal.Link(href=DocumentLink().profile)
 
-                if commands != None:
-                    clis = [];
-                    for index, i in enumerate(commands):
-                        com = commands[index]
-                        href = com['href']
-                        name = com['name']
- 
-                        newCommand = command + " " + name;
+            rsrc.Link(selflink)
+            rsrc.Link(profilelink)
+            print(rsrc.toHALJSON())
 
-                        link = {
-                                   "href": hcommand.CommandLink(uid, newCommand, href).href,
-                                   "name": name,
-                                   "profile": hcommand.CommandLink().profile
-                               }
-                        clis.append(link)
- 
-                        com = None;
-                        href = None;
-                        name = None;
-                        link = None;
-                   
-                    cli = halogen.Link(clis)
+#            class DocumentSchema(halogen.Schema):
+#                self = halogen.Link(attr=lambda value: DocumentLink(uid, command).href)
+#                profile = halogen.Link(DocumentLink().profile)
+#
+#                name = halogen.Attr()
+#                hcli_version = halogen.Attr()
+#                section = halogen.Attr()
+#
+#                t = template.Template()
+#                commands = t.findCommandsForId(uid)
+#
+#                if commands != None:
+#                    clis = [];
+#                    for index, i in enumerate(commands):
+#                        com = commands[index]
+#                        href = com['href']
+#                        name = com['name']
+# 
+#                        newCommand = command + " " + name;
+#
+#                        link = {
+#                                   "href": hcommand.CommandLink(uid, newCommand, href).href,
+#                                   "name": name,
+#                                   "profile": hcommand.CommandLink().profile
+#                               }
+#                        clis.append(link)
+# 
+#                        com = None
+#                        href = None
+#                        name = None
+#                        link = None
+#                  
+#                    cli = halogen.Link(clis)
 
 #
   #           List<Option> options = t.findOptionsForId(id);
@@ -116,10 +128,11 @@ class DocumentController:
   #               resource.withLink(cli.getRel(), cli.getHref(), null, null, null, profile.getHref() + SemanticTypes.EXECUTION);
    #          }
 
-            self.schema = DocumentSchema
+            #self.schema = DocumentSchema
 
     def serialize(self):
-        t = template.Template()
-        arg = t.findById(self.uid)
+        None
+        #t = template.Template()
+        #arg = t.findById(self.uid)
 
-        return self.schema.serialize(Document(arg))
+        #return self.schema.serialize(Document(arg))

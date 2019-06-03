@@ -42,8 +42,8 @@ class CommandController:
             name = self.com['name']
             
             class CommandSchema(halogen.Schema):
-                self = halogen.Link(attr=lambda value: CommandLink(uid, command, href).href,
-                                    profile=CommandLink().profile)
+                self = halogen.Link(attr=lambda value: CommandLink(uid, command, href).href)
+                profile = halogen.Link(CommandLink().profile)
 
                 name = halogen.Attr()
                 hcli_version = halogen.Attr()
