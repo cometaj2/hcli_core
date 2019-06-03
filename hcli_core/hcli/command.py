@@ -5,6 +5,7 @@ from haliot import hal
 from hcli import semantic
 from hcli import profile
 from hcli import document
+from hcli import home
 
 class Command:
     hcli_version = None
