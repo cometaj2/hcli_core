@@ -42,8 +42,8 @@ class DocumentController:
             selflink = hal.Link(href=DocumentLink(uid, command).href)
             profilelink = hal.Link(href=DocumentLink().profile)
 
-            rsrc.addLink(selflink)
-            rsrc.addLink(profilelink)
+            rsrc.addLink("self", selflink)
+            rsrc.addLink("profile", profilelink)
             print(rsrc.toHALJSON())
 
 #            class DocumentSchema(halogen.Schema):
