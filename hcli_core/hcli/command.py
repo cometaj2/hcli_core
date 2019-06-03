@@ -1,6 +1,7 @@
-import halogen
 import template
+import json
 import urllib.parse
+from haliot import hal
 from hcli import semantic
 from hcli import profile
 
@@ -25,31 +26,16 @@ class CommandLink:
 
 class CommandController:
     route = "/hcli/cli/__cdef/{uid}"
-    schema = None
-    uid = None
-    command = None
-    href = None
-    com = None
+    resource = None
 
     def __init__(self, uid=None, command=None, href=None):
         if uid != None and command != None and href != None:
-            self.uid = uid
-            self.command = command
-            self.href = href
-
             t = template.Template()
             arg = t.findById(uid);
-            self.com = t.findCommandForId(uid, href)
-            name = self.com['name']
-            
-            class CommandSchema(halogen.Schema):
-                self = halogen.Link(attr=lambda value: CommandLink(uid, command, href).href)
-                profile = halogen.Link(CommandLink().profile)
-
-                name = halogen.Attr()
-                hcli_version = halogen.Attr()
-                description = halogen.Attr()
-
+            com = t.findCommandForId(uid, href)
+            name = com['name']
+           
+            self.resource = hal.Resource(Command(com))
 
 #        
 #        Representation resource = (new HCLICommand(com)).toResource();
@@ -64,7 +50,6 @@ class CommandController:
 #                .withLink(profile.getRel(), profile.getHref() + SemanticTypes.COMMAND)
 #                .withLink(cli.getRel(), cli.getHref(), name, null, null, profile.getHref() + SemanticTypes.HCLI_DOCUMENT);
 
-            self.schema = CommandSchema
 
     def serialize(self):
-        return self.schema.serialize(Command(self.com))
+        return self.resource.toHALJSON()

@@ -1,4 +1,3 @@
-import halogen
 import template
 from hcli import home
 from hcli import document
@@ -22,5 +21,4 @@ class CommandApi:
         command = req.params['command']
         href = req.params['href']
 
-        serialized = hcommand.CommandController(uid, command, href).serialize()
-        resp.body = json.dumps(serialized)
+        resp.body = hcommand.CommandController(uid, command, href).serialize()

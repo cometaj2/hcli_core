@@ -2,7 +2,6 @@ from __future__ import absolute_import, division, print_function
 
 import falcon
 import json
-import halogen
 from hcli import api
 from hcli import home
 from hcli import document
