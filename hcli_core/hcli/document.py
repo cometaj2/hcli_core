@@ -1,10 +1,11 @@
-import halogen
 from haliot import hal
+import urllib.parse
 import template
 import json
 from hcli import semantic
 from hcli import profile
 from hcli import command as hcommand
+from hcli import home
 
 class Document:
     hcli_version = None
@@ -23,7 +24,7 @@ class DocumentLink:
     
     def __init__(self, uid=None, command=None):
         if uid != None and command != None:
-            self.href = self.href + "/" + uid + "?command=" + command
+            self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote(command)
 
 class DocumentController:
     route = "/hcli/cli/{uid}"
@@ -40,9 +41,11 @@ class DocumentController:
             self.resource = hal.Resource(Document(arg))
             selflink = hal.Link(href=DocumentLink(uid, command).href)
             profilelink = hal.Link(href=DocumentLink().profile)
+            homelink = hal.Link(href=home.HomeLink().href)
 
             self.resource.addLink("self", selflink)
             self.resource.addLink("profile", profilelink)
+            self.resource.addLink("home", homelink)
 
             t = template.Template()
             commands = t.findCommandsForId(uid)

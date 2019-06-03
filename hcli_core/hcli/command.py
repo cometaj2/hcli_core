@@ -4,6 +4,7 @@ import urllib.parse
 from haliot import hal
 from hcli import semantic
 from hcli import profile
+from hcli import document
 
 class Command:
     hcli_version = None
@@ -36,8 +37,16 @@ class CommandController:
             name = com['name']
            
             self.resource = hal.Resource(Command(com))
+            selflink = hal.Link(href=CommandLink(uid, command, href).href)
+            profilelink = hal.Link(href=CommandLink().profile)
+            clilink = hal.Link(href=document.DocumentLink(href, command).href)
+            homelink = hal.Link(href=home.HomeLink().href)
 
-#        
+            self.resource.addLink("self", selflink)
+            self.resource.addLink("profile", profilelink)
+            self.resource.addLink("cli", clilink)
+            self.resource.addLink("home", homelink)
+#       
 #        Representation resource = (new HCLICommand(com)).toResource();
 #        
 #        Link self = linkTo(methodOn(HCLICommandController.class).command(id, command, href)).withSelfRel().expand(id, command, href);

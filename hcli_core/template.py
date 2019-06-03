@@ -48,7 +48,8 @@ class Template:
         for index, i in enumerate(self.cli):
             arg = self.cli[index]
             if arg['id'] == uid:
-                return arg['command']
+                if 'command' in arg:
+                    return arg['command']
         
         return None
 
