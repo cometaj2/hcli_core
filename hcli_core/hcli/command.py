@@ -5,12 +5,13 @@ from hcli import semantic
 from hcli import profile
 
 class Command:
-    hcli_version = "1.0"
+    hcli_version = None
     name = None
     description = None
 
     def __init__(self, command=None):
         if command != None:
+            hcli_version = "1.0"
             self.name = command['name']
             self.description = command['description']
 

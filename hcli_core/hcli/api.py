@@ -1,14 +1,12 @@
 import halogen
 import template
-import json
 from hcli import home
 from hcli import document
 from hcli import command as hcommand
 
 class HomeApi:
     def on_get(self, req, resp):
-        serialized = home.HomeController.serialize(home.Home())
-        resp.body = json.dumps(serialized)
+        resp.body = home.HomeController().serialize()
 
 class DocumentApi:
     def on_get(self, req, resp, uid):
@@ -16,8 +14,7 @@ class DocumentApi:
         arg = t.findById(uid)
         command = req.params['command']
 
-        serialized = document.DocumentController(uid, command).serialize()
-        resp.body = json.dumps(serialized)
+        resp.body = document.DocumentController(uid, command).serialize()
 
 class CommandApi:
     def on_get(self, req, resp, uid):

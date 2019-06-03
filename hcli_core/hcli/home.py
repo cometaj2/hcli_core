@@ -1,25 +1,37 @@
-import halogen
 import template
+from haliot import hal
 from hcli import document
-from hcli import profile
 
 class Home(object):
     None
 
-class HomeController(halogen.Schema):
+class HomeLink:
+    href = None
+
+    def __init__(self):
+        self.href = "http://127.0.0.1:8000/hcli"
+
+class HomeController:
     route = "/hcli"
     href = "/hcli"
+    resource = None
 
-    self = halogen.Link(attr=lambda value: HomeController.href)
+    def __init__(self):
 
-    t = template.Template()
+        t = template.Template()
 
-    if t and t.cli and t.hcliTemplateVersion and t.hcliTemplateVersion == "1.0":
-        root = t.findRoot()
-        cid = root['id']
-        command = "command=" + root['name']
+        if t and t.cli and t.hcliTemplateVersion and t.hcliTemplateVersion == "1.0":
+            root = t.findRoot()
+            uid = root['id']
+            command = root['name']
 
-        cli = halogen.Link(
-                attr=lambda value: document.DocumentLink(HomeController.cid).href + "?" + HomeController.command,
-                profile=document.DocumentLink().profile
-        )
+            self.resource = hal.Resource(Home())
+            selflink = hal.Link(href=HomeLink().href)
+            clilink = hal.Link(href=document.DocumentLink(uid, command).href,
+                               profile=document.DocumentLink().profile)
+
+            self.resource.addLink("self", selflink)
+            self.resource.addLink("cli", clilink)
+
+    def serialize(self):
+        return self.resource.toHALJSON()

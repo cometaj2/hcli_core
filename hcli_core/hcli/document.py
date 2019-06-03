@@ -7,12 +7,13 @@ from hcli import profile
 from hcli import command as hcommand
 
 class Document:
-    hcli_version = "1.0"
+    hcli_version = None
     name = None
     section = []
 
     def __init__(self, document=None):
         if document != None:
+            self.hcli_version = "1.0"
             self.name = document['name']
             self.section = document['section']
 
@@ -26,9 +27,7 @@ class DocumentLink:
 
 class DocumentController:
     route = "/hcli/cli/{uid}"
-    schema = None
-    uid = None
-    command = None
+    resource = None
 
     def __init__(self, uid=None, command=None):
         if uid != None and command != None:
@@ -38,48 +37,35 @@ class DocumentController:
             t = template.Template()
             arg = t.findById(self.uid)
 
-            rsrc = hal.Resource(Document(arg))
+            self.resource = hal.Resource(Document(arg))
             selflink = hal.Link(href=DocumentLink(uid, command).href)
             profilelink = hal.Link(href=DocumentLink().profile)
 
-            rsrc.addLink("self", selflink)
-            rsrc.addLink("profile", profilelink)
-            print(rsrc.toHALJSON())
+            self.resource.addLink("self", selflink)
+            self.resource.addLink("profile", profilelink)
 
-#            class DocumentSchema(halogen.Schema):
-#                self = halogen.Link(attr=lambda value: DocumentLink(uid, command).href)
-#                profile = halogen.Link(DocumentLink().profile)
-#
-#                name = halogen.Attr()
-#                hcli_version = halogen.Attr()
-#                section = halogen.Attr()
-#
-#                t = template.Template()
-#                commands = t.findCommandsForId(uid)
-#
-#                if commands != None:
-#                    clis = [];
-#                    for index, i in enumerate(commands):
-#                        com = commands[index]
-#                        href = com['href']
-#                        name = com['name']
-# 
-#                        newCommand = command + " " + name;
-#
-#                        link = {
-#                                   "href": hcommand.CommandLink(uid, newCommand, href).href,
-#                                   "name": name,
-#                                   "profile": hcommand.CommandLink().profile
-#                               }
-#                        clis.append(link)
-# 
-#                        com = None
-#                        href = None
-#                        name = None
-#                        link = None
-#                  
-#                    cli = halogen.Link(clis)
+            t = template.Template()
+            commands = t.findCommandsForId(uid)
 
+            if commands != None:
+                for index, i in enumerate(commands):
+                    com = commands[index]
+                    href = com['href']
+                    name = com['name']
+
+                    newCommand = command + " " + name;
+
+                    link = {
+                               "href": hcommand.CommandLink(uid, newCommand, href).href,
+                               "name": name,
+                               "profile": hcommand.CommandLink().profile
+                           }
+                    self.resource.addLink("cli", link)
+
+                    com = None
+                    href = None
+                    name = None
+                    link = None
 #
   #           List<Option> options = t.findOptionsForId(id);
  #
@@ -131,8 +117,4 @@ class DocumentController:
             #self.schema = DocumentSchema
 
     def serialize(self):
-        None
-        #t = template.Template()
-        #arg = t.findById(self.uid)
-
-        #return self.schema.serialize(Document(arg))
+        return self.resource.toHALJSON()
