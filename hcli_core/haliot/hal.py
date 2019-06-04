@@ -10,7 +10,11 @@ class Resource:
 
     def addLink(self, rel, link):
         if link != None:
-           self._links[rel]=link
+            if rel == "self":
+                self._links[rel]=link
+            if rel != "self":
+                self._links[rel]=[]
+                self._links[rel].append(link)
 
     def toHALJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, 
