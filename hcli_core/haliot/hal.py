@@ -13,8 +13,12 @@ class Resource:
             if rel == "self":
                 self._links[rel]=link
             if rel != "self":
-                self._links[rel]=[]
-                self._links[rel].append(link)
+                l = self._links.get(rel)
+                if l:
+                    self._links[rel].append(link)
+                else:
+                    self._links[rel]=[]
+                    self._links[rel].append(link)
 
     def toHALJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, 

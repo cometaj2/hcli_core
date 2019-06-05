@@ -47,19 +47,6 @@ class CommandController:
             self.resource.addLink("profile", profilelink)
             self.resource.addLink("cli", clilink)
             self.resource.addLink("home", homelink)
-#       
-#        Representation resource = (new HCLICommand(com)).toResource();
-#        
-#        Link self = linkTo(methodOn(HCLICommandController.class).command(id, command, href)).withSelfRel().expand(id, command, href);
-#        Link home = linkTo(methodOn(HomeController.class).home()).withRel("home");
-#        Link profile = linkTo(methodOn(ProfileController.class).profile()).withRel("profile");
-#        Link cli = linkTo(methodOn(HCLIDocumentController.class).cli(href, command)).withRel("cli").expand(href, command);
-#        
-#        resource.withLink(self.getRel(), self.getHref())
-#                .withLink(home.getRel(), home.getHref())
-#                .withLink(profile.getRel(), profile.getHref() + SemanticTypes.COMMAND)
-#                .withLink(cli.getRel(), cli.getHref(), name, null, null, profile.getHref() + SemanticTypes.HCLI_DOCUMENT);
-
 
     def serialize(self):
         return self.resource.toHALJSON()

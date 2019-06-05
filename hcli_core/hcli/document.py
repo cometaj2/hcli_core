@@ -6,6 +6,7 @@ from hcli import semantic
 from hcli import profile
 from hcli import command as hcommand
 from hcli import home
+from hcli import option
 
 class Document:
     hcli_version = None
@@ -69,29 +70,29 @@ class DocumentController:
                     href = None
                     name = None
                     link = None
-#
-  #           List<Option> options = t.findOptionsForId(id);
- #
-  #           if(options != null)
-   #          {
-    #             for(int i = 0; i < options.size(); i++)
-     #            {
-      #               Option opt = (Option) options.get(i);
-       #              String href = opt.getHref();
-        #             String name = opt.getName();
- #
-  #                   String newCommand = command + " " + name;
- #
-  #                   Link cli = linkTo(methodOn(HCLIOptionController.class).option(id, newCommand, href)).withRel("cli").expand(href, newCommand, href);
- #
-  #                   resource.withLink(cli.getRel(), cli.getHref(), name, null, null, profile.getHref() + SemanticTypes.OPTION);
- #
-  #                   opt = null;
-   #                  href = null;
-    #                 name = null;
-     #                cli = null;
-      #           }
-       #      }
+
+            options = t.findOptionsForId(uid);
+
+            if options != None:
+                for index, i in enumerate(options):
+                    opt = options[index]
+                    href = opt['href']
+                    name = opt['name']
+
+                    newCommand = command + " " + name;
+
+                    link = {   
+                               "href": option.OptionLink(uid, newCommand, href).href,
+                               "name": name,
+                               "profile": option.OptionLink().profile
+                           }
+                    self.resource.addLink("cli", link)
+
+                    opt = None
+                    href = None
+                    name = None
+                    link = None
+
  #
   #           Parameter parameter = t.findParameterForId(id);
  #

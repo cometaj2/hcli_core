@@ -53,19 +53,14 @@ class Template:
         
         return None
 
-#    public List<Option> findOptionsForId(String id)
-#    {
-#        for(int i = 0; i < this.getCLI().size(); i++)
-#        {
-#            Argument doc = this.getCLI().get(i);
-#            if(doc.getId().equals(id))
-#            {
-#                return doc.getOption();
-#            }
-#        }
-#
-#        return null;
-#    }
+    def findOptionsForId(self, uid):
+        for index, i in enumerate(self.cli):
+            arg = self.cli[index]
+            if arg['id'] == uid:
+                if 'option' in arg:
+                    return arg['option']
+
+        return None
 
 #    public Parameter findParameterForId(String id)
 #    {
@@ -80,6 +75,19 @@ class Template:
 #
 #        return null;
 #    }
+
+
+    """ We attempt to retrieves a specific option, identified by href, for a given command (uid) """
+    def findOptionForId(self, uid, href):
+        for index, i in enumerate(self.cli):
+            arg = self.cli[index]
+            if arg['id'] == uid:
+                options = arg['option']
+
+                for index, j in enumerate(options):
+                    option = options[index]
+                    if option['href'] == href:
+                        return option
 
 #    public Option findOptionForId(String id, String href)
 #    {

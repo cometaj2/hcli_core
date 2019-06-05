@@ -2,6 +2,7 @@ import template
 from hcli import home
 from hcli import document
 from hcli import command as hcommand
+from hcli import option
 
 class HomeApi:
     def on_get(self, req, resp):
@@ -22,3 +23,11 @@ class CommandApi:
         href = req.params['href']
 
         resp.body = hcommand.CommandController(uid, command, href).serialize()
+
+class OptionApi:
+    def on_get(self, req, resp, uid):
+        t = template.Template()
+        command = req.params['command']
+        href = req.params['href']
+
+        resp.body = option.OptionController(uid, command, href).serialize()
