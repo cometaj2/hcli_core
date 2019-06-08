@@ -49,4 +49,4 @@ class ExecutionController:
             self.resource.addLink("cli", finallink)
 
     def serialize(self):
-        return self.resource.toHALJSON()
+        return self.resource.serialize()

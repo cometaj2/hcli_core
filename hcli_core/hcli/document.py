@@ -120,4 +120,4 @@ class DocumentController:
                 self.resource.addLink("cli", link)
 
     def serialize(self):
-        return self.resource.toHALJSON()
+        return self.resource.serialize()

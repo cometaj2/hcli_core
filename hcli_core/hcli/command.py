@@ -49,4 +49,4 @@ class CommandController:
             self.resource.addLink("home", homelink)
 
     def serialize(self):
-        return self.resource.toHALJSON()
+        return self.resource.serialize()

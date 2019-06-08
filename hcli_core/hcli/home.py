@@ -33,4 +33,4 @@ class HomeController:
             self.resource.addLink("cli", clilink)
 
     def serialize(self):
-        return self.resource.toHALJSON()
+        return self.resource.serialize()
