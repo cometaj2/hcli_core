@@ -1,0 +1,67 @@
+{
+    "hcliTemplateVersion" : "1.0",
+    "executable": [
+    {
+        "command" : "jsonf --version",
+        "http" : "get"
+    },
+    {
+        "command" : "jsonf go",
+        "http" : "post"
+    }],
+    "cli" : [{
+        "id" : "jsonf",
+        "name" : "jsonf",
+        "section" : [
+        {
+            "name" : "name",
+            "description" : "jsonf - a simple formatter for JSON"
+        },
+        {
+            "name" : "synopsis",
+            "description" : "jsonf [option] <command>"
+        },
+        {
+            "name" : "description",
+            "description" : "The jsonf CLI allows you to format JSON easily."
+        },
+        {
+            "name" : "examples",
+            "description" : "N/A"
+        }],
+        "command" : [{
+            "href" : "jsonfgo",
+            "name" : "go",
+            "description" : "jsonf go kicks off formatting of a JSON input stream"
+        }],
+        "option" : [{
+            "href" : "jsonf--version",
+            "name" : "--version",
+            "description" : "The jsonf CLI version."
+        }]
+    },
+    {
+        "id" : "jsonf--version"
+    },
+    {
+        "id" : "jsonfgo",
+        "name" : "go",
+        "section" : [
+        {
+            "name" : "name",
+            "description" : "jsonf go - kick off formatting of a JSON input stream"
+        },
+        {
+            "name" : "synopsis",
+            "description" : "jsonf go"
+        },
+        {
+            "name" : "description",
+            "description" : "The \"go\" command takes a JSON input stream and returns formatted JSON."
+        },
+        {
+            "name" : "examples",
+            "description" : "echo '{\"hello\":\"world\"}' | jsonf go"
+        }]        
+    }]
+}
