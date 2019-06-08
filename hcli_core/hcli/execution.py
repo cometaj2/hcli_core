@@ -36,17 +36,24 @@ class ExecutionController:
             t = template.Template()
             arg = t.findById(uid);
             ex = t.findExecutable(command)
+            http = ex['http']
            
             self.resource = hal.Resource(Execution(ex))
             selflink = hal.Link(href=ExecutionLink(uid, command).href)
             profilelink = hal.Link(href=ExecutionLink().profile)
             homelink = hal.Link(href=home.HomeLink().href)
-            finallink = hal.Link(href=finalexecution.FinalExecutionLink(command).href)
+
+            if http == 'get':
+                finallink = hal.Link(href=finalexecution.FinalGetExecutionLink(command).href)
+                self.resource.addLink("cli", finallink)
+            
+            if http == 'post':
+                finallink = hal.Link(href=finalexecution.FinalPostExecutionLink(command).href)
+                self.resource.addLink("cli", finallink)
 
             self.resource.addLink("self", selflink)
             self.resource.addLink("profile", profilelink)
             self.resource.addLink("home", homelink)
-            self.resource.addLink("cli", finallink)
 
     def serialize(self):
         return self.resource.serialize()
