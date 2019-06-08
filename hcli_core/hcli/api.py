@@ -1,4 +1,3 @@
-import template
 from hcli import home
 from hcli import document
 from hcli import command as hcommand
