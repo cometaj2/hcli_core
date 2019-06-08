@@ -20,7 +20,7 @@ class Execution:
             self.http = executable['http']
 
 class ExecutionLink:
-    href = "http://127.0.0.1:8000/hcli/cli/__edef"
+    href = "/hcli/cli/__edef"
     profile = profile.ProfileLink().href + semantic.hcli_execution_type
     
     def __init__(self, uid=None, command=None):

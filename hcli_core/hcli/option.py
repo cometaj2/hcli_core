@@ -19,7 +19,7 @@ class Option:
             self.description = option['description']
 
 class OptionLink:
-    href = "http://127.0.0.1:8000/hcli/cli/__odef"
+    href = "/hcli/cli/__odef"
     profile = profile.ProfileLink().href + semantic.hcli_option_type
     
     def __init__(self, uid=None, option=None, href=None):

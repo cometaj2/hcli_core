@@ -19,7 +19,7 @@ class Command:
             self.description = command['description']
 
 class CommandLink:
-    href = "http://127.0.0.1:8000/hcli/cli/__cdef"
+    href = "/hcli/cli/__cdef"
     profile = profile.ProfileLink().href + semantic.hcli_command_type
     
     def __init__(self, uid=None, command=None, href=None):

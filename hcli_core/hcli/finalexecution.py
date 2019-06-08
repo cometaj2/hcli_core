@@ -9,7 +9,7 @@ from hcli import home
 from hcli import cli
 
 class FinalExecutionLink:
-    href = "http://127.0.0.1:8000/hcli/cli/exec/getexecute"
+    href = "/hcli/cli/exec/getexecute"
     profile = profile.ProfileLink().href + semantic.hcli_execution_type
     
     def __init__(self, command=None):
