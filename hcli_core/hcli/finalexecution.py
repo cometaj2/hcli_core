@@ -6,7 +6,7 @@ from hcli import semantic
 from hcli import profile
 from hcli import document
 from hcli import home
-from hcli import cli
+from cli import cli
 
 class FinalGetExecutionLink:
     href = "/hcli/cli/exec/getexecute"

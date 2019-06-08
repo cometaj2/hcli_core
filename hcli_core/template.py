@@ -9,7 +9,7 @@ class Template:
     def __init__(self):
         
         try:
-            with open("template.json", "r") as read_file:
+            with open("cli/template.json", "r") as read_file:
                 data = json.load(read_file)	
 
             self.hcliTemplateVersion = data['hcliTemplateVersion']
