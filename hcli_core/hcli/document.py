@@ -7,6 +7,7 @@ from hcli import profile
 from hcli import command as hcommand
 from hcli import home
 from hcli import option
+from hcli import execution
 
 class Document:
     hcli_version = None
@@ -109,16 +110,14 @@ class DocumentController:
     #                 cli = null;
      #        }
 
-      #       Executable al = t.findExecutable(command);
- #
-  #           if(al != null)
-   #          {
-    #             Link cli = linkTo(methodOn(HCLIExecutionController.class).execution(id, command)).withRel("cli").expand(id, command);
- #
-  #               resource.withLink(cli.getRel(), cli.getHref(), null, null, null, profile.getHref() + SemanticTypes.EXECUTION);
-   #          }
-
-            #self.schema = DocumentSchema
+            executable = t.findExecutable(command);
+ 
+            if executable != None:
+                link = {
+                           "href": execution.ExecutionLink(uid, command).href,
+                           "profile": execution.ExecutionLink().profile
+                       }
+                self.resource.addLink("cli", link)
 
     def serialize(self):
         return self.resource.toHALJSON()

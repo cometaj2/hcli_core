@@ -30,17 +30,17 @@ class OptionController:
     route = "/hcli/cli/__odef/{uid}"
     resource = None
 
-    def __init__(self, uid=None, option=None, href=None):
-        if uid != None and option != None and href != None:
+    def __init__(self, uid=None, command=None, href=None):
+        if uid != None and command != None and href != None:
             t = template.Template()
             arg = t.findById(uid);
             opt = t.findOptionForId(uid, href)
             name = opt['name']
            
             self.resource = hal.Resource(Option(opt))
-            selflink = hal.Link(href=OptionLink(uid, uid, href).href)
+            selflink = hal.Link(href=OptionLink(uid, command, href).href)
             profilelink = hal.Link(href=OptionLink().profile)
-            clilink = hal.Link(href=document.DocumentLink(href, uid).href)
+            clilink = hal.Link(href=document.DocumentLink(uid, command).href)
             homelink = hal.Link(href=home.HomeLink().href)
 
             self.resource.addLink("self", selflink)

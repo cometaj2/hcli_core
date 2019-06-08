@@ -76,7 +76,6 @@ class Template:
 #        return null;
 #    }
 
-
     """ We attempt to retrieves a specific option, identified by href, for a given command (uid) """
     def findOptionForId(self, uid, href):
         for index, i in enumerate(self.cli):
@@ -89,39 +88,11 @@ class Template:
                     if option['href'] == href:
                         return option
 
-#    public Option findOptionForId(String id, String href)
-#    {
-#        for(int i = 0; i < this.getCLI().size(); i++)
-#        {
-#            Argument doc = this.getCLI().get(i);
-#            if(doc.getId().equals(id))
-#            {
-#                List<Option> options = doc.getOption();
-#
-#                for(int j = 0; j < options.size(); j++)
-#                {
-#                    Option opt = options.get(j);
-#                    if(opt.getHref().equals(href))
-#                    {
-#                        return opt;
-#                    }
-#                }
-#            }
-#        }
-#
-#        return null;
-#    }
+    """ We attempt to retrieves a specific executable, identified by a command """
+    def findExecutable(self, command):
+        for index, i in enumerate(self.executable):
+            ex = self.executable[index]
+            if(ex['command'] == command):
+                return ex
 
-#    public Executable findExecutable(String command)
-#    {
-#        for(int i = 0; i < this.getExecutable().size(); i++)
-#        {
-#            Executable al = this.getExecutable().get(i);
-#            if(al.getCommand().equals(command))
-#            {
-#                return al;
-#            }
-#        }
-#
-#        return null;
-#    }
+        return None
