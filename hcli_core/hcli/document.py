@@ -60,12 +60,10 @@ class DocumentController:
 
                     newCommand = command + " " + name;
 
-                    link = {
-                               "href": hcommand.CommandLink(uid, newCommand, href).href,
-                               "name": name,
-                               "profile": hcommand.CommandLink().profile
-                           }
-                    self.resource.addLink("cli", link)
+                    clilink = hal.Link(href=hcommand.CommandLink(uid, newCommand, href).href,
+                                       name=name,
+                                       profile=hcommand.CommandLink().profile)
+                    self.resource.addLink("cli", clilink)
 
                     com = None
                     href = None
@@ -82,12 +80,10 @@ class DocumentController:
 
                     newCommand = command + " " + name;
 
-                    link = {   
-                               "href": option.OptionLink(uid, newCommand, href).href,
-                               "name": name,
-                               "profile": option.OptionLink().profile
-                           }
-                    self.resource.addLink("cli", link)
+                    clilink = hal.Link(href=option.OptionLink(uid, newCommand, href).href,
+                                       name=name,
+                                       profile=option.OptionLink().profile)
+                    self.resource.addLink("cli", clilink)
 
                     opt = None
                     href = None
