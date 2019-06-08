@@ -109,11 +109,9 @@ class DocumentController:
             executable = t.findExecutable(command);
  
             if executable != None:
-                link = {
-                           "href": execution.ExecutionLink(uid, command).href,
-                           "profile": execution.ExecutionLink().profile
-                       }
-                self.resource.addLink("cli", link)
+                clilink = hal.Link(href=execution.ExecutionLink(uid, command).href,
+                                   profile=execution.ExecutionLink().profile)
+                self.resource.addLink("cli", clilink)
 
     def serialize(self):
         return self.resource.serialize()
