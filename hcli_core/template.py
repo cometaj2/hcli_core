@@ -62,19 +62,14 @@ class Template:
 
         return None
 
-#    public Parameter findParameterForId(String id)
-#    {
-#        for(int i = 0; i < this.getCLI().size(); i++)
-#        {
-#            Argument doc = this.getCLI().get(i);
-#            if(doc.getId().equals(id))
-#            {
-#                return doc.getParameter();
-#            }
-#        }
-#
-#        return null;
-#    }
+    def findParameterForId(self, uid):
+        for index, i in enumerate(self.cli):
+            arg = self.cli[index]
+            if arg['id'] == uid:
+                if 'parameter' in arg:
+                    return arg['parameter']
+
+        return None
 
     """ We attempt to retrieves a specific option, identified by href, for a given command (uid) """
     def findOptionForId(self, uid, href):

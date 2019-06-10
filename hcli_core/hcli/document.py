@@ -8,6 +8,7 @@ from hcli import command as hcommand
 from hcli import home
 from hcli import option
 from hcli import execution
+from hcli import parameter
 
 class Document:
     hcli_version = None
@@ -26,7 +27,7 @@ class DocumentLink:
     
     def __init__(self, uid=None, command=None):
         if uid != None and command != None:
-            self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote(command)
+            self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote_plus(command)
 
 class DocumentController:
     route = "/hcli/cli/{uid}"
@@ -34,11 +35,8 @@ class DocumentController:
 
     def __init__(self, uid=None, command=None):
         if uid != None and command != None:
-            self.uid = uid
-            self.command = command
-
             t = template.Template()
-            arg = t.findById(self.uid)
+            arg = t.findById(uid)
 
             self.resource = hal.Resource(Document(arg))
             selflink = hal.Link(href=DocumentLink(uid, command).href)
@@ -50,8 +48,8 @@ class DocumentController:
             self.resource.addLink("home", homelink)
 
             t = template.Template()
-            commands = t.findCommandsForId(uid)
 
+            commands = t.findCommandsForId(uid)
             if commands != None:
                 for index, i in enumerate(commands):
                     com = commands[index]
@@ -71,7 +69,6 @@ class DocumentController:
                     link = None
 
             options = t.findOptionsForId(uid);
-
             if options != None:
                 for index, i in enumerate(options):
                     opt = options[index]
@@ -89,25 +86,21 @@ class DocumentController:
                     href = None
                     name = None
                     link = None
-
- #
-  #           Parameter parameter = t.findParameterForId(id);
- #
-  #           if(parameter != null)
-   #          {
-    #                 String href = parameter.getHref();
- #
-  #                   Link cli = linkTo(methodOn(HCLIParameterController.class).parameter(id, command, href)).withRel("cli").expand(href, command, href);
- #
-  #                   resource.withLink(cli.getRel(), cli.getHref(), null, null, null, profile.getHref() + SemanticTypes.PARAMETER);
- #
-  #                   parameter = null;
-   #                  href = null;
-    #                 cli = null;
-     #        }
+ 
+            param = t.findParameterForId(uid)
+            if param != None:
+                href = param['href']
+ 
+                clilink = hal.Link(href=parameter.ParameterLink(uid, command, href).href,
+                                   profile=parameter.ParameterLink().profile)
+ 
+                self.resource.addLink("cli", clilink)
+ 
+                param = None
+                href = None
+                cli = None
 
             executable = t.findExecutable(command);
- 
             if executable != None:
                 clilink = hal.Link(href=execution.ExecutionLink(uid, command).href,
                                    profile=execution.ExecutionLink().profile)

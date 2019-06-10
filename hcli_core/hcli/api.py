@@ -4,6 +4,7 @@ from hcli import command as hcommand
 from hcli import option
 from hcli import execution
 from hcli import finalexecution
+from hcli import parameter
 
 class HomeApi:
     def on_get(self, req, resp):
@@ -32,6 +33,14 @@ class OptionApi:
 
         resp.content_type = "application/hal+json"
         resp.body = option.OptionController(uid, command, href).serialize()
+
+class ParameterApi:
+    def on_get(self, req, resp, uid):
+        command = req.params['command']
+        href = req.params['href']
+
+        resp.content_type = "application/hal+json"
+        resp.body = parameter.ParameterController(uid, command, href).serialize()
 
 class ExecutionApi:
     def on_get(self, req, resp, uid):

@@ -14,7 +14,7 @@ class FinalGetExecutionLink:
     
     def __init__(self, command=None):
         if command != None:
-            self.href = self.href + "?command=" + urllib.parse.quote(command)
+            self.href = self.href + "?command=" + urllib.parse.quote_plus(command)
 
 class FinalGetExecutionController:
     route = "/hcli/cli/exec/getexecute"
@@ -34,7 +34,7 @@ class FinalPostExecutionLink:
 
     def __init__(self, command=None):
         if command != None:
-            self.href = self.href + "?command=" + urllib.parse.quote(command)
+            self.href = self.href + "?command=" + urllib.parse.quote_plus(command)
 
 class FinalPostExecutionController:
     route = "/hcli/cli/exec/postexecute"

@@ -25,7 +25,7 @@ class ExecutionLink:
     
     def __init__(self, uid=None, command=None):
         if uid != None and command != None:
-            self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote(command)
+            self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote_plus(command)
 
 class ExecutionController:
     route = "/hcli/cli/__edef/{uid}"

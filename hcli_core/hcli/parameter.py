@@ -7,39 +7,37 @@ from hcli import profile
 from hcli import document
 from hcli import home
 
-class Command:
+class Parameter:
     hcli_version = None
-    name = None
-    description = None
 
-    def __init__(self, command=None):
-        if command != None:
-            hcli_version = "1.0"
-            self.name = command['name']
-            self.description = command['description']
+    def __init__(self):
+        hcli_version = "1.0"
 
-class CommandLink:
-    href = "/hcli/cli/__cdef"
-    profile = profile.ProfileLink().href + semantic.hcli_command_type
+class ParameterLink:
+    href = "/hcli/cli/__pdef"
+    profile = profile.ProfileLink().href + semantic.hcli_parameter_type
     
     def __init__(self, uid=None, command=None, href=None):
         if uid != None and command != None and href != None:
             self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote_plus(command) + "&href=" + href
 
-class CommandController:
-    route = "/hcli/cli/__cdef/{uid}"
+class ParameterController:
+    route = "/hcli/cli/__pdef/{uid}"
     resource = None
 
     def __init__(self, uid=None, command=None, href=None):
         if uid != None and command != None and href != None:
             t = template.Template()
-            com = t.findCommandForId(uid, href)
-            name = com['name']
+            arg = t.findById(uid);
+            param = t.findParameterForId(uid)
+            name = arg['name']
            
-            self.resource = hal.Resource(Command(com))
-            selflink = hal.Link(href=CommandLink(uid, command, href).href)
-            profilelink = hal.Link(href=CommandLink().profile)
-            clilink = hal.Link(href=document.DocumentLink(href, command).href)
+            self.resource = hal.Resource(Parameter())
+            selflink = hal.Link(href=ParameterLink(uid, command, href).href)
+            profilelink = hal.Link(href=ParameterLink().profile)
+            clilink = hal.Link(href=document.DocumentLink(uid, command + " " + "{hcli_param}").href,
+                               name=name,
+                               profile=document.DocumentLink().profile)
             homelink = hal.Link(href=home.HomeLink().href)
 
             self.resource.addLink("self", selflink)

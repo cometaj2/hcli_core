@@ -9,6 +9,7 @@ from hcli import command
 from hcli import option
 from hcli import execution
 from hcli import finalexecution
+from hcli import parameter
 
 server = falcon.API()
 server.add_route(home.HomeController.route, api.HomeApi())
@@ -18,3 +19,4 @@ server.add_route(option.OptionController.route, api.OptionApi())
 server.add_route(execution.ExecutionController.route, api.ExecutionApi())
 server.add_route(finalexecution.FinalGetExecutionController.route, api.FinalExecutionApi())
 server.add_route(finalexecution.FinalPostExecutionController.route, api.FinalExecutionApi())
+server.add_route(parameter.ParameterController.route, api.ParameterApi())
