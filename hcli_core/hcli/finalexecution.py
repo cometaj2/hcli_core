@@ -1,6 +1,5 @@
 import template
 import json
-import urllib.parse
 from haliot import hal
 from hcli import semantic
 from hcli import profile
@@ -14,7 +13,7 @@ class FinalGetExecutionLink:
     
     def __init__(self, command=None):
         if command != None:
-            self.href = self.href + "?command=" + urllib.parse.quote_plus(command)
+            self.href = self.href + "?command=" + command
 
 class FinalGetExecutionController:
     route = "/hcli/cli/exec/getexecute"
@@ -34,7 +33,7 @@ class FinalPostExecutionLink:
 
     def __init__(self, command=None):
         if command != None:
-            self.href = self.href + "?command=" + urllib.parse.quote_plus(command)
+            self.href = self.href + "?command=" + command
 
 class FinalPostExecutionController:
     route = "/hcli/cli/exec/postexecute"

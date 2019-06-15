@@ -24,7 +24,7 @@ class CommandLink:
     
     def __init__(self, uid=None, command=None, href=None):
         if uid != None and command != None and href != None:
-            self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote_plus(command) + "&href=" + href
+            self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote(command) + "&href=" + href
 
 class CommandController:
     route = "/hcli/cli/__cdef/{uid}"
@@ -39,7 +39,9 @@ class CommandController:
             self.resource = hal.Resource(Command(com))
             selflink = hal.Link(href=CommandLink(uid, command, href).href)
             profilelink = hal.Link(href=CommandLink().profile)
-            clilink = hal.Link(href=document.DocumentLink(href, command).href)
+            clilink = hal.Link(href=document.DocumentLink(href, command).href,
+                               name=name,
+                               profile=document.DocumentLink().profile)
             homelink = hal.Link(href=home.HomeLink().href)
 
             self.resource.addLink("self", selflink)

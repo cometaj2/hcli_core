@@ -24,7 +24,7 @@ class OptionLink:
     
     def __init__(self, uid=None, option=None, href=None):
         if uid != None and option != None and href != None:
-            self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote_plus(option) + "&href=" + href
+            self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote(option) + "&href=" + href
 
 class OptionController:
     route = "/hcli/cli/__odef/{uid}"

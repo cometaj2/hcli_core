@@ -1,7 +1,7 @@
 from haliot import hal
-import urllib.parse
 import template
 import json
+import urllib.parse
 from hcli import semantic
 from hcli import profile
 from hcli import command as hcommand
@@ -25,9 +25,13 @@ class DocumentLink:
     href = "/hcli/cli"
     profile = profile.ProfileLink().href + semantic.hcli_document_type
     
-    def __init__(self, uid=None, command=None):
-        if uid != None and command != None:
-            self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote_plus(command)
+    def __init__(self, uid=None, command=None, withparam=None):
+        if uid != None and command != None and withparam == None:
+            self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote(command)
+            return
+        if uid != None and command != None and withparam == True:
+            self.href = self.href + "/" + uid + "?command=" + command
+            return
 
 class DocumentController:
     route = "/hcli/cli/{uid}"

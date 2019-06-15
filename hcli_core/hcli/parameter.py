@@ -19,7 +19,7 @@ class ParameterLink:
     
     def __init__(self, uid=None, command=None, href=None):
         if uid != None and command != None and href != None:
-            self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote_plus(command) + "&href=" + href
+            self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote(command) + "&href=" + href
 
 class ParameterController:
     route = "/hcli/cli/__pdef/{uid}"
@@ -35,9 +35,10 @@ class ParameterController:
             self.resource = hal.Resource(Parameter())
             selflink = hal.Link(href=ParameterLink(uid, command, href).href)
             profilelink = hal.Link(href=ParameterLink().profile)
-            clilink = hal.Link(href=document.DocumentLink(uid, command + " " + "{hcli_param}").href,
+            clilink = hal.Link(href=document.DocumentLink(uid, urllib.parse.quote(command + " ") + "{hcli_param}", withparam=True).href,
                                name=name,
-                               profile=document.DocumentLink().profile)
+                               profile=document.DocumentLink().profile,
+                               templated=True)
             homelink = hal.Link(href=home.HomeLink().href)
 
             self.resource.addLink("self", selflink)
