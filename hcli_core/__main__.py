@@ -17,6 +17,10 @@ def main():
             display_man_page(config.hcli_core_manpage_path)
             sys.exit(0)
 
+        elif sys.argv[1] == "path":
+            print(config.root)
+            sys.exit(0)
+
         else:
             hcli_core_help()
 

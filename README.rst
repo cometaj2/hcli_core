@@ -36,20 +36,22 @@ Installation
 
 hcli_core requires Python 2.7, 3.4-3.6 and pip.
 
-Download the hcli_core wherever you want it to be installed and navigate into the hcli_core folder. For example:
-
-```
-$ cd /home/foma/hcli_core/hcli_core
-```
-
-Install an WSGI compliant application server. For example, you can use Green Unicorn (https://gunicorn.org/)
+You'll need an WSGI compliant application server to run hcli_core. For example, you can use Green Unicorn (https://gunicorn.org/)
 
 ```
 $ pip install gunicorn
 ```
 
-Then you can kick off hcli_core using Green Unicorn:
+Download the hcli_core wherever you want it to be installed and navigate into the hcli_core folder. For example:
 
 ```
-gunicorn --workers=5 --threads=2 "hcli_core:server"
+$ cd /home/foma/hcli_core/hcli_core
+$ gunicorn --workers=5 --threads=2 "hcli_core:server"
+```
+
+Alternatively, if you install hcli_core via pip, you can launch gunicorn from anywhere by using "hcli_core path"
+
+``` 
+$ pip install hcli_core
+$ gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:server"
 ```
