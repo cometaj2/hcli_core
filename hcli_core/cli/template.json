@@ -2,7 +2,7 @@
   "hcliTemplateVersion": "1.0",
   "executable" : [
   {
-    "command" : "hfm cp --local",
+    "command" : "hfm cp --local {p}",
     "http" : "post"
   },
   {

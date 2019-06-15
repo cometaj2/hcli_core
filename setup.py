@@ -8,7 +8,6 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 from hcli_core import package
-from hcli_core import hutils
 
 if sys.argv[-1] == 'publish':
     branch = subprocess.check_output('git rev-parse --abbrev-ref HEAD', shell=True).strip()
@@ -57,6 +56,8 @@ setup(
     keywords='cli client server connector hypermedia rest generic development',
     packages=find_packages(exclude=['__pycache__', 'tests']),
     install_requires=[package.dependencies[0]],
+    package_data={'hcli_core': ['data/*']},
+    include_package_data=True,
     entry_points={
         'console_scripts': [
             'hcli_core=hcli_core.__main__:main',

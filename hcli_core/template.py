@@ -1,4 +1,6 @@
 import json
+import urllib.parse
+import re
 
 class Template:
     hcliTemplateVersion = "1.0"
@@ -87,6 +89,9 @@ class Template:
     def findExecutable(self, command):
         for index, i in enumerate(self.executable):
             ex = self.executable[index]
+            command = urllib.parse.unquote(command)
+            command = re.sub(r'\'.*\'', '{p}', command)
+            command = re.sub(r'\".*\"', '{p}', command)
             if(ex['command'] == command):
                 return ex
 

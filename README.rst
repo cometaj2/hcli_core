@@ -30,3 +30,26 @@ Help shape HCLI and it's ecosystem on the discussion list [4] or by raising issu
 [3] https://hcli.io
 
 [4] https://groups.google.com/forum/#!forum/huck-hypermedia-unified-cli-with-a-kick
+
+Installation
+============
+
+hcli_core requires Python 2.7, 3.4-3.6 and pip.
+
+Download the hcli_core wherever you want it to be installed and navigate into the hcli_core folder. For example:
+
+```
+$ cd /home/foma/hcli_core/hcli_core
+```
+
+Install an WSGI compliant application server. For example, you can use Green Unicorn (https://gunicorn.org/)
+
+```
+$ pip install gunicorn
+```
+
+Then you can kick off hcli_core using Green Unicorn:
+
+```
+gunicorn --workers=5 --threads=2 "hcli_core:server"
+```
