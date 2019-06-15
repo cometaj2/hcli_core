@@ -24,7 +24,7 @@
       },
       {
         "name": "description",
-        "description": "The hfm CLI allows you to upload and download files as streams and to otherwise manipulate remote files as if they were local filesws you to move files"
+        "description": "The hfm CLI allows you to upload and download files as streams and to otherwise manipulate remote files as if they were local files."
       },
       {
         "name": "examples",
