@@ -1,57 +1,31 @@
-.TH HUCKLE 1 "FEBRUARY 2017" Linux "User Manuals"
+.TH HCLI_CORE 1 "JUNE 2019" Linux "User Manuals"
 .SH NAME
-huckle \- A generic hypertext command line interface (HCLI) client
+hcli_core \- An HCLI connector that can be used to expose CLIs via hypertext command line interface semantics (HCLI)
 .SH SYNOPSIS
-.B huckle
+.B hcli_core
 [
 .I option
 |
 .I <command>
-.I <parameter>
 ]
 .SH DESCRIPTION
-.B huckle
-is a generic CLI that can be used with any API that abides by
-the standard version 1.0 hypertext command line interface (HCLI) semantics.
-
-A terminal restart is required after the creation of the very first CLI alias. CLI aliases created thereafter are immediately usable.
+.B hcli_core
+is a WSGI application that provides a way for developers to expose a CLI via HCLI v1.0 semantics
+while providing dynamic and up to date in-band access to all the API/CLI documentation,
+man page style, which showcases commands, options, and parameters available for execution.
 
 .SH COMMANDS
-.IP "cli install <url>"
-This attempts to install/auto configure a CLI if provided with the root URL of an HCLI API. If successful, the CLI
-can be invoked by name, and its configuration is located under ~/.huckle/etc/<cliname>/config.
-
-Note that an existing configuration file is left alone if the command is run multiple times
-for the same CLI.
-.IP "cli rm <cliname>"
-Removes an installed CLI.
-.IP "cli run <cliname>"
-Used to invoke a CLI by name, the details of which are otherwise left to API implementers. This is equivalent to invoking
-<cliname> directly after CLI installation.
-.IP "cli ls"
-Lists all the installed CLIs.
-.IP "cli config <cliname>"
-Lists the configuration options of an installed CLI.
-.IP "<cliname> ..."
-The <cliname> alias created for brevity, via huckle cli install.
-.IP "<cliname> ... help"
-The "help" command can be used anywhere in a command line invocation to generate help pages from an HCLI document. This
-is useful to explore what a CLI can do.
+.IP "path"
+Provides the installation path of hcli_core (which can be used to help locate the path of the WSGI app to use in a WSGI server.
 .IP help
 This help file.
 .SH OPTIONS
 .IP --version
-.B huckle
+.B hcli_core
 version and the version of it's dependencies.
 .SH EXAMPLE
-huckle cli install https://hcli.io/hcli/cli/jsonf?command=jsonf
+hcli_core path
 
-huckle cli run jsonf (equivalent to simply invoking "jsonf" after a successful cli installation and a terminal restart)
+hcli_core --version
 
-huckle cli ls
-
-huckle cli config jsonf
-
-huckle cli rm jsonf
-
-huckle --version
+gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:server"
