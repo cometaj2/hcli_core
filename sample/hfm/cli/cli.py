@@ -12,7 +12,6 @@ class CLI:
     def execute(self):
 
         if self.inputstream != None:
-            print(self.commands)
             self.upload()
             return None
 
