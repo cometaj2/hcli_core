@@ -1,7 +1,7 @@
 HCLI Core
 =========
 
-HCLI Core is an HCLI Connector that can be used to expose any CLI via hypertext
+An HCLI Connector that can be used to expose any CLI via hypertext
 command line interface (HCLI) semantics.
 
 ----
