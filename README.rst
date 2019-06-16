@@ -50,4 +50,4 @@ Alternatively, if you install hcli_core via pip, you can launch gunicorn from an
 
     $ pip install hcli_core
 
-    $ gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:server"
+    $ gunicorn --workers=5 --threads=2 --chdir \`hcli_core path\` "hcli_core:server"
