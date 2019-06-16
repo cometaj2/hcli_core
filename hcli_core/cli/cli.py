@@ -13,15 +13,16 @@ class CLI:
 
         if self.inputstream != None and self.commands[2] == '-l':
             self.upload()
-            return
+            return None
 
         if self.inputstream == None and self.commands[2] == '-r':
-            self.download()
-            return
+            return self.download()
 
     def upload(self):
-        with io.open(self.commands[3].replace("'", ""), 'wb') as file:
-            file.write(self.inputstream)
+        with io.open(self.commands[3].replace("'", ""), 'wb') as f:
+            f.write(self.inputstream)
+            return None
 
     def download(self):
-        return open(self.commands[3].replace("'", ""), "rb")
+        f = open(self.commands[3].replace("'", ""), "rb")
+        return io.BytesIO(f.read())
