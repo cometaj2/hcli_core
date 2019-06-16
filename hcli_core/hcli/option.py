@@ -1,4 +1,4 @@
-import template
+import config
 import json
 import urllib.parse
 from haliot import hal
@@ -32,7 +32,7 @@ class OptionController:
 
     def __init__(self, uid=None, command=None, href=None):
         if uid != None and command != None and href != None:
-            t = template.Template()
+            t = config.template
             arg = t.findById(uid);
             opt = t.findOptionForId(uid, href)
             name = opt['name']

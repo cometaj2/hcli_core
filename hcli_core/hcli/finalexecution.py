@@ -1,4 +1,3 @@
-import template
 import json
 from haliot import hal
 from hcli import semantic

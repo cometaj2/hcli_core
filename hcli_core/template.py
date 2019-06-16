@@ -85,7 +85,7 @@ class Template:
                     if option['href'] == href:
                         return option
 
-    """ We attempt to retrieves a specific executable, identified by a command """
+    """ We attempt to retrieves a specific executable, identified by a command line sequence"""
     def findExecutable(self, command):
         for index, i in enumerate(self.executable):
             ex = self.executable[index]

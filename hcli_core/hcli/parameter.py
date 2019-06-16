@@ -1,4 +1,4 @@
-import template
+import config
 import json
 import urllib.parse
 from haliot import hal
@@ -27,7 +27,7 @@ class ParameterController:
 
     def __init__(self, uid=None, command=None, href=None):
         if uid != None and command != None and href != None:
-            t = template.Template()
+            t = config.template
             arg = t.findById(uid);
             param = t.findParameterForId(uid)
             name = arg['name']

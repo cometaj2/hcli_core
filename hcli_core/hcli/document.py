@@ -1,7 +1,7 @@
 from haliot import hal
-import template
 import json
 import urllib.parse
+import config
 from hcli import semantic
 from hcli import profile
 from hcli import command as hcommand
@@ -39,7 +39,7 @@ class DocumentController:
 
     def __init__(self, uid=None, command=None):
         if uid != None and command != None:
-            t = template.Template()
+            t = config.template
             arg = t.findById(uid)
 
             self.resource = hal.Resource(Document(arg))
@@ -50,8 +50,6 @@ class DocumentController:
             self.resource.addLink("self", selflink)
             self.resource.addLink("profile", profilelink)
             self.resource.addLink("home", homelink)
-
-            t = template.Template()
 
             commands = t.findCommandsForId(uid)
             if commands != None:

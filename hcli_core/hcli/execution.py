@@ -1,4 +1,4 @@
-import template
+import config
 import json
 import urllib.parse
 from haliot import hal
@@ -33,7 +33,7 @@ class ExecutionController:
 
     def __init__(self, uid=None, command=None):
         if uid != None and command != None:
-            t = template.Template()
+            t = config.template
             arg = t.findById(uid);
             ex = t.findExecutable(command)
             http = ex['http']
