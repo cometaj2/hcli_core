@@ -10,20 +10,18 @@ class CLI:
         self.inputstream = inputstream
 
     def execute(self):
-        print(self.commands)
 
-        if self.commands[1] == "--version":
-            return io.BytesIO(b"1.0.1\n")
+        if self.inputstream != None and self.commands[2] == '-l':
+            self.upload()
+            return
 
-        if self.commands[1] == "go":
-            return self.pretty(self.inputstream)
+        if self.inputstream == None and self.commands[2] == '-r':
+            self.download()
+            return
 
-        return None
+    def upload(self):
+        with io.open(self.commands[3].replace("'", ""), 'wb') as file:
+            file.write(self.inputstream)
 
-    def pretty(self, inputstream):
-        if self.inputstream != None:
-            string = json.loads(self.inputstream.decode("utf-8"))
-            j = json.dumps(string, indent=4) + "\n"
-            return io.BytesIO(j.encode("utf-8"))
-
-        return None
+    def download(self):
+        return open(self.commands[3].replace("'", ""), "rb")

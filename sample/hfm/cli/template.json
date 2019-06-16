@@ -2,11 +2,11 @@
   "hcliTemplateVersion": "1.0",
   "executable" : [
   {
-    "command" : "hfm cp --local",
+    "command" : "hfm cp -l {p}",
     "http" : "post"
   },
   {
-    "command" : "hfm cp --remote",
+    "command" : "hfm cp -r {p}",
     "http" : "get"  
   }],
   "cli": 
@@ -24,7 +24,7 @@
       },
       {
         "name": "description",
-        "description": "The hfm CLI allows you to upload and download files as streams and to otherwise manipulate remote files as if they were local filesws you to move files"
+        "description": "The hfm CLI allows you to upload and download files as streams and to otherwise manipulate remote files as if they were local files."
       },
       {
         "name": "examples",
@@ -35,7 +35,7 @@
       {
         "href": "hfmcp",
         "name": "cp",
-        "description": "The hfm cp command kicks off upload or download of data streams."
+        "description": "The hfm cp command kicks off copying of files as streams."
       }
     ]
   },
@@ -45,30 +45,30 @@
     "section": [
       {
         "name": "name",
-        "description": "hfm cp - upload or download data streams"
+        "description": "hfm cp - copy files as streams"
       },
       {
         "name": "synopsis",
-        "description": "hfm cp --local | --remote"
+        "description": "hfm cp -l | -r"
       },
       {
         "name": "description",
-        "description": "The \"cp\" command takes uploads or downloads a data stream."
+        "description": "The \"cp\" command allows you to upload or download files as streams to a remote service."
       },
       {
         "name": "examples",
-        "description": "cat test.mov | pv -s 3846487146 | hfm cp --local\\nhfm cp --remote | pv -s 41115648 > hello.txt"
+        "description": "cat test.mov | pv -s 3846487146 | hfm cp -l\\nhfm cp -r | pv -s 41115648 > hello.txt"
       }
     ],
     "option": [
       {
-        "href": "hfmcp--local",
-        "name": "--local",
-        "description": "Allows you to upload a file from a local input stream (e.g. STDIN), to the server."
+        "href": "hfmcp-l",
+        "name": "-l",
+        "description": "Allows you to copy a file from a local input stream (e.g. STDIN), to the server."
       },
       {
-        "href": "hfmcp--remote",
-        "name": "--remote",
+        "href": "hfmcp-r",
+        "name": "-r",
         "description": "Allows you to download a file from the server, to a local output stream (e.g. STDOUT)."
       }
     ],
@@ -77,10 +77,10 @@
     }    
   },
   {
-    "id": "hfmcp--local"
+    "id": "hfmcp-l"
   },
   {
-    "id": "hfmcp--remote"
+    "id": "hfmcp-r"
   },
   {
     "id": "hfmcpparameter"  
