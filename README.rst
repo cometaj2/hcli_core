@@ -43,9 +43,11 @@ You'll need an WSGI compliant application server to run hcli_core. For example, 
 Download the hcli_core wherever you want it to be installed and navigate into the hcli_core folder. For example:
 
     $ cd /home/foma/hcli_core/hcli_core
+
     $ gunicorn --workers=5 --threads=2 "hcli_core:server"
 
 Alternatively, if you install hcli_core via pip, you can launch gunicorn from anywhere by using "hcli_core path"
 
     $ pip install hcli_core
+
     $ gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:server"
