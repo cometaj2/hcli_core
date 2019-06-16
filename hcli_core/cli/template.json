@@ -1,88 +1,67 @@
 {
-  "hcliTemplateVersion": "1.0",
-  "executable" : [
-  {
-    "command" : "hfm cp --local {p}",
-    "http" : "post"
-  },
-  {
-    "command" : "hfm cp --remote",
-    "http" : "get"  
-  }],
-  "cli": 
-  [{
-    "id": "hfm",
-    "name": "hfm",
-    "section": [
-      {
-        "name": "name",
-        "description": "hfm - a hypertext file manager"
-      },
-      {
-        "name": "synopsis",
-        "description": "hfm <command>"
-      },
-      {
-        "name": "description",
-        "description": "The hfm CLI allows you to upload and download files as streams and to otherwise manipulate remote files as if they were local files."
-      },
-      {
-        "name": "examples",
-        "description": "N/A"
-      }
-    ],
-    "command": [
-      {
-        "href": "hfmcp",
-        "name": "cp",
-        "description": "The hfm cp command kicks off upload or download of data streams."
-      }
-    ]
-  },
-  {
-    "id": "hfmcp",
-    "name": "cp",
-    "section": [
-      {
-        "name": "name",
-        "description": "hfm cp - upload or download data streams"
-      },
-      {
-        "name": "synopsis",
-        "description": "hfm cp --local | --remote"
-      },
-      {
-        "name": "description",
-        "description": "The \"cp\" command takes uploads or downloads a data stream."
-      },
-      {
-        "name": "examples",
-        "description": "cat test.mov | pv -s 3846487146 | hfm cp --local\\nhfm cp --remote | pv -s 41115648 > hello.txt"
-      }
-    ],
-    "option": [
-      {
-        "href": "hfmcp--local",
-        "name": "--local",
-        "description": "Allows you to upload a file from a local input stream (e.g. STDIN), to the server."
-      },
-      {
-        "href": "hfmcp--remote",
-        "name": "--remote",
-        "description": "Allows you to download a file from the server, to a local output stream (e.g. STDOUT)."
-      }
-    ],
-    "parameter" : {
-      "href": "hfmcpparameter"
-    }    
-  },
-  {
-    "id": "hfmcp--local"
-  },
-  {
-    "id": "hfmcp--remote"
-  },
-  {
-    "id": "hfmcpparameter"  
-  }]
+    "hcliTemplateVersion" : "1.0",
+    "executable": [
+    {
+        "command" : "jsonf --version",
+        "http" : "get"
+    },
+    {
+        "command" : "jsonf go",
+        "http" : "post"
+    }],
+    "cli" : [{
+        "id" : "jsonf",
+        "name" : "jsonf",
+        "section" : [
+        {
+            "name" : "name",
+            "description" : "jsonf - a simple formatter for JSON"
+        },
+        {
+            "name" : "synopsis",
+            "description" : "jsonf [option] <command>"
+        },
+        {
+            "name" : "description",
+            "description" : "The jsonf CLI allows you to format JSON easily."
+        },
+        {
+            "name" : "examples",
+            "description" : "N/A"
+        }],
+        "command" : [{
+            "href" : "jsonfgo",
+            "name" : "go",
+            "description" : "jsonf go kicks off formatting of a JSON input stream"
+        }],
+        "option" : [{
+            "href" : "jsonf--version",
+            "name" : "--version",
+            "description" : "The jsonf CLI version."
+        }]
+    },
+    {
+        "id" : "jsonf--version"
+    },
+    {
+        "id" : "jsonfgo",
+        "name" : "go",
+        "section" : [
+        {
+            "name" : "name",
+            "description" : "jsonf go - kick off formatting of a JSON input stream"
+        },
+        {
+            "name" : "synopsis",
+            "description" : "jsonf go"
+        },
+        {
+            "name" : "description",
+            "description" : "The \"go\" command takes a JSON input stream and returns formatted JSON."
+        },
+        {
+            "name" : "examples",
+            "description" : "echo '{\"hello\":\"world\"}' | jsonf go"
+        }]        
+    }]
 }
