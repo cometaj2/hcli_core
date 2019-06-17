@@ -60,4 +60,4 @@ class FinalExecutionApi:
         command = req.params['command']
 
         resp.content_type = "application/octet-stream"
-        resp.stream = finalexecution.FinalPostExecutionController(command, req.stream.read()).serialize()        
+        resp.stream = finalexecution.FinalPostExecutionController(command, req.stream).serialize()        
