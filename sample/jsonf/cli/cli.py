@@ -22,7 +22,7 @@ class CLI:
 
     def pretty(self, inputstream):
         if self.inputstream != None:
-            string = json.loads(self.inputstream.decode("utf-8"))
+            string = json.loads(self.inputstream.read().decode("utf-8"))
             j = json.dumps(string, indent=4) + "\n"
             return io.BytesIO(j.encode("utf-8"))
 
