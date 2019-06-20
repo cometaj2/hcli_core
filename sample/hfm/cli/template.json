@@ -35,7 +35,7 @@
       {
         "href": "hfmcp",
         "name": "cp",
-        "description": "The hfm cp command kicks off copying of files as streams."
+        "description": "The hfm cp command allows you to copy files as streams."
       }
     ]
   },
@@ -49,15 +49,15 @@
       },
       {
         "name": "synopsis",
-        "description": "hfm cp -l | -r"
+        "description": "hfm cp -l | -r \"path\""
       },
       {
         "name": "description",
-        "description": "The \"cp\" command allows you to upload or download files as streams to a remote service."
+        "description": "The \"cp\" command allows you to upload or download files as streams to the remote service."
       },
       {
         "name": "examples",
-        "description": "cat test.mov | pv -s 3846487146 | hfm cp -l\\nhfm cp -r | pv -s 41115648 > hello.txt"
+        "description": "cat test.mov | pv -s 3846487146 | hfm cp -l \"/home/user1/test.mov\"\\nhfm cp -r \"/home/user1/test.txt\" | pv -s 41115648 > hello.txt"
       }
     ],
     "option": [
