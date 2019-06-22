@@ -32,7 +32,7 @@ Help shape HCLI and it's ecosystem on the discussion list [4] or by raising issu
 [4] https://groups.google.com/forum/#!forum/huck-hypermedia-unified-cli-with-a-kick
 
 Installation
-============
+------------
 
 hcli_core requires Python 2.7, 3.4-3.6 and pip.
 
@@ -51,3 +51,8 @@ Alternatively, if you install hcli_core via pip, you can launch gunicorn from an
     $ pip install hcli_core
 
     $ gunicorn --workers=5 --threads=2 --chdir \`hcli_core path\` "hcli_core:server"
+
+Bugs
+----
+
+- No good handling of control over request and response in cli code which can lead to exceptions and empty response client side.
