@@ -1,67 +1,88 @@
 {
-    "hcliTemplateVersion" : "1.0",
-    "executable": [
-    {
-        "command" : "jsonf --version",
-        "http" : "get"
-    },
-    {
-        "command" : "jsonf go",
-        "http" : "post"
-    }],
-    "cli" : [{
-        "id" : "jsonf",
-        "name" : "jsonf",
-        "section" : [
-        {
-            "name" : "name",
-            "description" : "jsonf - a simple formatter for JSON"
-        },
-        {
-            "name" : "synopsis",
-            "description" : "jsonf [option] <command>"
-        },
-        {
-            "name" : "description",
-            "description" : "The jsonf CLI allows you to format JSON easily."
-        },
-        {
-            "name" : "examples",
-            "description" : "N/A"
-        }],
-        "command" : [{
-            "href" : "jsonfgo",
-            "name" : "go",
-            "description" : "jsonf go kicks off formatting of a JSON input stream"
-        }],
-        "option" : [{
-            "href" : "jsonf--version",
-            "name" : "--version",
-            "description" : "The jsonf CLI version."
-        }]
-    },
-    {
-        "id" : "jsonf--version"
-    },
-    {
-        "id" : "jsonfgo",
-        "name" : "go",
-        "section" : [
-        {
-            "name" : "name",
-            "description" : "jsonf go - kick off formatting of a JSON input stream"
-        },
-        {
-            "name" : "synopsis",
-            "description" : "jsonf go"
-        },
-        {
-            "name" : "description",
-            "description" : "The \"go\" command takes a JSON input stream and returns formatted JSON."
-        },
-        {
-            "name" : "examples",
-            "description" : "echo '{\"hello\":\"world\"}' | jsonf go"
-        }]        
-    }]
+  "hcliTemplateVersion": "1.0",
+  "executable" : [
+  {
+    "command" : "hfm cp -l {p}",
+    "http" : "post"
+  },
+  {
+    "command" : "hfm cp -r {p}",
+    "http" : "get"  
+  }],
+  "cli": 
+  [{
+    "id": "hfm",
+    "name": "hfm",
+    "section": [
+      {
+        "name": "name",
+        "description": "hfm - a hypertext file manager"
+      },
+      {
+        "name": "synopsis",
+        "description": "hfm <command>"
+      },
+      {
+        "name": "description",
+        "description": "The hfm CLI allows you to upload and download files as streams and to otherwise manipulate remote files as if they were local files."
+      },
+      {
+        "name": "examples",
+        "description": "N/A"
+      }
+    ],
+    "command": [
+      {
+        "href": "hfmcp",
+        "name": "cp",
+        "description": "The hfm cp command allows you to copy files as streams."
+      }
+    ]
+  },
+  {
+    "id": "hfmcp",
+    "name": "cp",
+    "section": [
+      {
+        "name": "name",
+        "description": "hfm cp - copy files as streams"
+      },
+      {
+        "name": "synopsis",
+        "description": "hfm cp -l | -r \"path\""
+      },
+      {
+        "name": "description",
+        "description": "The \"cp\" command allows you to upload or download files as streams to the remote service."
+      },
+      {
+        "name": "examples",
+        "description": "cat test.mov | pv -s 3846487146 | hfm cp -l \"/home/user1/test.mov\"\\nhfm cp -r \"/home/user1/test.txt\" | pv -s 41115648 > hello.txt"
+      }
+    ],
+    "option": [
+      {
+        "href": "hfmcp-l",
+        "name": "-l",
+        "description": "Allows you to copy a file from a local input stream (e.g. STDIN), to the server."
+      },
+      {
+        "href": "hfmcp-r",
+        "name": "-r",
+        "description": "Allows you to download a file from the server, to a local output stream (e.g. STDOUT)."
+      }
+    ],
+    "parameter" : {
+      "href": "hfmcpparameter"
+    }    
+  },
+  {
+    "id": "hfmcp-l"
+  },
+  {
+    "id": "hfmcp-r"
+  },
+  {
+    "id": "hfmcpparameter"  
+  }]
 }

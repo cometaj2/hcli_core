@@ -1,5 +1,6 @@
 import json
 import io
+from functools import partial
 
 class CLI:
     commands = None
@@ -10,20 +11,22 @@ class CLI:
         self.inputstream = inputstream
 
     def execute(self):
-        print(self.commands)
 
-        if self.commands[1] == "--version":
-            return io.BytesIO(b"1.0.1\n")
+        if self.inputstream != None and self.commands[2] == '-l':
+            self.upload()
+            return None
 
-        if self.commands[1] == "go":
-            return self.pretty(self.inputstream)
+        if self.inputstream == None and self.commands[2] == '-r':
+            return self.download()
 
-        return None
-
-    def pretty(self, inputstream):
-        if self.inputstream != None:
-            string = json.loads(self.inputstream.read().decode("utf-8"))
-            j = json.dumps(string, indent=4) + "\n"
-            return io.BytesIO(j.encode("utf-8"))
+    def upload(self):
+        unquoted = self.commands[3].replace("'", "").replace("\"", "")
+        with io.open(unquoted, 'wb') as f:
+            for chunk in iter(partial(self.inputstream.read, 16384), b''):
+                f.write(chunk)
 
         return None
+
+    def download(self):
+        f = open(self.commands[3].replace("'", ""), "rb")
+        return io.BytesIO(f.read())

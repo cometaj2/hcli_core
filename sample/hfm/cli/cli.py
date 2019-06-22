@@ -20,7 +20,8 @@ class CLI:
             return self.download()
 
     def upload(self):
-        with io.open(self.commands[3].replace("'", ""), 'wb') as f:
+        unquoted = self.commands[3].replace("'", "").replace("\"", "")
+        with io.open(unquoted, 'wb') as f:
             for chunk in iter(partial(self.inputstream.read, 16384), b''):
                 f.write(chunk)
 
