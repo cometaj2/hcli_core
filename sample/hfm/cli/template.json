@@ -49,7 +49,7 @@
       },
       {
         "name": "synopsis",
-        "description": "hfm cp -l | -r \"path\""
+        "description": "hfm cp -l | -r '\"path\"'"
       },
       {
         "name": "description",
@@ -57,7 +57,7 @@
       },
       {
         "name": "examples",
-        "description": "cat test.mov | pv -s 3846487146 | hfm cp -l \"/home/user1/test.mov\"\\nhfm cp -r \"/home/user1/test.txt\" | pv -s 41115648 > hello.txt"
+        "description": "cat test.mov | pv -s 3846487146 | hfm cp -l '\"/home/user1/test.mov\"'\\n\\nhfm cp -r '\"/home/user1/test.txt\"' | pv -s 41115648 > hello.txt"
       }
     ],
     "option": [
