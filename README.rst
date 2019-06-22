@@ -52,6 +52,15 @@ Alternatively, if you install hcli_core via pip, you can launch gunicorn from an
 
     $ gunicorn --workers=5 --threads=2 --chdir \`hcli_core path\` "hcli_core:server"
 
+Then install an HCLI client, for example Huckle (https://github.com/cometaj2/huckle) and access the default sample jsonf HCLI
+exposed by HCLI Core:
+
+    $ pip install huckle
+
+    $ huckle cli install http://127.0.0.1:8000/hcli/cli/jsonf?command=jsonf
+
+    $ jsonf help
+
 Bugs
 ----
 
