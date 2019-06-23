@@ -35,7 +35,7 @@
       {
         "href": "hubns",
         "name": "ns",
-        "description": "The hub ns command helps manage HCLI service namespaces."
+        "description": "The hub ns command helps manage service namespaces."
       }
     ]
   },
@@ -45,15 +45,15 @@
     "section": [
       {
         "name": "name",
-        "description": "hub ns - manage HCLI service namespaces."
+        "description": "hub ns - manage service namespaces"
       },
       {
         "name": "synopsis",
-        "description": "hub ns ls | add '\"namespace\"'"
+        "description": "hub ns ls | add '\"namespace name\"'"
       },
       {
         "name": "description",
-        "description": "The \"ns\" command allows you to manage HCLI service namespaces to help with HCLI service disovery and service name collision avoidance."
+        "description": "The \"ns\" command allows you to manage HCLI service namespaces to help with service disovery an HCLI name collision avoidance."
       }
     ],
     "option": [
@@ -67,7 +67,10 @@
         "name": "add",
         "description": "Attempts to add a new namespace to help group services."
       }
-    ]
+    ],
+    "parameter" : {
+      "href": "hfmcpparameter"
+    }    
   },
   {
     "id": "hubnsls"

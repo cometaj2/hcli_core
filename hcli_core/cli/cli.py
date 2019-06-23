@@ -1,6 +1,9 @@
 import json
 import io
-from functools import partial
+import hub
+
+import os.path
+from os import path
 
 class CLI:
     commands = None
@@ -11,22 +14,21 @@ class CLI:
         self.inputstream = inputstream
 
     def execute(self):
+        print(self.commands)
 
-        if self.inputstream != None and self.commands[2] == '-l':
-            self.upload()
-            return None
+        if self.commands[1] == "ns":
+            if self.commands[2] == "ls":
+                if not path.exists("cli/services.json"):
+                    with open("cli/services.json", "w") as f:
+                        h = hub.Hub()
+                        f.write(h.serialize())
+                        f.close()
+         
+                else: 
+                    with open("cli/services.json", "r") as f:
+                        data = f.read()
 
-        if self.inputstream == None and self.commands[2] == '-r':
-            return self.download()
-
-    def upload(self):
-        unquoted = self.commands[3].replace("'", "").replace("\"", "")
-        with io.open(unquoted, 'wb') as f:
-            for chunk in iter(partial(self.inputstream.read, 16384), b''):
-                f.write(chunk)
+                        f.close()
+                        return io.BytesIO(data.encode("utf-8"))
 
         return None
-
-    def download(self):
-        f = open(self.commands[3].replace("'", ""), "rb")
-        return io.BytesIO(f.read())
