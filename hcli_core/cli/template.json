@@ -8,6 +8,10 @@
   {
     "command" : "hub ns add {p}",
     "http" : "post"  
+  },
+  {
+    "command" : "hub service {p}",
+    "http" : "get"
   }],
   "cli": 
   [{
@@ -36,6 +40,11 @@
         "href": "hubns",
         "name": "ns",
         "description": "The hub ns command helps manage HCLI service namespaces."
+      },
+      {
+        "href": "hubservice",
+        "name": "service",
+        "description": "The hub service command helps find a service in anys namespace."
       }
     ]
   },
@@ -70,9 +79,33 @@
     ]
   },
   {
+    "id": "hubservice",
+    "name": "service",
+    "section": [
+      {
+        "name": "name",
+        "description": "hub service - locate an HCLI service across all namespaces."
+      },
+      {
+        "name": "synopsis",
+        "description": "hub service '\"name\"'"
+      },
+      {
+        "name": "description",
+        "description": "The \"service\" command allows you to locate all the available hub registered instances of an HCLI service, across all namespaces."
+      }
+    ],
+    "parameter": {
+        "href": "hubserviceparameter"
+    }
+  },
+  {
     "id": "hubnsls"
   },
   {
     "id": "hubnsadd"
+  },
+  {
+    "id": "hubserviceparameter"
   }]
 }

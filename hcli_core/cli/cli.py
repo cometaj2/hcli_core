@@ -18,17 +18,13 @@ class CLI:
 
         if self.commands[1] == "ns":
             if self.commands[2] == "ls":
-                if not path.exists("cli/services.json"):
-                    with open("cli/services.json", "w") as f:
-                        h = hub.Hub()
-                        f.write(h.serialize())
-                        f.close()
-         
-                else: 
-                    with open("cli/services.json", "r") as f:
-                        data = f.read()
+                h = hub.Hub()
+                n = h.listNamespaces()
+                return io.BytesIO(n.encode("utf-8"))
 
-                        f.close()
-                        return io.BytesIO(data.encode("utf-8"))
+        if self.commands[1] == "service":
+            h = hub.Hub()
+            n = h.findService(self.commands[2])
+            return io.BytesIO(n.encode("utf-8"))
 
         return None

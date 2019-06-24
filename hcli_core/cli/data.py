@@ -1,11 +1,19 @@
 import json
-from collections import namedtuple
+import os.path
+from os import path
+
+try:
+        from types import SimpleNamespace as Namespace
+except ImportError:
+        # Python 2.x fallback
+        from argparse import Namespace
 
 class DAO:
     """ Adds an object's attributes verbatim to a resource """
-    def __init__(self, model):
-        for key, value in vars(model).items():
-            setattr(self, key, value)
+    def __init__(self, model=None):
+        if model is not None:
+            for key, value in vars(model).items():
+                setattr(self, key, value)
 
     """ Serializes an inherently well structured haliot resource to application/hal+json """
     def serialize(self):
@@ -13,6 +21,19 @@ class DAO:
                           sort_keys=True,
                           indent=4)
 
-    def deserialize(self, obj=None):
-        x = json.loads(obj, self=lambda d: namedtuple('X', d.keys())(*d.values()))
-        print(x)
+    def exists(self):
+        if not path.exists("cli/hub.json"):
+            return False
+        else:
+            return True
+
+    def save(self):
+        with open("cli/hub.json", "w") as f:
+            f.write(self.serialize())
+            f.close()
+
+    def load(self, obj):
+        with open("cli/hub.json", "r") as f:
+            j = f.read()
+            f.close()
+            obj.__dict__ = json.loads(j)

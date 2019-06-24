@@ -1,17 +1,36 @@
 import data
+import json
 import namespace as ns
 
 class Hub:
     namespace = None
 
-    def __init__(self, hub=None):
-        self.namespace = []
-        self.namespace.append(ns.Namespace())
+    def __init__(self):
+        if not data.DAO().exists():
+            self.namespace = []
+            self.namespace.append(ns.Namespace())
+            data.DAO(self).save()
+
+        else:
+            data.DAO().load(self)
 
     def serialize(self):
         return data.DAO(self).serialize()   
     
-    def listNamespace(self):
+    def listNamespaces(self):
+        namespaces = ""
         for index, i in enumerate(self.namespace):
             arg = self.namespace[index]
-            print( arg  )
+            namespaces = namespaces + arg['name'] + "\n"
+
+        return namespaces
+
+    def findService(self, name):
+        services = ""
+        for index, i in enumerate(self.namespace):
+            arg = self.namespace[index]
+            for jndex, j in enumerate(arg['service']):
+                if j['name'] == name.replace("\"", ""):
+                    services = services + arg['name'] + ":" + j['name'] + ":" + j['href'] + "\n"
+
+        return services
