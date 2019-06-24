@@ -6,8 +6,8 @@
     "http" : "get"
   },
   {
-    "command" : "hub ns add {p}",
-    "http" : "post"  
+    "command" : "hub service {p}",
+    "http" : "get"
   }],
   "cli": 
   [{
@@ -35,7 +35,12 @@
       {
         "href": "hubns",
         "name": "ns",
-        "description": "The hub ns command helps manage service namespaces."
+        "description": "The \"ns\" command helps manage HCLI service namespaces."
+      },
+      {
+        "href": "hubservice",
+        "name": "service",
+        "description": "The \"service\" command helps find a service, by name, across all namespaces."
       }
     ]
   },
@@ -45,37 +50,50 @@
     "section": [
       {
         "name": "name",
-        "description": "hub ns - manage service namespaces"
+        "description": "hub ns - manage HCLI service namespaces."
       },
       {
         "name": "synopsis",
-        "description": "hub ns ls | add '\"namespace name\"'"
+        "description": "hub ns ls"
       },
       {
         "name": "description",
-        "description": "The \"ns\" command allows you to manage HCLI service namespaces to help with service disovery an HCLI name collision avoidance."
+        "description": "The \"ns\" command allows you to manage HCLI service namespaces to help with HCLI service disovery and service name collision avoidance."
       }
     ],
     "option": [
       {
         "href": "hubnsls",
         "name": "ls",
-        "description": "Lists available service namespaces."
+        "description": "Lists available namespaces."
+      }
+    ]
+  },
+  {
+    "id": "hubservice",
+    "name": "service",
+    "section": [
+      {
+        "name": "name",
+        "description": "hub service - locate an HCLI service across all namespaces."
       },
       {
-        "href": "hubnsadd",
-        "name": "add",
-        "description": "Attempts to add a new namespace to help group services."
+        "name": "synopsis",
+        "description": "hub service '\"name\"'"
+      },
+      {
+        "name": "description",
+        "description": "The \"service\" command allows you to locate all the available hub registered instances of an HCLI service, across all namespaces."
       }
     ],
-    "parameter" : {
-      "href": "hfmcpparameter"
-    }    
+    "parameter": {
+        "href": "hubserviceparameter"
+    }
   },
   {
     "id": "hubnsls"
   },
   {
-    "id": "hubnsadd"
+    "id": "hubserviceparameter"
   }]
 }

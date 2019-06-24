@@ -1,0 +1,22 @@
+{
+    "namespace": [
+        {
+            "name": "hcli",
+            "service": [
+                {
+                    "name": "jsonf",
+                    "href": "https://hcli.io/hcli/cli/jsonf?command=jsonf"
+                }
+            ]
+        },
+        {
+            "name": "test",
+            "service": [
+                {
+                    "name": "jsonf",
+                    "href": "https://example.org.io/hcli/cli/jsonf?command=jsonf"
+                }         
+            ]
+        }        
+    ]
+}
