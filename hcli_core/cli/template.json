@@ -6,10 +6,6 @@
     "http" : "get"
   },
   {
-    "command" : "hub ns add {p}",
-    "http" : "post"  
-  },
-  {
     "command" : "hub service {p}",
     "http" : "get"
   }],
@@ -58,7 +54,7 @@
       },
       {
         "name": "synopsis",
-        "description": "hub ns ls | add '\"namespace\"'"
+        "description": "hub ns ls"
       },
       {
         "name": "description",
@@ -69,12 +65,7 @@
       {
         "href": "hubnsls",
         "name": "ls",
-        "description": "Lists available service namespaces."
-      },
-      {
-        "href": "hubnsadd",
-        "name": "add",
-        "description": "Attempts to add a new namespace to help group services."
+        "description": "Lists available namespaces."
       }
     ]
   },
@@ -101,9 +92,6 @@
   },
   {
     "id": "hubnsls"
-  },
-  {
-    "id": "hubnsadd"
   },
   {
     "id": "hubserviceparameter"
