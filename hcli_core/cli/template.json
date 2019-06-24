@@ -35,12 +35,12 @@
       {
         "href": "hubns",
         "name": "ns",
-        "description": "The hub ns command helps manage HCLI service namespaces."
+        "description": "The \"ns\" command helps manage HCLI service namespaces."
       },
       {
         "href": "hubservice",
         "name": "service",
-        "description": "The hub service command helps find a service in anys namespace."
+        "description": "The \"service\" command helps find a service, by name, across all namespaces."
       }
     ]
   },
