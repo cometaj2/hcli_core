@@ -54,14 +54,14 @@
       },
       {
         "name": "synopsis",
-        "description": "hub ns ls"
+        "description": "hub ns <command>"
       },
       {
         "name": "description",
         "description": "The \"ns\" command allows you to manage HCLI service namespaces to help with HCLI service disovery and service name collision avoidance."
       }
     ],
-    "option": [
+    "command": [
       {
         "href": "hubnsls",
         "name": "ls",
@@ -91,7 +91,22 @@
     }
   },
   {
-    "id": "hubnsls"
+    "id": "hubnsls",
+    "name": "ls",
+    "section": [
+      {
+        "name": "name",
+        "description": "hub ns ls - list all hub namespaces."
+      },
+      {
+        "name": "synopsis",
+        "description": "hub ns ls"
+      },
+      {
+        "name": "description",
+        "description": "The \"ls\" lists all the available hub registered namespaces."
+      }
+    ]
   },
   {
     "id": "hubserviceparameter"
