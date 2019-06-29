@@ -33,7 +33,7 @@ Help shape HCLI and it's ecosystem on the discussion list [4] or by raising issu
 Installation
 ------------
 
-hcli_core requires Python 2.7, 3.4-3.6 and pip.
+hcli_core requires Python 3.4-3.6 and pip.
 
 You'll need an WSGI compliant application server to run hcli_core. For example, you can use Green Unicorn (https://gunicorn.org/)
 

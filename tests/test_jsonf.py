@@ -8,7 +8,7 @@ def test_function():
     #!/bin/bash
 
     cd `hcli_core path`
-    gunicorn --workers=1 --threads=1 "hcli_core:HCLI().connector"
+    gunicorn --workers=1 --threads=1 "hcli_core:HCLI().connector" --daemon
     huckle cli install http://127.0.0.1:8000/hcli/cli/jsonf?command=jsonf
     echo '{"hello":"world"}' | jsonf go
     """
@@ -27,4 +27,4 @@ def test_function():
     out, err = p2.communicate()
     result = out.decode('utf-8')
 
-    assert('{\n  "hello" : "world"\n}\n' in result)
+    assert('{\n    "hello": "world"\n}\n' in result)
