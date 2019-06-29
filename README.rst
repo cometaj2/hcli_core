@@ -6,8 +6,8 @@ command line interface (HCLI) semantics.
 
 ----
 
-HCLI Core is a WSGI application that provides a way for developers to expose a CLI via HCLI semantics
-while providing dynamic and up to date in-band access to man page style API/CLI documentation.
+HCLI Core implements the Service Connector pattern as a WSGI application and provides a way for developers to
+expose a CLI via HCLI semantics which yields dynamic and up to date in-band access to man page style API/CLI documentation.
 
 Most, if not all, programming languages have a way to issue shell commands. With the help
 of any generic HCLI client, such as Huckle, APIs that make use of HCLI semantics are readily consumable
