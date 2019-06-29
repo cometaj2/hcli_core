@@ -4,8 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.1.7]
+- Add xenial python 3.7 support
+
 ## [0.1.6]
 - Add Travis CI test for jsonf default
+- Cleanup supported python version to take into account deprecation (2.7 and 3.4) and travis support
 
 ## [0.1.5]
 - Remove jsonf from samples since it's the default
