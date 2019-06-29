@@ -28,5 +28,5 @@ class CLI:
         return None
 
     def download(self):
-        f = open(self.commands[3].replace("'", ""), "rb")
+        f = open(self.commands[3].replace("'", "").replace("\"", ""), "rb")
         return io.BytesIO(f.read())
