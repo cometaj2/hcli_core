@@ -1,5 +1,5 @@
-HCLI Core
-=========
+HCLI Core |build status|_ |pypi|_
+=================================
 
 An HCLI Connector that can be used to expose any CLI via hypertext
 command line interface (HCLI) semantics.
@@ -78,3 +78,8 @@ Bugs
 ----
 
 - No good handling of control over request and response in cli code which can lead to exceptions and empty response client side.
+
+.. |build status| image:: https://travis-ci.org/cometaj2/hcli_core.svg?branch=master
+.. _build status: https://travis-ci.org/cometaj2/hcli_core
+.. |pypi| image:: https://badge.fury.io/py/hcli_core.svg
+.. _pypi: https://badge.fury.io/py/hcli_core
