@@ -81,5 +81,5 @@ Bugs
 
 .. |build status| image:: https://travis-ci.org/cometaj2/hcli_core.svg?branch=master
 .. _build status: https://travis-ci.org/cometaj2/hcli_core
-.. |pypi| image:: https://badge.fury.io/py/hcli_core.svg
-.. _pypi: https://badge.fury.io/py/hcli_core
+.. |pypi| image:: https://badge.fury.io/py/hcli-core.svg
+.. _pypi: https://badge.fury.io/py/hcli-core
