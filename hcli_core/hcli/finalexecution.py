@@ -1,10 +1,13 @@
+from __future__ import absolute_import, division, print_function
+
 import json
+import sys
+import config
 from haliot import hal
 from hcli import semantic
 from hcli import profile
 from hcli import document
 from hcli import home
-from cli import cli
 
 class FinalGetExecutionLink:
     href = "/hcli/cli/exec/getexecute"
@@ -21,7 +24,7 @@ class FinalGetExecutionController:
     def __init__(self, command=None):
         if command != None:
             commands = command.split()
-            self.resource = cli.CLI(commands, None)
+            self.resource = config.cli.CLI(commands, None)
             
     def serialize(self):
         return self.resource.execute()
@@ -41,7 +44,7 @@ class FinalPostExecutionController:
     def __init__(self, command=None, inputstream=None):
         if command != None:
             commands = command.split()
-            self.resource = cli.CLI(commands, inputstream)
+            self.resource = config.cli.CLI(commands, inputstream)
 
     def serialize(self):
         return self.resource.execute()    

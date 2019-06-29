@@ -1,5 +1,6 @@
 import json
 import urllib.parse
+import config
 import re
 
 class Template:
@@ -11,7 +12,7 @@ class Template:
     def __init__(self):
         
         try:
-            with open("cli/template.json", "r") as read_file:
+            with open(config.plugin_path + "/template.json", "r") as read_file:
                 data = json.load(read_file)	
 
             self.hcliTemplateVersion = data['hcliTemplateVersion']

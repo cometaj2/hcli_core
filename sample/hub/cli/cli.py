@@ -1,6 +1,6 @@
 import json
 import io
-from . import hub
+import hub
 
 import os.path
 from os import path

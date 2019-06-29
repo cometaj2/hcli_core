@@ -1,6 +1,6 @@
 import json
-from . import namespace as ns
-from . import data
+import namespace as ns
+import data
 
 class Hub:
     namespace = None

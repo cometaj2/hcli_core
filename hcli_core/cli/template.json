@@ -1,114 +1,67 @@
 {
-  "hcliTemplateVersion": "1.0",
-  "executable" : [
-  {
-    "command" : "hub ns ls",
-    "http" : "get"
-  },
-  {
-    "command" : "hub service {p}",
-    "http" : "get"
-  }],
-  "cli": 
-  [{
-    "id": "hub",
-    "name": "hub",
-    "section": [
-      {
-        "name": "name",
-        "description": "hub - an HCLI service discovery hub"
-      },
-      {
-        "name": "synopsis",
-        "description": "hub <command>"
-      },
-      {
-        "name": "description",
-        "description": "The hub CLI allows you to manage HCLI service discovery."
-      },
-      {
-        "name": "examples",
-        "description": "N/A"
-      }
-    ],
-    "command": [
-      {
-        "href": "hubns",
-        "name": "ns",
-        "description": "The \"ns\" command helps manage HCLI service namespaces."
-      },
-      {
-        "href": "hubservice",
-        "name": "service",
-        "description": "The \"service\" command helps find a service, by name, across all namespaces."
-      }
-    ]
-  },
-  {
-    "id": "hubns",
-    "name": "ns",
-    "section": [
-      {
-        "name": "name",
-        "description": "hub ns - manage HCLI service namespaces."
-      },
-      {
-        "name": "synopsis",
-        "description": "hub ns <command>"
-      },
-      {
-        "name": "description",
-        "description": "The \"ns\" command allows you to manage HCLI service namespaces to help with HCLI service disovery and service name collision avoidance."
-      }
-    ],
-    "command": [
-      {
-        "href": "hubnsls",
-        "name": "ls",
-        "description": "Lists available namespaces."
-      }
-    ]
-  },
-  {
-    "id": "hubservice",
-    "name": "service",
-    "section": [
-      {
-        "name": "name",
-        "description": "hub service - locate an HCLI service across all namespaces."
-      },
-      {
-        "name": "synopsis",
-        "description": "hub service '\"name\"'"
-      },
-      {
-        "name": "description",
-        "description": "The \"service\" command allows you to locate all the available hub registered instances of an HCLI service, across all namespaces."
-      }
-    ],
-    "parameter": {
-        "href": "hubserviceparameter"
-    }
-  },
-  {
-    "id": "hubnsls",
-    "name": "ls",
-    "section": [
-      {
-        "name": "name",
-        "description": "hub ns ls - list all hub namespaces."
-      },
-      {
-        "name": "synopsis",
-        "description": "hub ns ls"
-      },
-      {
-        "name": "description",
-        "description": "The \"ls\" lists all the available hub registered namespaces."
-      }
-    ]
-  },
-  {
-    "id": "hubserviceparameter"
-  }]
+    "hcliTemplateVersion" : "1.0",
+    "executable": [
+    {
+        "command" : "jsonf --version",
+        "http" : "get"
+    },
+    {
+        "command" : "jsonf go",
+        "http" : "post"
+    }],
+    "cli" : [{
+        "id" : "jsonf",
+        "name" : "jsonf",
+        "section" : [
+        {
+            "name" : "name",
+            "description" : "jsonf - a simple formatter for JSON"
+        },
+        {
+            "name" : "synopsis",
+            "description" : "jsonf [option] <command>"
+        },
+        {
+            "name" : "description",
+            "description" : "The jsonf CLI allows you to format JSON easily."
+        },
+        {
+            "name" : "examples",
+            "description" : "N/A"
+        }],
+        "command" : [{
+            "href" : "jsonfgo",
+            "name" : "go",
+            "description" : "jsonf go kicks off formatting of a JSON input stream"
+        }],
+        "option" : [{
+            "href" : "jsonf--version",
+            "name" : "--version",
+            "description" : "The jsonf CLI version."
+        }]
+    },
+    {
+        "id" : "jsonf--version"
+    },
+    {
+        "id" : "jsonfgo",
+        "name" : "go",
+        "section" : [
+        {
+            "name" : "name",
+            "description" : "jsonf go - kick off formatting of a JSON input stream"
+        },
+        {
+            "name" : "synopsis",
+            "description" : "jsonf go"
+        },
+        {
+            "name" : "description",
+            "description" : "The \"go\" command takes a JSON input stream and returns formatted JSON."
+        },
+        {
+            "name" : "examples",
+            "description" : "echo '{\"hello\":\"world\"}' | jsonf go"
+        }]        
+    }]
 }

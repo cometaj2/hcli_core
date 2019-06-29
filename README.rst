@@ -7,8 +7,7 @@ command line interface (HCLI) semantics.
 ----
 
 HCLI Core is a WSGI application that provides a way for developers to expose a CLI via HCLI semantics
-while providing dynamic and up to date in-band access to all the API/CLI documentation,
-man page style, which showcases commands, options, and parameters available for execution.
+while providing dynamic and up to date in-band access to man page style API/CLI documentation.
 
 Most, if not all, programming languages have a way to issue shell commands. With the help
 of any generic HCLI client, such as Huckle, APIs that make use of HCLI semantics are readily consumable
@@ -44,15 +43,15 @@ Download the hcli_core wherever you want it to be installed and navigate into th
 
     $ cd /home/foma/hcli_core/hcli_core
 
-    $ gunicorn --workers=5 --threads=2 "hcli_core:server"
+    $ gunicorn --workers=5 --threads=2 "hcli_core:HCLI().connector"
 
 Alternatively, if you install hcli_core via pip, you can launch gunicorn from anywhere by using "hcli_core path"
 
     $ pip install hcli_core
 
-    $ gunicorn --workers=5 --threads=2 --chdir \`hcli_core path\` "hcli_core:server"
+    $ gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:HCLI().connector"
 
-Then install an HCLI client, for example Huckle (https://github.com/cometaj2/huckle) and access the default sample jsonf HCLI
+Then install an HCLI client, for example Huckle (https://github.com/cometaj2/huckle) and access the default sample jsonf CLI
 exposed by HCLI Core:
 
     $ pip install huckle
