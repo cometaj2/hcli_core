@@ -30,7 +30,7 @@ class Hub:
         for index, i in enumerate(self.namespace):
             arg = self.namespace[index]
             for jndex, j in enumerate(arg['service']):
-                if j['name'] == name.replace("\"", ""):
+                if j['name'] == name.replace("'", "").replace("\"", ""):
                     services = services + arg['name'] + ":" + j['name'] + ":" + j['href'] + "\n"
 
         return services
