@@ -3,8 +3,9 @@ from __future__ import absolute_import, division, print_function
 import sys
 import os
 import importlib
+import inspect
 
-root = os.path.abspath(os.path.dirname(__file__))
+root = os.path.dirname(inspect.getfile(lambda: None))
 sample = root + "/sample"
 hcli_core_manpage_path = root + "/data/hcli_core.1"
 template = None
