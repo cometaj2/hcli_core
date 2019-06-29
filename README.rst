@@ -53,9 +53,9 @@ Alternatively, if you install hcli_core via pip, you can launch gunicorn from an
 
     $ gunicorn --workers=5 --threads=2 --chdir \`hcli_core path\` "hcli_core:HCLI().connector"
 
-If you want to load a sample other than the default HCLI, you can try loading the sample hub:
+If you want to load a sample HCLI other than the default, you can try loading the sample hub. A folder path to any HCLI module can be provided in the same way:
 
-    $ gunicorn --workers=5 --threads=2 --chdir \`hcli_core path\` "hcli_core:HCLI(\"\`hcli_core sample hub\`\").connector"
+    $ gunicorn --workers=5 --threads=2 --chdir \`hcli_core path\` "hcli_core:HCLI(\\"\`hcli_core sample hub\`\\").connector"
 
 Curl your new service to understand what is being exposed. The HCLI root URL, to use with an HCLI client, is the cli link relation:
 

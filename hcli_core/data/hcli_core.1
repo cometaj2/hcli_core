@@ -13,6 +13,8 @@ hcli_core \- An HCLI connector that can be used to expose CLIs via hypertext com
 is a WSGI application that provides a way for developers to expose a CLI via HCLI v1.0 semantics
 while providing dynamic and up to date in-band access to man page style API/CLI documentation.
 
+Any HCLI module path can be provided to HCLI(), as a parameter, to expose other HCLIs.
+
 .SH COMMANDS
 .IP "path"
 Provides the installation path of hcli_core, which can be used to help locate the path of the WSGI app to use in a WSGI server.
