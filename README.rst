@@ -45,11 +45,15 @@ Download the hcli_core wherever you want it to be installed and navigate into th
 
     $ gunicorn --workers=5 --threads=2 "hcli_core:HCLI().connector"
 
-Alternatively, if you install hcli_core via pip, you can launch gunicorn from anywhere by using "hcli_core path"
+Alternatively, if you install hcli_core via pip, you can launch gunicorn from anywhere by using "hcli_core path":
 
     $ pip install hcli_core
 
     $ gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:HCLI().connector"
+
+If you want to load a sample other than the default HCLI, you can try loading the sample hub:
+
+    $ gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:HCLI(\"`hcli_core sample hub`\").connector"
 
 Then install an HCLI client, for example Huckle (https://github.com/cometaj2/huckle) and access the default sample jsonf CLI
 exposed by HCLI Core:

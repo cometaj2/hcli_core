@@ -16,6 +16,10 @@ while providing dynamic and up to date in-band access to man page style API/CLI 
 .SH COMMANDS
 .IP "path"
 Provides the installation path of hcli_core, which can be used to help locate the path of the WSGI app to use in a WSGI server.
+.IP "sample hub"
+Provides the path of a sample HCLI CLI that can be used for service discovery.
+.IP "sample hfm"
+Provides the path of a sample HCLI CLI that can be used to stream upload, download and otherwise remotely manage files.
 .IP help
 This help file.
 .SH OPTIONS
@@ -27,4 +31,6 @@ hcli_core path
 
 hcli_core --version
 
-gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:server"
+gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:HCLI().connector"
+
+gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:HCLI(\\"`hcli_core sample hub`\\").connector\\"

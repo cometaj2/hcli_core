@@ -26,8 +26,17 @@ def main():
         else:
             hcli_core_help()
 
-    else:
-        hcli_core_help()
+    elif len(sys.argv) == 3:
+
+        if sys.argv[1] == "sample":
+            if sys.argv[2] == "hub":
+                print(config.sample + "/hub/cli")
+            elif sys.argv[2] == "hfm":
+                print(config.sample + "/hub/hfm")
+            
+            sys.exit(0)
+
+    hcli_core_help()
 
 # show huckle's version and the version of its dependencies
 def show_dependencies():
