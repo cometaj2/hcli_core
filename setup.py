@@ -51,6 +51,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
     keywords='cli client server connector hypermedia rest generic development',
     packages=find_packages(exclude=['__pycache__', 'tests']),
