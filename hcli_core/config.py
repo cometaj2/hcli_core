@@ -5,7 +5,7 @@ import os
 import importlib
 
 root = os.path.abspath(os.path.dirname(__file__))
-sample = os.path.dirname(root) + "/sample"
+sample = root + "/sample"
 hcli_core_manpage_path = root + "/data/hcli_core.1"
 template = None
 plugin_path = root + "/cli"

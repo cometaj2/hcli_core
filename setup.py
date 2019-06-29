@@ -56,7 +56,6 @@ setup(
     keywords='cli client server connector hypermedia rest generic development',
     packages=find_packages(exclude=['__pycache__', 'tests']),
     install_requires=[package.dependencies[0]],
-    package_data={'hcli_core': ['hcli_core/data/*', 'hcli_core/cli/*']},
     include_package_data=True,
     entry_points={
         'console_scripts': [
