@@ -32,7 +32,7 @@ def main():
             if sys.argv[2] == "hub":
                 print(config.sample + "/hub/cli")
             elif sys.argv[2] == "hfm":
-                print(config.sample + "/hub/hfm")
+                print(config.sample + "/hfm/cli")
             
             sys.exit(0)
 
