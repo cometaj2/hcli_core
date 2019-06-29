@@ -15,10 +15,10 @@ if sys.argv[-1] == 'publish':
         sys.exit("publishing from a branch other than master is disallowed.")
     os.system("rm -rf dist")
     os.system("python setup.py sdist")
-    #os.system("twine upload dist/* -r pypi")
-    #os.system("git tag -a %s -m 'version %s'" % ("hcli_core-" + package.__version__, "hcli_core-" + package.__version__))
-    #os.system("git push")
-    #os.system("git push --tags")
+    os.system("twine upload dist/* -r pypi")
+    os.system("git tag -a %s -m 'version %s'" % ("hcli_core-" + package.__version__, "hcli_core-" + package.__version__))
+    os.system("git push")
+    os.system("git push --tags")
     sys.exit()
 
 if sys.argv[-1] == 'tag':
@@ -56,9 +56,8 @@ setup(
     keywords='cli client server connector hypermedia rest generic development',
     packages=find_packages(exclude=['__pycache__', 'tests']),
     install_requires=[package.dependencies[0]],
-    package_data={'hcli_core': ['hcli_core/data/*']},
+    package_data={'hcli_core': ['hcli_core/data/*', 'hcli_core/cli/*']},
     include_package_data=True,
-    data_files=[('hcli_core', ['hcli_core/cli/*.json'])],
     entry_points={
         'console_scripts': [
             'hcli_core=hcli_core.__main__:main',
