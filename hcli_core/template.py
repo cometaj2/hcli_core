@@ -1,5 +1,5 @@
 import json
-import urllib.parse
+import urllib
 import config
 import re
 

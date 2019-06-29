@@ -7,10 +7,9 @@ def test_function():
     setup = """
     #!/bin/bash
 
-    pip install gunicorn
-    pip install huckle
     gunicorn --workers=1 --threads=1 --chdir `hcli_core path` "hcli_core:HCLI().connector"
     huckle cli install http://127.0.0.1:8000/hcli/cli/jsonf?command=jsonf
+    echo '{"hello":"world"}' | jsonf go
     """
 
     p1 = subprocess.Popen(['bash', '-c', setup], stdin=subprocess.PIPE, stdout=subprocess.PIPE)

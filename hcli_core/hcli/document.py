@@ -1,6 +1,6 @@
 from haliot import hal
 import json
-import urllib.parse
+import urllib
 import config
 from hcli import semantic
 from hcli import profile
