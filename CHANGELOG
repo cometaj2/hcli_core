@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add xenial python 3.7 support
 - Test using cli auto discovery with the latest version of huckle
 - Add tests for hfm sample
+- Add ls and chroot to hfm sample
 
 ## [0.1.6]
 - Add Travis CI test for jsonf default

@@ -7,8 +7,7 @@ def test_function():
     setup = """
     #!/bin/bash
 
-    cd `hcli_core path`
-    gunicorn --workers=1 --threads=1 "hcli_core:HCLI().connector" --daemon
+    gunicorn --workers=1 --threads=1 --chdir `hcli_core path` "hcli_core:HCLI().connector" --daemon
     huckle cli install http://127.0.0.1:8000
     echo '{"hello":"world"}' | jsonf go
     """
@@ -21,6 +20,7 @@ def test_function():
 
     export PATH=$PATH:~/.huckle/bin
     echo '{"hello":"world"}' | jsonf go
+    kill $(ps aux | grep '[g]unicorn' | awk '{print $2}')
     """
     
     p2 = subprocess.Popen(['bash', '-c', hello], stdin=subprocess.PIPE, stdout=subprocess.PIPE)

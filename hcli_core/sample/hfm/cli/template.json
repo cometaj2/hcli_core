@@ -8,6 +8,10 @@
   {
     "command" : "hfm cp -r {p}",
     "http" : "get"  
+  },
+  {
+    "command" : "hfm ls",
+    "http" : "get"  
   }],
   "cli": 
   [{
@@ -36,6 +40,11 @@
         "href": "hfmcp",
         "name": "cp",
         "description": "The hfm cp command allows you to copy files as streams."
+      },
+      {
+        "href": "hfmls",
+        "name": "ls",
+        "description": "The hfm ls command allows you to list remote files."
       }
     ]
   },
@@ -75,6 +84,24 @@
     "parameter" : {
       "href": "hfmcpparameter"
     }    
+  },
+  {
+    "id": "hfmls",
+    "name": "ls",
+    "section": [
+      {
+        "name": "name",
+        "description": "hfm ls - list remote files"
+      },
+      {
+        "name": "synopsis",
+        "description": "hfm ls"
+      },
+      {
+        "name": "description",
+        "description": "The \"ls\" command allows you to list remote."
+      }
+    ]
   },
   {
     "id": "hfmcp-l"

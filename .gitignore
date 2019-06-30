@@ -3,6 +3,7 @@
 .cache
 build/
 dist/
+chroot/
 *.egg-info/
 *.egg
 *.py[cod]
