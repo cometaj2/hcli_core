@@ -53,9 +53,9 @@ Alternatively, if you install hcli_core via pip, you can launch gunicorn from an
 
     $ gunicorn --workers=5 --threads=2 --chdir \`hcli_core path\` "hcli_core:HCLI().connector"
 
-If you want to load a sample HCLI other than the default, you can try loading the sample hub. A folder path to any HCLI module can be provided in the same way:
+If you want to load a sample HCLI other than the default, you can try loading the sample hfm. A folder path to any 3rd party HCLI module can be provided in the same way:
 
-    $ gunicorn --workers=5 --threads=2 --chdir \`hcli_core path\` "hcli_core:HCLI(\\"\`hcli_core sample hub\`\\").connector"
+    $ gunicorn --workers=5 --threads=2 --chdir \`hcli_core path\` "hcli_core:HCLI(\\"\`hcli_core sample hfm\`\\").connector"
 
 Curl your new service to understand what is being exposed. The HCLI root URL, to use with an HCLI client, is the cli link relation:
 
@@ -66,7 +66,7 @@ exposed by HCLI Core (you may need to restart your terminal to be able to use js
 
     $ pip install huckle
 
-    $ huckle cli install http://127.0.0.1:8000/hcli/cli/jsonf?command=jsonf
+    $ huckle cli install http://127.0.0.1:8000
 
     $ jsonf help
 
