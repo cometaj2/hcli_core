@@ -12,25 +12,27 @@ interacted with dynamically via any HCLI client. Up to date, in-band, man page s
 readily available for use.
 
 Most, if not all, programming languages have a way to issue shell commands. With the help
-of any generic HCLI client, such as Huckle, APIs that make use of HCLI semantics are readily consumable
+of a generic HCLI client, such as Huckle [1], APIs that make use of HCLI semantics are readily consumable
 anywhere via the familiar command line (CLI) mode of operation, and this, without there being a need to write
 a custom and dedicated CLI to interact with a specific HCLI API.
 
-The HCLI Internet-Draft [1] is a work in progress by the author and 
+You can find out more about HCLI on hcli.io [2]
+
+The HCLI Internet-Draft [3] is a work in progress by the author and 
 the current implementation leverages hal+json alongside a static form of ALPS
-(semantic profile) [2] to help enable widespread cross media-type support.
+(semantic profile) [4] to help enable widespread cross media-type support.
 
-You can find out more about HCLI on hcli.io [3]
+Help shape HCLI and it's ecosystem on the discussion list [5] or by raising issues on github!
 
-Help shape HCLI and it's ecosystem on the discussion list [4] or by raising issues on github!
+[1] https://github.com/cometaj2/huckle
 
-[1] https://github.com/cometaj2/I-D/tree/master/hcli
+[2] https://hcli.io
 
-[2] http://alps.io
+[3] https://github.com/cometaj2/I-D/tree/master/hcli
 
-[3] https://hcli.io
+[4] http://alps.io
 
-[4] https://groups.google.com/forum/#!forum/huck-hypermedia-unified-cli-with-a-kick
+[5] https://groups.google.com/forum/#!forum/huck-hypermedia-unified-cli-with-a-kick
 
 Installation
 ------------
@@ -47,7 +49,7 @@ Install hcli_core via pip. You can launch gunicorn from anywhere by using "hcli_
 
     $ hcli_core help
 
-    $ gunicorn --workers=5 --threads=2 --chdir \`hcli_core path\` "hcli_core:HCLI().connector"
+    $ gunicorn --workers=5 --threads=2 -b 127.0.0.1:8000 --chdir \`hcli_core path\` "hcli_core:HCLI().connector"
 
 If you want to load a sample HCLI other than the default, you can try loading the sample hfm (hypertext file manager) HCLI.
 A folder path to any 3rd party HCLI can be provided in the same way:
