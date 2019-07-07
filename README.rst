@@ -6,8 +6,10 @@ command line interface (HCLI) semantics.
 
 ----
 
-HCLI Core implements an HCLI Connector (a type of Service Connector) as a WSGI application and provides a way for developers to
-expose a CLI, as a REST API, via HCLI semantics which yields dynamic and up to date in-band access to man page style API/CLI documentation.
+HCLI Core implements an HCLI Connector, a type of Service Connector, as a WSGI application and provides a way
+for developers to expose a REST API that makes use of HCLI semantics. Such an API can expose any "built-in" CLI that can be
+interacted with dynamically via any HCLI client. Up to date, in-band, man page style API/CLI documentation is also
+readily available for use.
 
 Most, if not all, programming languages have a way to issue shell commands. With the help
 of any generic HCLI client, such as Huckle, APIs that make use of HCLI semantics are readily consumable
@@ -39,13 +41,7 @@ You'll need an WSGI compliant application server to run hcli_core. For example, 
 
     $ pip install gunicorn
 
-Download the hcli_core wherever you want it to be installed and navigate into the hcli_core folder. For example:
-
-    $ cd /home/foma/hcli_core/hcli_core
-
-    $ gunicorn --workers=5 --threads=2 "hcli_core:HCLI().connector"
-
-Alternatively, if you install hcli_core via pip, you can launch gunicorn from anywhere by using "hcli_core path". You can also look at the hcli_core help file:
+Install hcli_core via pip. You can launch gunicorn from anywhere by using "hcli_core path". You can also look at the hcli_core help file:
 
     $ pip install hcli_core
 
@@ -53,9 +49,10 @@ Alternatively, if you install hcli_core via pip, you can launch gunicorn from an
 
     $ gunicorn --workers=5 --threads=2 --chdir \`hcli_core path\` "hcli_core:HCLI().connector"
 
-If you want to load a sample HCLI other than the default, you can try loading the sample hfm. A folder path to any 3rd party HCLI module can be provided in the same way:
+If you want to load a sample HCLI other than the default, you can try loading the sample hfm (hypertext file manager) HCLI.
+A folder path to any 3rd party HCLI can be provided in the same way:
 
-    $ gunicorn --workers=5 --threads=2 --chdir \`hcli_core path\` "hcli_core:HCLI(\\"\`hcli_core sample hfm\`\\").connector"
+    $ gunicorn --workers=5 --threads=2 -b 127.0.0.1:8000 --chdir \`hcli_core path\` "hcli_core:HCLI(\\"\`hcli_core sample hfm\`\\").connector"
 
 Curl your new service to understand what is being exposed. The HCLI root URL, to use with an HCLI client, is the cli link relation:
 
