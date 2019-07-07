@@ -1,13 +1,13 @@
 HCLI Core |build status|_ |pypi|_
 =================================
 
-An HCLI Connector that can be used to expose any CLI via hypertext
+An HCLI Connector that can be used to expose any CLI, as a REST API, via hypertext
 command line interface (HCLI) semantics.
 
 ----
 
-HCLI Core implements the Service Connector pattern as a WSGI application and provides a way for developers to
-expose a CLI via HCLI semantics which yields dynamic and up to date in-band access to man page style API/CLI documentation.
+HCLI Core implements an HCLI Connector (a type of Service Connector) as a WSGI application and provides a way for developers to
+expose a CLI, as a REST API, via HCLI semantics which yields dynamic and up to date in-band access to man page style API/CLI documentation.
 
 Most, if not all, programming languages have a way to issue shell commands. With the help
 of any generic HCLI client, such as Huckle, APIs that make use of HCLI semantics are readily consumable
