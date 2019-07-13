@@ -26,7 +26,7 @@ Help shape HCLI and it's ecosystem on the discussion list [5] or by raising issu
 
 [1] https://github.com/cometaj2/huckle
 
-[2] https://hcli.io
+[2] http://hcli.io
 
 [3] https://github.com/cometaj2/I-D/tree/master/hcli
 
