@@ -5,7 +5,7 @@
             "service": [
                 {
                     "name": "jsonf",
-                    "href": "https://hcli.io/hcli/cli/jsonf?command=jsonf"
+                    "href": "http://hcli.io/hcli/cli/jsonf?command=jsonf"
                 }
             ]
         },
@@ -14,7 +14,7 @@
             "service": [
                 {
                     "name": "jsonf",
-                    "href": "https://example.org.io/hcli/cli/jsonf?command=jsonf"
+                    "href": "http://example.org.io/hcli/cli/jsonf?command=jsonf"
                 }         
             ]
         }        

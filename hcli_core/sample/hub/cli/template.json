@@ -6,6 +6,10 @@
     "http" : "get"
   },
   {
+    "command" : "hub ns ls {p}",
+    "http" : "get"
+  },
+  {
     "command" : "hub service {p}",
     "http" : "get"
   }],
@@ -96,19 +100,29 @@
     "section": [
       {
         "name": "name",
-        "description": "hub ns ls - list all hub namespaces."
+        "description": "hub ns ls - list all hub namespaces or services in a given namespace."
       },
       {
         "name": "synopsis",
-        "description": "hub ns ls"
+        "description": "hub ns ls ['\"nsname\"']"
       },
       {
         "name": "description",
-        "description": "The \"ls\" lists all the available hub registered namespaces."
+        "description": "The \"ls\" command lists all available hub registered namespaces. All the services registered to a given namespace can also be listed if \"ls\" is also provided an \"nsname\"."
+      },
+      {
+        "name": "example",
+        "description": "hub ns ls '\"hcli\"' | awk '{print $3}' | xargs -0 huckle cli install"
       }
-    ]
+    ],
+    "parameter": {
+        "href": "hubnslsparameter"
+    }
   },
   {
     "id": "hubserviceparameter"
+  },
+  {
+    "id": "hubnslsparameter"
   }]
 }

@@ -5,37 +5,39 @@ The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [0.2.2]
-- Update to clarify the README
+- Update to clarify the README.
+- Update hub to column separated output.
+- Update hub to allow listing all services registered to a namespace.
 
 ## [0.2.1]
-- Update documentation to showcase hfm instead of hub
-- Prune chroot out of hfm sample
+- Update documentation to showcase hfm instead of hub.
+- Prune chroot out of hfm sample.
 
 ## [0.2.0]
-- Add xenial python 3.7 support
-- Test using cli auto discovery with the latest version of huckle
-- Add tests for hfm sample
-- Add ls and chroot to hfm sample
+- Add xenial python 3.7 support.
+- Test using cli auto discovery with the latest version of huckle.
+- Add tests for hfm sample.
+- Add ls and chroot to hfm sample.
 
 ## [0.1.6]
-- Add Travis CI test for jsonf default
-- Cleanup supported python version to take into account deprecation (2.7 and 3.4) and travis support
+- Add Travis CI test for jsonf default.
+- Cleanup supported python version to take into account deprecation (2.7 and 3.4) and travis support.
 
 ## [0.1.5]
-- Remove jsonf from samples since it's the default
-- Fix hub sample HCLI parameter handling ("'param'" vs '"param"')
+- Remove jsonf from samples since it's the default.
+- Fix hub sample HCLI parameter handling ("'param'" vs '"param"').
 
 ## [0.1.4]
-- Fix HCLI parameter quotes defect on hfm sample
+- Fix HCLI parameter quotes defect on hfm sample.
 
 ## [0.1.3]
-- Fix incorrect path for hfm sample
+- Fix incorrect path for hfm sample.
 
 ## [0.1.2]
-- Bring the HCLI samples into the codebase so that wheel distributions can use it since package_data doesn't seem to want to address folders correctly
+- Bring the HCLI samples into the codebase so that wheel distributions can use it since package_data doesn't seem to want to address folders correctly.
 
 ## [0.1.1]
-- Fix broken pip data file distribution
+- Fix broken pip data file distribution.
 
 ## [0.1.0]
 - Add basic HCLI 1.0 spec support

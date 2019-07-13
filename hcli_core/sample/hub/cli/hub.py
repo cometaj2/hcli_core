@@ -31,6 +31,16 @@ class Hub:
             arg = self.namespace[index]
             for jndex, j in enumerate(arg['service']):
                 if j['name'] == name.replace("'", "").replace("\"", ""):
-                    services = services + arg['name'] + ":" + j['name'] + ":" + j['href'] + "\n"
+                    services = services + arg['name'] + "    " + j['name'] + "    " + j['href'] + "\n"
 
         return services
+
+    def listServicesInNamespace(self, ns):
+        services = ""
+        for index, i in enumerate(self.namespace):
+            arg = self.namespace[index]
+            if arg['name'] == ns.replace("'", "").replace("\"", ""):
+                for jndex, j in enumerate(arg['service']):
+                    services = services + arg['name'] + "    " + j['name'] + "    " + j['href'] + "\n"
+
+        return services    
