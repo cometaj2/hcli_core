@@ -25,7 +25,7 @@ class Networks:
 
         return subnets
 
-    def listFreeSubnetWithPrefix(self, prefix):
+    def listFreeSubnetsWithPrefix(self, prefix):
         subnets = ""
         for index, value in enumerate(self.free):
             ip = ip_network(self.free[index])
@@ -40,15 +40,18 @@ class Networks:
         return subnets
 
     def allocateSubnet(self, prefix):
-        subnets = ""
+        subnet = ""
         for index, value in enumerate(self.free):
             ip = ip_network(self.free[index])
 
             try:
                 s = list(ip.subnets(new_prefix=int(prefix.replace("'", "").replace("\"", ""))))
                 for i in s:
-                    subnets = subnets + str(i) + "\n"
+                    subnet = subnet + str(i) + "\n"
+                    self.allocated.append(str(i))
+                    data.DAO(self).save()
+                    return subnet
             except:
                 pass
 
-        return subnets
+        return subnet

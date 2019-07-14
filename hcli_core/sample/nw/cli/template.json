@@ -10,6 +10,10 @@
     "http" : "get"
   },
   {
+    "command" : "nw ls -fp {p}",
+    "http" : "get"
+  },
+  {
     "command" : "nw allocate -p {p}",
     "http" : "post"
   }],
@@ -28,7 +32,7 @@
       },
       {
         "name": "description",
-        "description": "The nw CLI allows you to manage private network allocation, resizing and also provides a way to look at currently allocated CIDR ranges.. The service guarantees that requested CIDR ranges do not overlap to help avoid conflicting address ranges."
+        "description": "The \"nw\" CLI allows you to manage private network manipulation, such as allocation, resizing, and listing of currently allocated CIDR ranges. The service guarantees that allocated CIDR ranges do not overlap to help avoid conflicts."
       },
       {
         "name": "examples",
@@ -75,14 +79,28 @@
         "href": "nwls-f",
         "name": "-f",
         "description": "Lists free CIDR ranges."
-      }      
-    ]
+      },
+      {
+        "href": "nwls-fp",
+        "name": "-fp",
+        "description": "Lists free CIDR ranges with a given prefix."
+      }     
+    ],
+    "parameter": {
+        "href": "nwls-fpparameter"
+    }
   },
   {
     "id" : "nwls-a"
   },  
   {
     "id" : "nwls-f"
+  },  
+  {
+    "id" : "nwls-fp"
+  },  
+  {
+    "id" : "nwls-fpparameter"
   },  
   {
     "id": "nwallocate",
