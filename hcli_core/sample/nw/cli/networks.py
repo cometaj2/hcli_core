@@ -46,11 +46,20 @@ class Networks:
 
             try:
                 s = list(ip.subnets(new_prefix=int(prefix.replace("'", "").replace("\"", ""))))
+                if len(s) != 0:
+                    subnet = subnet + str(s[0]) + "\n"
+                    if s[0] not in self.allocated:
+                        self.allocated.append(str(s[0]))
+                    self.free.remove(value)
                 for i in s:
-                    subnet = subnet + str(i) + "\n"
-                    self.allocated.append(str(i))
-                    data.DAO(self).save()
-                    return subnet
+                    try:
+                        if i not in self.free:
+                            self.free.append(str(i))
+                    except:
+                        pass
+
+                data.DAO(self).save()
+                return subnet
             except:
                 pass
 
