@@ -52,7 +52,8 @@ class Networks:
                         self.allocated.append(str(s[0]))
                     self.free.remove(value)
                     s = s[1:len(s)]
-                    for i in s:
+                    t = collapse_addresses(s)
+                    for i in t:
                         try:
                             if i not in self.free:
                                 self.free.append(str(i))
