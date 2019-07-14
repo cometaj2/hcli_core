@@ -1,5 +1,6 @@
 import json
 import data
+from ipaddress import *
 
 class Networks:
     allocated = None
@@ -17,9 +18,37 @@ class Networks:
     def serialize(self):
         return data.DAO(self).serialize()   
     
-    def listFreeRanges(self):
-        ranges = ""
+    def listFreeSubnets(self):
+        subnets = ""
         for index, value in enumerate(self.free):
-            ranges = ranges + value + "\n"
+            subnets = subnets + value + "\n"
 
-        return ranges
+        return subnets
+
+    def listFreeSubnetWithPrefix(self, prefix):
+        subnets = ""
+        for index, value in enumerate(self.free):
+            ip = ip_network(self.free[index])
+
+            try:
+                s = list(ip.subnets(new_prefix=int(prefix.replace("'", "").replace("\"", ""))))
+                for i in s:
+                    subnets = subnets + str(i) + "\n"
+            except:
+                pass
+
+        return subnets
+
+    def allocateSubnet(self, prefix):
+        subnets = ""
+        for index, value in enumerate(self.free):
+            ip = ip_network(self.free[index])
+
+            try:
+                s = list(ip.subnets(new_prefix=int(prefix.replace("'", "").replace("\"", ""))))
+                for i in s:
+                    subnets = subnets + str(i) + "\n"
+            except:
+                pass
+
+        return subnets

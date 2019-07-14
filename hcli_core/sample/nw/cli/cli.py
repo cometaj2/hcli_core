@@ -21,7 +21,14 @@ class CLI:
                 None
             elif self.commands[2] == "-f":
                 n = networks.Networks()
-                s = n.listFreeRanges()
+                s = n.listFreeSubnets()
                 return io.BytesIO(s.encode("utf-8"))
+
+        if self.commands[1] == "allocate":
+            if self.commands[2] == "-p":
+                if len(self.commands) > 3:
+                    n = networks.Networks()
+                    s = n.allocateSubnet(self.commands[3])
+                    return io.BytesIO(s.encode("utf-8"))
 
         return None

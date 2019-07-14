@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Update to clarify the README.
 - Update hub to column separated output.
 - Update hub to allow listing all services registered to a namespace.
+- New sample application nw for managing network CIDR block allocation (deconflicted)
 
 ## [0.2.1]
 - Update documentation to showcase hfm instead of hub.

@@ -8,6 +8,10 @@
   {
     "command" : "nw ls -f",
     "http" : "get"
+  },
+  {
+    "command" : "nw allocate -p {p}",
+    "http" : "post"
   }],
   "cli": 
   [{
@@ -36,6 +40,11 @@
         "href": "nwls",
         "name": "ls",
         "description": "The \"ls\" command allows you to list allocated or free CIDR ranges."
+      },
+      {
+        "href": "nwallocate",
+        "name": "allocate",
+        "description": "The \"allocate\" command allows you reserve a deconflicted CIDR ranges."
       }
     ]
   },
@@ -68,5 +77,45 @@
         "description": "Lists free CIDR ranges."
       }      
     ]
+  },
+  {
+    "id" : "nwls-a"
+  },  
+  {
+    "id" : "nwls-f"
+  },  
+  {
+    "id": "nwallocate",
+    "name": "allocate",
+    "section": [
+      {
+        "name": "name",
+        "description": "nw allocate - reserve a CIDR range."
+      },
+      {
+        "name": "synopsis",
+        "description": "nw allocate -p '\"CIDR prefix\"'"
+      },
+      {
+        "name": "description",
+        "description": "The \"allocate\" command allows you to reserve a free CIDR range."
+      }
+    ],
+    "option": [
+      {
+        "href": "nwallocate-p",
+        "name": "-p",
+        "description": "CIDR prefix."
+      }
+    ],
+    "parameter": {
+        "href": "nwallocate-pparameter"
+    }
+  },
+  {
+    "id" : "nwallocate-p"
+  },  
+  { 
+    "id": "nwallocate-pparameter"
   }]
 }
