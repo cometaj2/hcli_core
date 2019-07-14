@@ -19,7 +19,7 @@ class Networks:
     
     def listFreeRanges(self):
         ranges = ""
-        for index, i in enumerate(self.free):
-            ranges = ranges + index + "\n"
+        for index, value in enumerate(self.free):
+            ranges = ranges + value + "\n"
 
         return ranges
