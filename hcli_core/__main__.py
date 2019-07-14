@@ -33,6 +33,8 @@ def main():
                 print(config.sample + "/hub/cli")
             elif sys.argv[2] == "hfm":
                 print(config.sample + "/hfm/cli")
+            elif sys.argv[2] == "nw":
+                print(config.sample + "/nw/cli")
             
             sys.exit(0)
 

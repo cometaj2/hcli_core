@@ -1,7 +1,7 @@
 HCLI Core |build status|_ |pypi|_
 =================================
 
-An HCLI Connector that can be used to expose any CLI, as a REST API, via hypertext
+An HCLI Connector that can be used to expose any CLI as a REST API, via hypertext
 command line interface (HCLI) semantics.
 
 ----

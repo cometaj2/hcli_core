@@ -1,0 +1,72 @@
+{
+  "hcliTemplateVersion": "1.0",
+  "executable" : [
+  {
+    "command" : "nw ls -a",
+    "http" : "get"
+  },
+  {
+    "command" : "nw ls -f",
+    "http" : "get"
+  }],
+  "cli": 
+  [{
+    "id": "nw",
+    "name": "nw",
+    "section": [
+      {
+        "name": "name",
+        "description": "nw - a private network management service"
+      },
+      {
+        "name": "synopsis",
+        "description": "nw <command>"
+      },
+      {
+        "name": "description",
+        "description": "The nw CLI allows you to manage private network allocation, resizing and also provides a way to look at currently allocated CIDR ranges.. The service guarantees that requested CIDR ranges do not overlap to help avoid conflicting address ranges."
+      },
+      {
+        "name": "examples",
+        "description": "N/A"
+      }
+    ],
+    "command": [
+      {
+        "href": "nwls",
+        "name": "ls",
+        "description": "The \"ls\" command allows you to list allocated or free CIDR ranges."
+      }
+    ]
+  },
+  {
+    "id": "nwls",
+    "name": "ls",
+    "section": [
+      {
+        "name": "name",
+        "description": "nw ls - list allocated or free CIDR ranges."
+      },
+      {
+        "name": "synopsis",
+        "description": "hub ls <command>"
+      },
+      {
+        "name": "description",
+        "description": "The \"ls\" command allows you to peek at allocated or free CIDR ranges."
+      }
+    ],
+    "option": [
+      {
+        "href": "nwls-a",
+        "name": "-a",
+        "description": "Lists allocated CIDR ranges."
+      },
+      {
+        "href": "nwls-f",
+        "name": "-f",
+        "description": "Lists free CIDR ranges."
+      }      
+    ]
+  }]
+}
