@@ -43,12 +43,12 @@
       {
         "href": "nwls",
         "name": "ls",
-        "description": "The \"ls\" command allows you to list allocated or free CIDR ranges."
+        "description": "The \"ls\" command allows you to list information about CIDR ranges."
       },
       {
         "href": "nwallocate",
         "name": "allocate",
-        "description": "The \"allocate\" command allows you reserve a deconflicted CIDR ranges."
+        "description": "The \"allocate\" command allows you reserve a deconflicted CIDR range."
       }
     ]
   },
@@ -58,7 +58,7 @@
     "section": [
       {
         "name": "name",
-        "description": "nw ls - list allocated or free CIDR ranges."
+        "description": "nw ls - list information about CIDR ranges."
       },
       {
         "name": "synopsis",
@@ -123,7 +123,7 @@
       {
         "href": "nwallocate-p",
         "name": "-p",
-        "description": "CIDR prefix."
+        "description": "allocate a CIDR range with a given prefix."
       }
     ],
     "parameter": {
