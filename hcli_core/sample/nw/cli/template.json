@@ -18,6 +18,10 @@
     "http" : "post"
   },
   {
+    "command" : "nw group mv {p} {p}",
+    "http" : "post"
+  },
+  {
     "command" : "nw allocate -g {p} -p {p}",
     "http" : "post"
   }],
@@ -132,7 +136,12 @@
       {
         "href": "nwgroupcreate",
         "name": "create",
-        "description": "Allows you to create a new logical group for CIDR ranges."
+        "description": "Allows you to create a new logical group of managed CIDR ranges."
+      },
+      {
+        "href": "nwgroupmv",
+        "name": "mv",
+        "description": "Allows you to rename a new logical group."
       }
     ]
   },
@@ -150,7 +159,28 @@
       },
       {
         "name": "description",
-        "description": "The \"create\" command allows you to create a new named logical group of allocatable CIDR ranges."
+        "description": "The \"create\" command allows you to create a new, uniquely named, logical group of allocatable CIDR ranges."
+      }
+    ],
+    "parameter": {
+        "href": "nwgroupcreateparameter"
+    }
+  },
+  {
+    "id": "nwgroupmv",
+    "name": "mv",
+    "section": [
+      {
+        "name": "name",
+        "description": "mv - rename a logical group."
+      },
+      {
+        "name": "synopsis",
+        "description": "nw group mv '\"oldname\"' '\"newname\"'"
+      },
+      {
+        "name": "description",
+        "description": "The \"mv\" command renames an existing logical group of allocatable CIDR ranges."
       }
     ],
     "parameter": {

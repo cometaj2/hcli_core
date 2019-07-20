@@ -61,6 +61,17 @@ class Networks:
         data.DAO(self).save()
         return cleanname + "\n"
 
+    def renameLogicalGroup(self, oldname, newname):
+        cleanold = oldname.replace("'", "").replace("\"", "")
+        cleannew = newname.replace("'", "").replace("\"", "")
+        for pindex, pool in enumerate(self.pools):
+            if pool["name"] == cleanold:
+                pool["name"] = cleannew
+                data.DAO(self).save()
+                return cleannew + "\n"
+
+        return ""
+
     def allocateNetwork(self, groupname, prefix):
         subnet = ""
         for pindex, pool in enumerate(self.pools):
