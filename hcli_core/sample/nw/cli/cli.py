@@ -38,10 +38,10 @@ class CLI:
                     return None
 
         if self.commands[1] == "allocate":
-            if self.commands[2] == "-p":
-                if len(self.commands) > 3:
+            if self.commands[2] == "-g":
+                if len(self.commands) > 5 and self.commands[4] == "-p":
                     n = networks.Networks()
-                    s = n.allocateSubnet(self.commands[3])
+                    s = n.allocateSubnet(self.commands[3], self.commands[5])
                     return io.BytesIO(s.encode("utf-8"))
 
         return None
