@@ -30,15 +30,18 @@ class Networks:
 
     def listFreeSubnetsWithPrefix(self, prefix):
         subnets = ""
-        for index, value in enumerate(self.free):
-            ip = ip_network(self.free[index])
+        for pindex, pool in enumerate(self.pools):
+            subnets = subnets + "------------------------------" + "\n"
+            subnets = subnets + pool["name"] + "\n"
+            for index, value in enumerate(pool["free"]):
+                ip = ip_network(pool["free"][index])
 
-            try:
-                s = list(ip.subnets(new_prefix=int(prefix.replace("'", "").replace("\"", ""))))
-                for i in s:
-                    subnets = subnets + str(i) + "\n"
-            except:
-                pass
+                try:
+                    s = list(ip.subnets(new_prefix=int(prefix.replace("'", "").replace("\"", ""))))
+                    for i in s:
+                        subnets = subnets + str(i) + "\n"
+                except:
+                    pass
 
         return subnets
 
