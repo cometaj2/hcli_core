@@ -14,6 +14,10 @@
     "http" : "get"
   },
   {
+    "command" : "nw group create {p}",
+    "http" : "post"
+  },
+  {
     "command" : "nw allocate -p {p}",
     "http" : "post"
   }],
@@ -46,6 +50,11 @@
         "description": "The \"ls\" command allows you to list information about CIDR ranges."
       },
       {
+        "href": "nwgroup",
+        "name": "group",
+        "description": "The \"group\" command allows you to work with logical groups of CIDR ranges."
+      },
+      {
         "href": "nwallocate",
         "name": "allocate",
         "description": "The \"allocate\" command allows you reserve a deconflicted CIDR range."
@@ -58,11 +67,11 @@
     "section": [
       {
         "name": "name",
-        "description": "nw ls - list information about CIDR ranges."
+        "description": "ls - list information about CIDR ranges."
       },
       {
         "name": "synopsis",
-        "description": "hub ls <command>"
+        "description": "nw ls <command>"
       },
       {
         "name": "description",
@@ -102,6 +111,52 @@
   {
     "id" : "nwls-fpparameter"
   },  
+  {
+    "id": "nwgroup",
+    "name": "group",
+    "section": [
+      {
+        "name": "name",
+        "description": "group - work with logical CIDR range groups."
+      },
+      {
+        "name": "synopsis",
+        "description": "nw group <command>"
+      },
+      {
+        "name": "description",
+        "description": "The \"group\" command allows you to work with logical groups of CIDR ranges."
+      }
+    ],
+    "command": [
+      {
+        "href": "nwgroupcreate",
+        "name": "create",
+        "description": "Allows you to create a new logical group for CIDR ranges."
+      }
+    ]
+  },
+  {
+    "id": "nwgroupcreate",
+    "name": "create",
+    "section": [
+      {
+        "name": "name",
+        "description": "create - create a new logical CIDR range group."
+      },
+      {
+        "name": "synopsis",
+        "description": "nw group create '\"groupname\"'"
+      },
+      {
+        "name": "description",
+        "description": "The \"create\" command allows you to create a new named logical group of allocatable CIDR ranges."
+      }
+    ],
+    "parameter": {
+        "href": "nwgroupcreateparameter"
+    }
+  },
   {
     "id": "nwallocate",
     "name": "allocate",
