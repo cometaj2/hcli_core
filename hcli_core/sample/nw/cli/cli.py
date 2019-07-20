@@ -21,12 +21,12 @@ class CLI:
                 None
             elif self.commands[2] == "-f":
                 n = networks.Networks()
-                s = n.listFreeSubnets()
+                s = n.listFreeNetworks()
                 return io.BytesIO(s.encode("utf-8"))
             elif self.commands[2] == "-fp":
                 if len(self.commands) > 3:
                     n = networks.Networks()
-                    s = n.listFreeSubnetsWithPrefix(self.commands[3])
+                    s = n.listFreeNetworksWithPrefix(self.commands[3])
                     return io.BytesIO(s.encode("utf-8"))
 
         if self.commands[1] == "group":
@@ -41,7 +41,7 @@ class CLI:
             if self.commands[2] == "-g":
                 if len(self.commands) > 5 and self.commands[4] == "-p":
                     n = networks.Networks()
-                    s = n.allocateSubnet(self.commands[3], self.commands[5])
+                    s = n.allocateNetwork(self.commands[3], self.commands[5])
                     return io.BytesIO(s.encode("utf-8"))
 
         return None

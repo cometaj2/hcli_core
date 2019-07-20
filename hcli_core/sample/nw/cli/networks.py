@@ -18,21 +18,31 @@ class Networks:
     def serialize(self):
         return data.DAO(self).serialize()   
     
-    def listFreeSubnets(self):
+    def listFreeNetworks(self):
         subnets = ""
         for pindex, pool in enumerate(self.pools):
             subnets = subnets + "------------------------------" + "\n"
-            subnets = subnets + pool["name"] + "\n"
+            subnets = subnets + pool["name"] + " (free)" + "\n"
             for index, value in enumerate(pool["free"]):
                 subnets = subnets + value + "\n"
 
         return subnets
 
-    def listFreeSubnetsWithPrefix(self, prefix):
+    def listAllocatedNetworks(self):
         subnets = ""
         for pindex, pool in enumerate(self.pools):
             subnets = subnets + "------------------------------" + "\n"
-            subnets = subnets + pool["name"] + "\n"
+            subnets = subnets + pool["name"] + " (free)" + "\n"
+            for index, value in enumerate(pool["free"]):
+                subnets = subnets + value + "\n"
+
+        return subnets
+
+    def listFreeNetworksWithPrefix(self, prefix):
+        subnets = ""
+        for pindex, pool in enumerate(self.pools):
+            subnets = subnets + "------------------------------" + "\n"
+            subnets = subnets + pool["name"] + " (free)" + "\n"
             for index, value in enumerate(pool["free"]):
                 ip = ip_network(pool["free"][index])
 
@@ -60,7 +70,7 @@ class Networks:
         data.DAO(self).save()
         return subnets
 
-    def allocateSubnet(self, groupname, prefix):
+    def allocateNetwork(self, groupname, prefix):
         subnet = ""
         for pindex, pool in enumerate(self.pools):
             if pool["name"] == groupname.replace("'", "").replace("\"", ""):
