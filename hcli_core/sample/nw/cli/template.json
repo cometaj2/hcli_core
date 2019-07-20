@@ -18,7 +18,7 @@
     "http" : "post"
   },
   {
-    "command" : "nw allocate -p {p}",
+    "command" : "nw allocate -g {p} -p {p}",
     "http" : "post"
   }],
   "cli": 
@@ -167,14 +167,19 @@
       },
       {
         "name": "synopsis",
-        "description": "nw allocate -p '\"CIDR prefix\"'"
+        "description": "nw allocate -g '\"groupname\"' -p '\"CIDR prefix\"'"
       },
       {
         "name": "description",
-        "description": "The \"allocate\" command allows you to reserve a free CIDR range."
+        "description": "The \"allocate\" command allows you to reserve a free CIDR range in a logical pool."
       }
     ],
     "option": [
+      {
+        "href": "nwallocate-g",
+        "name": "-g",
+        "description": "name a logical pool to allocate a CIDR range against."
+      },
       {
         "href": "nwallocate-p",
         "name": "-p",
@@ -182,13 +187,16 @@
       }
     ],
     "parameter": {
-        "href": "nwallocate-pparameter"
+        "href": "nwallocateparameter"
     }
   },
+  {
+    "id" : "nwallocate-g"
+  },  
   {
     "id" : "nwallocate-p"
   },  
   { 
-    "id": "nwallocate-pparameter"
+    "id": "nwallocateparameter"
   }]
 }
