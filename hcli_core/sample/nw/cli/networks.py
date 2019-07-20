@@ -21,7 +21,8 @@ class Networks:
     def listFreeNetworks(self):
         subnets = ""
         for pindex, pool in enumerate(self.pools):
-            subnets = subnets + "------------------------------" + "\n"
+            if len(pool["free"]) > 0:
+                subnets = subnets + "------------------------------" + "\n"
             for index, value in enumerate(pool["free"]):
                 subnets = subnets + pool["name"] + " (free)      " + value + "\n"
 
@@ -30,7 +31,8 @@ class Networks:
     def listAllocatedNetworks(self):
         subnets = ""
         for pindex, pool in enumerate(self.pools):
-            subnets = subnets + "------------------------------" + "\n"
+            if len(pool["allocated"]) > 0:
+                subnets = subnets + "------------------------------" + "\n"
             for index, value in enumerate(pool["allocated"]):
                 subnets = subnets + pool["name"] + " (allocated)      " + value + "\n"
 
@@ -39,12 +41,13 @@ class Networks:
     def listFreeNetworksWithPrefix(self, prefix):
         subnets = ""
         for pindex, pool in enumerate(self.pools):
-            subnets = subnets + "------------------------------" + "\n"
             for index, value in enumerate(pool["free"]):
                 ip = ip_network(pool["free"][index])
 
                 try:
                     s = list(ip.subnets(new_prefix=int(prefix.replace("'", "").replace("\"", ""))))
+                    if len(s) > 0:
+                        subnets = subnets + "------------------------------" + "\n"
                     for i in s:
                         subnets = subnets + pool["name"] + " (free)      " + str(i) + "\n"
                 except:
@@ -53,19 +56,10 @@ class Networks:
         return subnets
 
     def createLogicalGroup(self, groupname):
-        group = ""
-        for index, value in enumerate(self.free):
-            ip = ip_network(self.free[index])
-
-            try:
-                s = list(ip.subnets(new_prefix=int(prefix.replace("'", "").replace("\"", ""))))
-                for i in s:
-                    subnets = subnets + str(i) + "\n"
-            except:
-                pass
-
+        cleanname = groupname.replace("'", "").replace("\"", "")
+        self.pools.append(pool.Pool(cleanname))
         data.DAO(self).save()
-        return subnets
+        return cleanname + "\n"
 
     def allocateNetwork(self, groupname, prefix):
         subnet = ""
