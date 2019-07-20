@@ -4,11 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [0.2.2]
+## [0.3.0]
 - Update to clarify the README.
 - Update hub to column separated output.
 - Update hub to allow listing all services registered to a namespace.
 - New sample application nw for managing network CIDR block allocation (deconflicted)
+- Fix execution matching to non-greedy to avoid parameters getting cut out in multi-parameter command lines
 
 ## [0.2.1]
 - Update documentation to showcase hfm instead of hub.

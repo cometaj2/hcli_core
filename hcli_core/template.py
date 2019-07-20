@@ -91,8 +91,8 @@ class Template:
         for index, i in enumerate(self.executable):
             ex = self.executable[index]
             command = urllib.parse.unquote(command)
-            command = re.sub(r'\'.*\'', '{p}', command)
-            command = re.sub(r'\".*\"', '{p}', command)
+            command = re.sub(r'\'.*?\'', '{p}', command)
+            command = re.sub(r'\".*?\"', '{p}', command)
             if(ex['command'] == command):
                 return ex
 

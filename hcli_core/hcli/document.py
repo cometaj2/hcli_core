@@ -101,7 +101,7 @@ class DocumentController:
                 param = None
                 href = None
                 cli = None
-
+ 
             executable = t.findExecutable(command);
             if executable != None:
                 clilink = hal.Link(href=execution.ExecutionLink(uid, command).href,
