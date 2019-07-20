@@ -41,6 +41,7 @@ class Networks:
 
     def allocateSubnet(self, prefix):
         subnet = ""
+        self.free.sort(key=lambda network: int(network.split("/")[1]), reverse=True)
         for index, value in enumerate(self.free):
             ip = ip_network(self.free[index])
 
@@ -61,6 +62,7 @@ class Networks:
                             pass
 
                     
+                    self.free.sort(key=lambda network: int(network.split("/")[1]), reverse=True)
                     data.DAO(self).save()
                     return subnet
                 else:
