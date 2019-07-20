@@ -18,7 +18,9 @@ class CLI:
 
         if self.commands[1] == "ls":
             if self.commands[2] == "-a":
-                None
+                n = networks.Networks()
+                s = n.listAllocatedNetworks()
+                return io.BytesIO(s.encode("utf-8"))
             elif self.commands[2] == "-f":
                 n = networks.Networks()
                 s = n.listFreeNetworks()

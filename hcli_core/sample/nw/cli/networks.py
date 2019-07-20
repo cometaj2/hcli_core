@@ -22,9 +22,8 @@ class Networks:
         subnets = ""
         for pindex, pool in enumerate(self.pools):
             subnets = subnets + "------------------------------" + "\n"
-            subnets = subnets + pool["name"] + " (free)" + "\n"
             for index, value in enumerate(pool["free"]):
-                subnets = subnets + value + "\n"
+                subnets = subnets + pool["name"] + " (free)      " + value + "\n"
 
         return subnets
 
@@ -32,9 +31,8 @@ class Networks:
         subnets = ""
         for pindex, pool in enumerate(self.pools):
             subnets = subnets + "------------------------------" + "\n"
-            subnets = subnets + pool["name"] + " (free)" + "\n"
-            for index, value in enumerate(pool["free"]):
-                subnets = subnets + value + "\n"
+            for index, value in enumerate(pool["allocated"]):
+                subnets = subnets + pool["name"] + " (allocated)      " + value + "\n"
 
         return subnets
 
@@ -42,14 +40,13 @@ class Networks:
         subnets = ""
         for pindex, pool in enumerate(self.pools):
             subnets = subnets + "------------------------------" + "\n"
-            subnets = subnets + pool["name"] + " (free)" + "\n"
             for index, value in enumerate(pool["free"]):
                 ip = ip_network(pool["free"][index])
 
                 try:
                     s = list(ip.subnets(new_prefix=int(prefix.replace("'", "").replace("\"", ""))))
                     for i in s:
-                        subnets = subnets + str(i) + "\n"
+                        subnets = subnets + pool["name"] + " (free)      " + str(i) + "\n"
                 except:
                     pass
 
