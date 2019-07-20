@@ -9,7 +9,7 @@ class Networks:
     def __init__(self):
         if not data.DAO().exists():
             self.pools = []
-            self.pools.append(pool.Pool("Default"))
+            self.pools.append(pool.Pool("default"))
             data.DAO(self).save()
 
         else:
@@ -20,8 +20,11 @@ class Networks:
     
     def listFreeSubnets(self):
         subnets = ""
-        for index, value in enumerate(self.free):
-            subnets = subnets + value + "\n"
+        for pindex, pool in enumerate(self.pools):
+            subnets = subnets + "------------------------------" + "\n"
+            subnets = subnets + pool["name"] + "\n"
+            for index, value in enumerate(pool["free"]):
+                subnets = subnets + value + "\n"
 
         return subnets
 
