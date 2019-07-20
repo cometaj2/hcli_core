@@ -12,3 +12,4 @@ __pycache__/
 *.so
 *~
 tests/__pycache__
+networks.json

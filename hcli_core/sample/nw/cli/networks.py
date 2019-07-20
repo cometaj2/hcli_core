@@ -1,15 +1,15 @@
 import json
 import data
+import pool
 from ipaddress import *
 
 class Networks:
-    allocated = None
-    free = None
-
+    pools = None
+    
     def __init__(self):
         if not data.DAO().exists():
-            self.allocated = []
-            self.free = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+            self.pools = []
+            self.pools.append(pool.Pool("Default"))
             data.DAO(self).save()
 
         else:
@@ -39,6 +39,21 @@ class Networks:
 
         return subnets
 
+    def createLogicalGroup(self, groupname):
+        group = ""
+        for index, value in enumerate(self.free):
+            ip = ip_network(self.free[index])
+
+            try:
+                s = list(ip.subnets(new_prefix=int(prefix.replace("'", "").replace("\"", ""))))
+                for i in s:
+                    subnets = subnets + str(i) + "\n"
+            except:
+                pass
+
+        data.DAO(self).save()
+        return subnets
+
     def allocateSubnet(self, prefix):
         subnet = ""
         self.free.sort(key=lambda network: int(network.split("/")[1]), reverse=True)
@@ -61,7 +76,6 @@ class Networks:
                         except:
                             pass
 
-                    
                     self.free.sort(key=lambda network: int(network.split("/")[1]), reverse=True)
                     data.DAO(self).save()
                     return subnet
