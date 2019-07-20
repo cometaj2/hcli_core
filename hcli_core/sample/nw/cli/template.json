@@ -22,6 +22,10 @@
     "http" : "post"
   },
   {
+    "command" : "nw group rm {p}",
+    "http" : "post"
+  },
+  {
     "command" : "nw allocate -g {p} -p {p}",
     "http" : "post"
   }],
@@ -142,6 +146,11 @@
         "href": "nwgroupmv",
         "name": "mv",
         "description": "Allows you to rename a new logical group."
+      },
+      {
+        "href": "nwgrouprm",
+        "name": "rm",
+        "description": "Allows you to remove a logical group."
       }
     ]
   },
@@ -166,6 +175,9 @@
         "href": "nwgroupcreateparameter"
     }
   },
+  { 
+    "id" : "nwgroupcreateparameter"
+  },
   {
     "id": "nwgroupmv",
     "name": "mv",
@@ -184,8 +196,35 @@
       }
     ],
     "parameter": {
-        "href": "nwgroupcreateparameter"
+        "href": "nwgroupmvparameter"
     }
+  },
+  { 
+    "id" : "nwgroupmvparameter"
+  },
+  {
+    "id": "nwgrouprm",
+    "name": "rm",
+    "section": [
+      {
+        "name": "name",
+        "description": "rm - remove a logical group."
+      },
+      {
+        "name": "synopsis",
+        "description": "nw group rm '\"groupname\"'"
+      },
+      {
+        "name": "description",
+        "description": "The \"rm\" command removes an existing logical group of allocatable CIDR ranges."
+      }
+    ],
+    "parameter": {
+        "href": "nwgrouprmparameter"
+    }
+  },
+  {
+    "id" : "nwgrouprmparameter"
   },
   {
     "id": "nwallocate",
