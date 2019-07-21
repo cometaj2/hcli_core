@@ -54,5 +54,9 @@ class CLI:
                     n = networks.Networks()
                     s = n.allocateNetwork(self.commands[3], self.commands[5])
                     return io.BytesIO(s.encode("utf-8"))
+                if len(self.commands) > 5 and self.commands[4] == "-n":
+                    n = networks.Networks()
+                    s = n.allocateSpecificNetwork(self.commands[3], self.commands[5])
+                    return io.BytesIO(s.encode("utf-8"))
 
         return None

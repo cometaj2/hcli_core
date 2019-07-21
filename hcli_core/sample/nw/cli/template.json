@@ -28,6 +28,10 @@
   {
     "command" : "nw allocate -g {p} -p {p}",
     "http" : "post"
+  },
+  { 
+    "command" : "nw allocate -g {p} -n {p}",
+    "http" : "post"
   }],
   "cli": 
   [{
@@ -236,7 +240,7 @@
       },
       {
         "name": "synopsis",
-        "description": "nw allocate -g '\"groupname\"' -p '\"CIDR prefix\"'"
+        "description": "nw allocate -g '\"groupname\"' (-p '\"CIDR prefix\"' | -n '\"ip\/prefix\"')"
       },
       {
         "name": "description",
@@ -252,7 +256,12 @@
       {
         "href": "nwallocate-p",
         "name": "-p",
-        "description": "allocate a CIDR range with a given prefix."
+        "description": "allocate a semi-random CIDR range with a given prefix."
+      },
+      {
+        "href": "nwallocate-n",
+        "name": "-p",
+        "description": "allocate a specific provided CIDR range with a given prefix."
       }
     ],
     "parameter": {
@@ -264,6 +273,9 @@
   },  
   {
     "id" : "nwallocate-p"
+  },  
+  {
+    "id" : "nwallocate-n"
   },  
   { 
     "id": "nwallocateparameter"
