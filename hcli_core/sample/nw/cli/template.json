@@ -32,6 +32,10 @@
   { 
     "command" : "nw allocate -g {p} -n {p}",
     "http" : "post"
+  },
+  {
+    "command" : "nw deallocate -g {p} -n {p}",
+    "http" : "post"
   }],
   "cli": 
   [{
@@ -70,6 +74,11 @@
         "href": "nwallocate",
         "name": "allocate",
         "description": "The \"allocate\" command allows you reserve a deconflicted CIDR range."
+      },
+      {
+        "href": "nwdeallocate",
+        "name": "deallocate",
+        "description": "The \"deallocate\" command allows you to deallocate an allocated CIDR range, restoring the range to the free pool."
       }
     ]
   },
@@ -279,5 +288,48 @@
   },  
   { 
     "id": "nwallocateparameter"
-  }]
+  },
+  {
+    "id": "nwdeallocate",
+    "name": "deallocate",
+    "section": [
+      {
+        "name": "name",
+        "description": "nw deallocate - deallocate a reserved CIDR range, restoring it to the free pool."
+      },
+      {
+        "name": "synopsis",
+        "description": "nw deallocate -g '\"groupname\"' -n '\"ip\/prefix\"')"
+      },
+      {
+        "name": "description",
+        "description": "The \"deallocate\" command allows you to deallocate reserved CIDR range. The ip and prefix must match an allocated range exactly."
+      }
+    ],
+    "option": [
+      {
+        "href": "nwdeallocate-g",
+        "name": "-g",
+        "description": "name a logical pool to deallocate a CIDR range from."
+      },
+      {
+        "href": "nwdeallocate-n",
+        "name": "-p",
+        "description": "deallocate a specific provided CIDR range with a given prefix."
+      }
+    ],
+    "parameter": {
+        "href": "nwdeallocateparameter"
+    }
+  },
+  {
+    "id" : "nwdeallocate-g"
+  },
+  {
+    "id" : "nwdeallocate-n"
+  },
+  {
+    "id": "nwdeallocateparameter"
+  }
+  ]
 }

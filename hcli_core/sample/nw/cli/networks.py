@@ -162,3 +162,39 @@ class Networks:
                         pass
 
         return subnet    
+
+    # deallocate a specific CIDR range from a logical group if the provided network matches exactly
+    def deallocateSpecificNetwork(self, groupname, network):
+        self.compactFreeNetworks(groupname)
+        subnet = ""
+        network = network.replace("'", "").replace("\"", "")
+        prefix = network.split("/")[1]
+        for pindex, pool in enumerate(self.pools):
+            if pool["name"] == groupname.replace("'", "").replace("\"", ""):
+                for index, value in enumerate(pool["allocated"]):
+                    ip = pool["allocated"][index]
+                    try:
+                        if network == ip:
+                            pool["allocated"].remove(network)
+                            pool["free"].append(network)
+                            self.compactFreeNetworks(groupname) 
+                            data.DAO(self).save()
+                            subnet = subnet + network + "\n"
+                            return subnet
+
+                    except:
+                        pass
+
+        return subnet
+
+    def compactFreeNetworks(self, groupname):
+        new = []
+        for pindex, pool in enumerate(self.pools):
+            if pool["name"] == groupname.replace("'", "").replace("\"", ""):
+                for index, value in enumerate(pool["free"]):
+                    network = ip_network(pool["free"][index])
+                    new.append(network)
+                collapsed = collapse_addresses(new)
+                pool["free"] = [str(network) for network in collapsed]
+                pool["free"].sort(key=lambda network: int(network.split("/")[1]), reverse=True)
+                return
