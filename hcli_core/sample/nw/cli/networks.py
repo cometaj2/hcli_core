@@ -196,6 +196,62 @@ class Networks:
 
         return subnet
 
+    # add an additional free CIDR block to the pool if it doesn't overlap with existing free or allocated CIDRs
+    def addSpecificFreeNetwork(self, groupname, network):
+        network = network.replace("'", "").replace("\"", "")
+        ipnetwork = ip_network(network)
+        prefix = network.split("/")[1]
+        for pindex, pool in enumerate(self.pools):
+            if pool["name"] == groupname.replace("'", "").replace("\"", ""):
+                for index, value in enumerate(pool["free"]):
+                    ipnetworks = ip_network(pool["free"][index])
+                    if ipnetwork.overlaps(ipnetworks):
+                        return ""
+                for jindex, jvalue in enumerate(pool["allocated"]):
+                    jipnetworks = ip_network(pool["allocated"][jindex])
+                    if ipnetwork.overlaps(jipnetworks):
+                        return ""
+
+        pool["free"].append(network)
+        self.compactFreeNetworks(groupname)
+        data.DAO(self).save()
+        return network + "\n"
+
+    def removeSpecificFreeNetwork(self, groupname, network):
+        subnet = ""
+        network = network.replace("'", "").replace("\"", "")
+        ipnetwork = ip_network(network)
+        prefix = network.split("/")[1]
+        for pindex, pool in enumerate(self.pools):
+            if pool["name"] == groupname.replace("'", "").replace("\"", ""):
+                for index, value in enumerate(pool["free"]):
+                    ip = ip_network(pool["free"][index])
+                    try:
+                        s = list(ip.subnets(new_prefix=int(prefix)))
+                        if len(s) != 0:
+                            if ipnetwork in s:
+                                pool["free"].remove(value)
+                                s.remove(ipnetwork)
+                                t = collapse_addresses(s)
+                                for i in t:
+                                    try:
+                                        if i not in pool["free"]:
+                                            pool["free"].append(str(i))
+                                    except:
+                                        pass
+
+                                pool["free"].sort(key=lambda network: int(network.split("/")[1]), reverse=True)
+                                data.DAO(self).save()
+                                subnet = subnet + str(ipnetwork) + "\n"
+                                return subnet
+
+                        else:
+                            return subnet
+                    except:
+                        pass
+
+        return subnet
+
     def compactFreeNetworks(self, groupname):
         new = []
         for pindex, pool in enumerate(self.pools):

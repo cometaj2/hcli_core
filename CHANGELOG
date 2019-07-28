@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Update nw sample app to include network allocation for a specific logical group & network.
 - Update nw sample app to include network deallocation for a specific logical group & network
 - Update nw sample app to include network group listing
+- Update nw sample app to include adding and removing CIDR range in the free pool for a given logical group.
 - Fix empty or non-conformant json error on jsonf go default hcli app
 
 ## [0.3.0]

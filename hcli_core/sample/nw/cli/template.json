@@ -40,6 +40,14 @@
   {
     "command" : "nw deallocate -g {p} -n {p}",
     "http" : "post"
+  },
+  {
+    "command" : "nw allocate -fg {p} -n {p}",
+    "http" : "post"
+  },
+  {
+    "command" : "nw deallocate -fg {p} -n {p}",
+    "http" : "post"
   }],
   "cli": 
   [{
@@ -276,7 +284,7 @@
       },
       {
         "name": "synopsis",
-        "description": "nw allocate -g '\"groupname\"' (-p '\"CIDR prefix\"' | -n '\"ip\/prefix\"')"
+        "description": "nw allocate [-g | -fg] '\"groupname\"' (-p '\"CIDR prefix\"' | -n '\"ip\/prefix\"')"
       },
       {
         "name": "description",
@@ -298,6 +306,11 @@
         "href": "nwallocate-n",
         "name": "-p",
         "description": "allocate a specific provided CIDR range with a given prefix."
+      },
+      {
+        "href": "nwallocate-fg",
+        "name": "-fg",
+        "description": "add a specific provided CIDR range to the free pool of allocatable CIDR ranges."
       }
     ],
     "parameter": {
@@ -312,6 +325,9 @@
   },  
   {
     "id" : "nwallocate-n"
+  },  
+  {
+    "id" : "nwallocate-fg"
   },  
   { 
     "id": "nwallocateparameter"
@@ -343,6 +359,11 @@
         "href": "nwdeallocate-n",
         "name": "-p",
         "description": "deallocate a specific provided CIDR range with a given prefix."
+      },
+      {
+        "href": "nwdeallocate-fg",
+        "name": "-fg",
+        "description": "remove a specific provided CIDR range from the free pool of allocatable CIDR ranges."
       }
     ],
     "parameter": {
@@ -354,6 +375,9 @@
   },
   {
     "id" : "nwdeallocate-n"
+  },
+  {
+    "id" : "nwdeallocate-fg"
   },
   {
     "id": "nwdeallocateparameter"
