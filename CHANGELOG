@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Update README documentation to clarify what HCLI Core does
 - Update nw sample app to include network allocation for a specific logical group & network.
 - Update nw sample app to include network deallocation for a specific logical group & network
+- Fix empty or non-conformat json error on jsonf go default hcli app
 
 ## [0.3.0]
 - Update to clarify the README.
