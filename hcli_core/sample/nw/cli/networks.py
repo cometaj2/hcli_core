@@ -9,8 +9,9 @@ class Networks:
     def __init__(self):
         if not data.DAO().exists():
             self.pools = []
-            self.pools.append(pool.Pool("default"))
+            self.pools.append(pool.Pool("default", ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]))
             data.DAO(self).save()
+            data.DAO().load(self)
 
         else:
             data.DAO().load(self)
@@ -87,6 +88,14 @@ class Networks:
                 return cleanname + "\n"
 
         return ""
+
+    # list named group from the available pools
+    def listLogicalGroup(self):
+        groups = ""
+        for pindex, pool in enumerate(self.pools):
+            groups = groups + pool["name"] + "\n"
+
+        return groups
 
     # Allocate the next available network that matches the provided previx. gives precedence to smaller networks.
     def allocateNetwork(self, groupname, prefix):

@@ -47,6 +47,10 @@ class CLI:
                     n = networks.Networks()
                     s = n.removeLogicalGroup(self.commands[3])
                     return io.BytesIO(s.encode("utf-8"))
+            if self.commands[2] == "ls":
+                n = networks.Networks()
+                s = n.listLogicalGroup()
+                return io.BytesIO(s.encode("utf-8"))
 
         if self.commands[1] == "allocate":
             if self.commands[2] == "-g":

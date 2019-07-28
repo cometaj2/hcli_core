@@ -26,6 +26,10 @@
     "http" : "post"
   },
   {
+    "command" : "nw group ls",
+    "http" : "get"
+  },
+  {
     "command" : "nw allocate -g {p} -p {p}",
     "http" : "post"
   },
@@ -164,6 +168,11 @@
         "href": "nwgrouprm",
         "name": "rm",
         "description": "Allows you to remove a logical group."
+      },
+      {
+        "href": "nwgroupls",
+        "name": "ls",
+        "description": "Allows you to list logical group names."
       }
     ]
   },
@@ -238,6 +247,24 @@
   },
   {
     "id" : "nwgrouprmparameter"
+  },
+  {
+    "id": "nwgroupls",
+    "name": "ls",
+    "section": [
+      {
+        "name": "name",
+        "description": "ls - list logical group names."
+      },
+      {
+        "name": "synopsis",
+        "description": "nw group ls"
+      },
+      {
+        "name": "description",
+        "description": "The \"ls\" command allows you to list all the named logical group of allocatable CIDR ranges."
+      }
+    ]
   },
   {
     "id": "nwallocate",
