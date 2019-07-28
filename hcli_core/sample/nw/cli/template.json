@@ -48,7 +48,7 @@
     "section": [
       {
         "name": "name",
-        "description": "nw - a private network management service"
+        "description": "nw - a network management service"
       },
       {
         "name": "synopsis",
@@ -56,7 +56,7 @@
       },
       {
         "name": "description",
-        "description": "The \"nw\" CLI allows you to manage private network manipulation, such as allocation, resizing, and listing of currently allocated CIDR ranges. The service guarantees that allocated CIDR ranges do not overlap to help avoid conflicts."
+        "description": "The \"nw\" CLI allows you to manage networks. The service can perform allocation, and listing of currently allocated CIDR ranges and guarantees that allocated CIDR ranges do not overlap to help avoid conflicts. Note that the CLI returns an empty result if an operation could not be performed."
       },
       {
         "name": "examples",
