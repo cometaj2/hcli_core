@@ -14,7 +14,7 @@ class Option:
 
     def __init__(self, option=None):
         if option != None:
-            hcli_version = "1.0"
+            self.hcli_version = "1.0"
             self.name = option['name']
             self.description = option['description']
 

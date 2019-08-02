@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.4.1]
+- Fix incorrect -n flag name on nw sample app
+- Fix missing hcli_version on HCLI command, option, execution and parameter per HCLI 1.0 spec
+
 ## [0.4.0]
 - Update README documentation to clarify what HCLI Core does
 - Update nw sample app to include network allocation for a specific logical group & network.

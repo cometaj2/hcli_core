@@ -14,7 +14,7 @@ class Command:
 
     def __init__(self, command=None):
         if command != None:
-            hcli_version = "1.0"
+            self.hcli_version = "1.0"
             self.name = command['name']
             self.description = command['description']
 

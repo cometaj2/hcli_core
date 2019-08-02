@@ -15,7 +15,7 @@ class Execution:
 
     def __init__(self, executable=None):
         if executable != None:
-            hcli_version = "1.0"
+            self.hcli_version = "1.0"
             self.command = executable['command']
             self.http = executable['http']
 

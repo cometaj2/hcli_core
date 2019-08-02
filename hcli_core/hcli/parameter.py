@@ -11,7 +11,7 @@ class Parameter:
     hcli_version = None
 
     def __init__(self):
-        hcli_version = "1.0"
+        self.hcli_version = "1.0"
 
 class ParameterLink:
     href = "/hcli/cli/__pdef"
