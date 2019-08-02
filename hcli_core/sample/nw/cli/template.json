@@ -194,7 +194,7 @@
       },
       {
         "name": "synopsis",
-        "description": "nw group create '\"groupname\"'"
+        "description": "nw group create 'groupname'"
       },
       {
         "name": "description",
@@ -218,7 +218,7 @@
       },
       {
         "name": "synopsis",
-        "description": "nw group mv '\"oldname\"' '\"newname\"'"
+        "description": "nw group mv 'oldname' 'newname'"
       },
       {
         "name": "description",
@@ -242,7 +242,7 @@
       },
       {
         "name": "synopsis",
-        "description": "nw group rm '\"groupname\"'"
+        "description": "nw group rm 'groupname'"
       },
       {
         "name": "description",
@@ -284,7 +284,7 @@
       },
       {
         "name": "synopsis",
-        "description": "nw allocate [-g | -fg] '\"groupname\"' (-p '\"CIDR prefix\"' | -n '\"ip\/prefix\"')"
+        "description": "nw allocate [-g | -fg] 'groupname' (-p 'CIDR prefix' | -n 'ip\/prefix')"
       },
       {
         "name": "description",
@@ -342,7 +342,7 @@
       },
       {
         "name": "synopsis",
-        "description": "nw deallocate -g '\"groupname\"' -n '\"ip\/prefix\"')"
+        "description": "nw deallocate -g 'groupname' -n 'ip\/prefix')"
       },
       {
         "name": "description",
@@ -357,7 +357,7 @@
       },
       {
         "href": "nwdeallocate-n",
-        "name": "-p",
+        "name": "-n",
         "description": "deallocate a specific provided CIDR range with a given prefix."
       },
       {

@@ -21,8 +21,8 @@ def test_function():
 
     export PATH=$PATH:~/.huckle/bin
     echo '{"hello":"world"}' > hello.json
-    cat hello.json | hfm cp -l \\"'./hello.json'\\"
-    hfm cp -r \\"'hello.json'\\" > hello1.json
+    cat hello.json | hfm cp -l ./hello.json
+    hfm cp -r hello.json > hello1.json
     kill $(ps aux | grep '[g]unicorn' | awk '{print $2}')
     cat hello1.json
     rm hello.json
