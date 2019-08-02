@@ -97,3 +97,16 @@ class Template:
                 return ex
 
         return None
+
+    # We convert the current command to an executable-like format
+    def displayParameter(self, command):
+        for index, i in enumerate(self.executable):
+            ex = self.executable[index]
+            command = urllib.parse.unquote(command)
+            command = re.sub(r'\'.*?\'', '{p}', command)
+            command = re.sub(r'\".*?\"', '{p}', command)
+            replaced = ex['command'].replace(command, '').lstrip()
+            if(replaced.find('{p}') == 0):
+                return True
+
+        return False

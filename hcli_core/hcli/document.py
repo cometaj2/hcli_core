@@ -88,25 +88,27 @@ class DocumentController:
                     href = None
                     name = None
                     link = None
+
+            if(t.displayParameter(command)):
+                param = t.findParameterForId(uid)
+                if param != None:
+                    href = param['href']
  
-            param = t.findParameterForId(uid)
-            if param != None:
-                href = param['href']
+                    clilink = hal.Link(href=parameter.ParameterLink(uid, command, href).href,
+                                       profile=parameter.ParameterLink().profile)
  
-                clilink = hal.Link(href=parameter.ParameterLink(uid, command, href).href,
-                                   profile=parameter.ParameterLink().profile)
+                    self.resource.addLink("cli", clilink)
  
-                self.resource.addLink("cli", clilink)
- 
-                param = None
-                href = None
-                cli = None
+                    param = None
+                    href = None
+                    cli = None
  
             executable = t.findExecutable(command);
             if executable != None:
                 clilink = hal.Link(href=execution.ExecutionLink(uid, command).href,
                                    profile=execution.ExecutionLink().profile)
                 self.resource.addLink("cli", clilink)
+
 
     def serialize(self):
         return self.resource.serialize()

@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.0.0]
+- Change to only present param links when a parameter would be required for a command or option
+
 ## [0.4.1]
 - Fix incorrect -n flag name on nw sample app
 - Fix missing hcli_version on HCLI command, option, execution and parameter per HCLI 1.0 spec
