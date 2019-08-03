@@ -62,6 +62,10 @@ class Networks:
     # create a new logical group (pool) to allocate networks from
     def createLogicalGroup(self, groupname):
         cleanname = groupname.replace("'", "").replace("\"", "")
+        for pindex, p in enumerate(self.pools):
+            if p["name"] == cleanname:
+                return ""
+
         self.pools.append(pool.Pool(cleanname))
         data.DAO(self).save()
         return cleanname + "\n"
@@ -70,9 +74,14 @@ class Networks:
     def renameLogicalGroup(self, oldname, newname):
         cleanold = oldname.replace("'", "").replace("\"", "")
         cleannew = newname.replace("'", "").replace("\"", "")
-        for pindex, pool in enumerate(self.pools):
-            if pool["name"] == cleanold:
-                pool["name"] = cleannew
+
+        for pindex, p in enumerate(self.pools):
+            if p["name"] == cleannew:
+                return ""
+
+        for pindex, p in enumerate(self.pools):
+            if p["name"] == cleanold:
+                p["name"] = cleannew
                 data.DAO(self).save()
                 return cleannew + "\n"
 

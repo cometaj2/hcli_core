@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.4.3]
+- Disallow nw group create with the same name multiple times
+- Disallow nw group mv landing on a new name that already exists
+
 ## [0.4.2]
 - Change to only present param links when a parameter would be required for a command or option
 - Fix broken deallocate option -n in nw sample app
