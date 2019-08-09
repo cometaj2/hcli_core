@@ -212,8 +212,6 @@ class Networks:
         prefix = network.split("/")[1]
         for pindex, pool in enumerate(self.pools):
             if pool["name"] == groupname.replace("'", "").replace("\"", ""):
-
-                print(groupname)
                 for index, value in enumerate(pool["free"]):
                     ipnetworks = ip_network(pool["free"][index])
                     if ipnetwork.overlaps(ipnetworks):
