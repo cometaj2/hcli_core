@@ -212,6 +212,8 @@ class Networks:
         prefix = network.split("/")[1]
         for pindex, pool in enumerate(self.pools):
             if pool["name"] == groupname.replace("'", "").replace("\"", ""):
+
+                print(groupname)
                 for index, value in enumerate(pool["free"]):
                     ipnetworks = ip_network(pool["free"][index])
                     if ipnetwork.overlaps(ipnetworks):
@@ -221,10 +223,12 @@ class Networks:
                     if ipnetwork.overlaps(jipnetworks):
                         return ""
 
-        pool["free"].append(network)
-        self.compactFreeNetworks(groupname)
-        data.DAO(self).save()
-        return network + "\n"
+                pool["free"].append(network)
+                self.compactFreeNetworks(groupname)
+                data.DAO(self).save()
+                return network + "\n"
+
+        return ""
 
     def removeSpecificFreeNetwork(self, groupname, network):
         subnet = ""
