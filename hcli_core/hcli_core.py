@@ -13,10 +13,7 @@ from hcli import finalexecution
 from hcli import parameter
 import config
 
-class HCLI:
-    connector = None
-    
-    def __init__(self, plugin_path=None):
+def connector(plugin_path=None):
 
         # We load the HCLI template in memory to reduce disk io
         config.set_plugin_path(plugin_path)
@@ -33,4 +30,4 @@ class HCLI:
         server.add_route(finalexecution.FinalPostExecutionController.route, api.FinalExecutionApi())
         server.add_route(parameter.ParameterController.route, api.ParameterApi())
 
-        self.connector = server
+        return server
