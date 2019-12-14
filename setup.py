@@ -10,7 +10,7 @@ from os import path
 from hcli_core import package
 
 if sys.argv[-1] == 'publish':
-    branch = subprocess.check_output('git rev-parse --abbrev-ref HEAD', shell=True).strip()
+    branch = subprocess.check_output('git rev-parse --abbrev-ref HEAD', shell=True).strip().decode("utf-8") 
     if branch != "master":
         sys.exit("publishing from a branch other than master is disallowed.")
     os.system("rm -rf dist")
@@ -22,7 +22,7 @@ if sys.argv[-1] == 'publish':
     sys.exit()
 
 if sys.argv[-1] == 'tag':
-    branch = subprocess.check_output('git rev-parse --abbrev-ref HEAD', shell=True).strip()
+    branch = subprocess.check_output('git rev-parse --abbrev-ref HEAD', shell=True).strip().decode("utf-8") 
     if branch != "master":
         sys.exit("tagging from a branch other than master is disallowed.")
     os.system("git tag -a %s -m 'version %s'" % ("hcli_core-" + package.__version__, "hcli_core-" + package.__version__))
