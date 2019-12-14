@@ -49,19 +49,20 @@ Install hcli_core via pip. You can launch gunicorn from anywhere by using "hcli_
 
     $ hcli_core help
 
-    $ gunicorn --workers=5 --threads=2 -b 127.0.0.1:8000 --chdir \`hcli_core path\` "hcli_core:HCLI().connector"
+    $ gunicorn --workers=5 --threads=2 -b 127.0.0.1:8000 --chdir \`hcli_core path\` "hcli_core:connector()"
 
 If you want to load a sample HCLI other than the default, you can try loading the sample hfm (hypertext file manager) HCLI.
 A folder path to any 3rd party HCLI can be provided in the same way:
 
-    $ gunicorn --workers=5 --threads=2 -b 127.0.0.1:8000 --chdir \`hcli_core path\` "hcli_core:HCLI(\\"\`hcli_core sample hfm\`\\").connector"
+    $ gunicorn --workers=5 --threads=2 -b 127.0.0.1:8000 --chdir \`hcli_core path\` "hcli_core:connector(\\"\`hcli_core sample hfm\`\\")"
 
 Curl your new service to understand what is being exposed. The HCLI root URL, to use with an HCLI client, is the cli link relation:
 
     $ curl http://127.0.0.1:8000
 
 Install an HCLI client, for example Huckle (https://github.com/cometaj2/huckle), and access the default sample jsonf CLI
-exposed by HCLI Core (you may need to restart your terminal to be able to use jsonf by name directly):
+exposed by HCLI Core (you may need to restart your terminal to be able to use jsonf by name directly; otherwise you can attempt
+to source ~/.bash_profile or ~/.bashrc):
 
     $ pip install huckle
 
