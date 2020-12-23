@@ -37,7 +37,7 @@ Help shape HCLI and it's ecosystem on the discussion list [5] or by raising issu
 Installation
 ------------
 
-hcli_core requires Python 3.5-3.7 and pip.
+hcli_core requires Python 3.5-3.9 and pip.
 
 You'll need an WSGI compliant application server to run hcli_core. For example, you can use Green Unicorn (https://gunicorn.org/)
 
@@ -54,7 +54,7 @@ Install hcli_core via pip. You can launch gunicorn from anywhere by using "hcli_
 If you want to load a sample HCLI other than the default, you can try loading the sample hfm (hypertext file manager) HCLI.
 A folder path to any 3rd party HCLI can be provided in the same way:
 
-    $ gunicorn --workers=5 --threads=2 -b 127.0.0.1:8000 --chdir \`hcli_core path\` "hcli_core:connector(\\"\`hcli_core sample hfm\`\\")"
+    $ gunicorn --workers=5 --threads=2 -b 127.0.0.1:8000 --chdir \`hcli_core path\` "hcli_core:connector("\"\"\`hcli_core sample hfm\`"\"\")"
 
 Curl your new service to understand what is being exposed. The HCLI root URL, to use with an HCLI client, is the cli link relation:
 
@@ -79,7 +79,7 @@ Bugs
 
 - No good handling of control over request and response in cli code which can lead to exceptions and empty response client side.
 
-.. |build status| image:: https://travis-ci.org/cometaj2/hcli_core.svg?branch=master
-.. _build status: https://travis-ci.org/cometaj2/hcli_core
+.. |build status| image:: https://circleci.com/gh/cometaj2/hcli_core.svg?style=shield
+.. _build status: https://circleci.com/gh/cometaj2/huckle
 .. |pypi| image:: https://badge.fury.io/py/hcli-core.svg
 .. _pypi: https://badge.fury.io/py/hcli-core

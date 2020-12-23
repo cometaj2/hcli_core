@@ -7,4 +7,14 @@ source ~/bin/activate
 deactivate
 
 # start server from hcli_core (call server.py's server variable)
-gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:HCLI().connector"
+gunicorn  --workers=5  --threads=2 -b 0.0.0.0:8000 --chdir  `hcli_core path` "hcli_core:connector(\"`hcli_core sample hfm`\")"
+
+# certbot hcli.io certificate renewal via DNS challenge
+certbot -d hcli.io --manual --preferred-challenges dns certonly
+
+# fullchain and private key location
+certificate and chain have been saved at: /etc/letsencrypt/live/hcli.io/fullchain.pem
+Your key file has been saved at:          /etc/letsencrypt/live/hcli.io/privkey.pem
+
+# gunicorn launch with SSL certificate
+gunicorn --keyfile=/home/user/etc/letsencrypt/hcli.io/privkey.pem --certfile=/home/user/etc/letsencrypt/hcli.io/fullchain.pem --workers=5 --threads=2 -b 0.0.0.0:8000 --chdir `hcli_core path` "hcli_core:connector(\"`hcli_core sample hptt`\")"

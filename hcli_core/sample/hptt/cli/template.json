@@ -1,0 +1,240 @@
+{
+  "hcliTemplateVersion": "1.0",
+  "executable" : [
+  {
+    "command" : "hptt channel create {p}",
+    "http" : "post"
+  },
+  {
+    "command" : "hptt channel mv {p} {p}",
+    "http" : "post"
+  },
+  {
+    "command" : "hptt channel rm {p}",
+    "http" : "post"
+  },
+  {
+    "command" : "hptt channel ls",
+    "http" : "get"
+  },
+  {
+    "command" : "hptt channel stream -l {p}",
+    "http" : "post"
+  },
+  {
+    "command" : "hptt channel stream -r {p}",
+    "http" : "get"
+  }],
+  "cli": 
+  [{
+    "id": "hptt",
+    "name": "hptt",
+    "section": [
+      {
+        "name": "name",
+        "description": "hptt - an HCLI Push To Talk (PTT) channel management service"
+      },
+      {
+        "name": "synopsis",
+        "description": "hptt <command>"
+      },
+      {
+        "name": "description",
+        "description": "The \"hptt\" CLI allows you to manage radio Push To Talk (PTT) half-duplex channels. The service can act as an anchor for joining disjointed radio networks through a radio gateway by allowing them to communicate through intermediary PTT channels used to facilitate audio input/output streams. "
+      },
+      {
+        "name": "examples",
+        "description": "N/A"
+      }
+    ],
+    "command": [
+      {
+        "href": "hpttchannel",
+        "name": "channel",
+        "description": "The \"channel\" command allows you to work with logical PTT channels."
+      }
+    ]
+  },
+  {
+    "id": "hpttchannel",
+    "name": "channel",
+    "section": [
+      {
+        "name": "name",
+        "description": "channel - work with logical PTT channels."
+      },
+      {
+        "name": "synopsis",
+        "description": "hptt channel <command>"
+      },
+      {
+        "name": "description",
+        "description": "The \"channel\" command allows you to work with logical PTT channels."
+      }
+    ],
+    "command": [
+      {
+        "href": "hpttchannelcreate",
+        "name": "create",
+        "description": "Allows you to create a new logical hal-duplex PTT channel of managing radio network audio input/output streams."
+      },
+      {
+        "href": "hpttchannelmv",
+        "name": "mv",
+        "description": "Allows you to rename a logical PTT channel."
+      },
+      {
+        "href": "hpttchannelrm",
+        "name": "rm",
+        "description": "Allows you to remove a logical PTT channel."
+      },
+      {
+        "href": "hpttchannells",
+        "name": "ls",
+        "description": "Allows you to list all logical channel names."
+      },
+      {
+        "href": "hpttchannelstream",
+        "name": "stream",
+        "description": "Allows you to stream to and from a named PTT channel."
+      }
+    ]
+  },
+  {
+    "id": "hpttchannelcreate",
+    "name": "create",
+    "section": [
+      {
+        "name": "name",
+        "description": "create - create a new logical PTT channel."
+      },
+      {
+        "name": "synopsis",
+        "description": "hptt channel create 'channelname'"
+      },
+      {
+        "name": "description",
+        "description": "The \"create\" command allows you to create a new, uniquely named, logical PTT channel."
+      }
+    ],
+    "parameter": {
+        "href": "hpttchannelcreateparameter"
+    }
+  },
+  { 
+    "id" : "hpttchannelcreateparameter"
+  },
+  {
+    "id": "hpttchannelmv",
+    "name": "mv",
+    "section": [
+      {
+        "name": "name",
+        "description": "mv - rename a logical channel."
+      },
+      {
+        "name": "synopsis",
+        "description": "hptt channel mv 'oldname' 'newname'"
+      },
+      {
+        "name": "description",
+        "description": "The \"mv\" command renames an existing logical PTT channel."
+      }
+    ],
+    "parameter": {
+        "href": "hpttchannelmvparameter"
+    }
+  },
+  { 
+    "id" : "hpttchannelmvparameter"
+  },
+  {
+    "id": "hpttchannelrm",
+    "name": "rm",
+    "section": [
+      {
+        "name": "name",
+        "description": "rm - remove a logical channel."
+      },
+      {
+        "name": "synopsis",
+        "description": "hptt channel rm 'channelname'"
+      },
+      {
+        "name": "description",
+        "description": "The \"rm\" command removes an existing logical PTT channel."
+      }
+    ],
+    "parameter": {
+        "href": "hpttchannelrmparameter"
+    }
+  },
+  {
+    "id" : "hpttchannelrmparameter"
+  },
+  {
+    "id": "hpttchannells",
+    "name": "ls",
+    "section": [
+      {
+        "name": "name",
+        "description": "ls - list logical channel names."
+      },
+      {
+        "name": "synopsis",
+        "description": "hptt channel ls"
+      },
+      {
+        "name": "description",
+        "description": "The \"ls\" command allows you to list all the named logical PTT channels."
+      }
+    ]
+  },
+  {
+    "id": "hpttchannelstream",
+    "name": "stream",
+    "section": [
+      {
+        "name": "name",
+        "description": "hptt channel stream - stream to and from a named half-duplex PTT channel"
+      },
+      {
+        "name": "synopsis",
+        "description": "hptt channel stream -l | -r 'channel name'"
+      },
+      {
+        "name": "description",
+        "description": "The \"stream\" command allows you to stream to or stream from the remote service against channels you have permissions to stream to and from."
+      },
+      {
+        "name": "examples",
+        "description": "cat test.wav | pv -s 3846487146 | hptt channel stream -l 'default'\\n\\nhptt channel stream -r 'default' | pv -s 41115648 > /dev/audio"
+      }
+    ],
+    "option": [
+      {
+        "href": "hpttchannelstream-l",
+        "name": "-l",
+        "description": "Allows you to stream from a local input stream (e.g. STDIN), to a named channel."
+      },
+      {
+        "href": "hpttchannelstream-r",
+        "name": "-r",
+        "description": "Allows you to stream from a named channel, to a local output stream (e.g. STDOUT)."
+      }
+    ],
+    "parameter" : {
+      "href": "hpttchannelstreamparameter"
+    }
+  },
+  {
+    "id": "hpttchannelstream-l"
+  },
+  {
+    "id": "hpttchannelstream-r"
+  },
+  {
+    "id": "hpttchannelstreamparameter"
+  }
+  ]
+}

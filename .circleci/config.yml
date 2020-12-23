@@ -1,0 +1,42 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@0.2.1
+
+workflows:
+  main:
+    jobs:
+      - test:
+          name: "Python 3.8"
+          v: "3.9"
+      - test:
+          name: "Python 3.8"
+          v: "3.8"
+      - test:
+          name: "Python 3.7"
+          v: "3.7"
+      - test:
+          name: "Python 3.6"
+          v: "3.6"
+      - test:
+          name: "Python 3.5"
+          v: "3.5"
+
+jobs:
+  test:
+    parameters:
+      v:
+        type: string
+        default: "latest"
+    docker:
+      - image: circleci/python:<< parameters.v >>
+    steps: &steps
+      - checkout
+      - run: |
+          pip install --upgrade pip
+          pip install --upgrade pytest
+          pip install --upgrade --force-reinstall setuptools
+          pip install gunicorn==19.9.0
+          pip install huckle==2.5.7
+          pip install -e .
+          python -m pytest -v

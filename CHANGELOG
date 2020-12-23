@@ -4,8 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [0.4.7]
+## [0.5.0]
 - Fix hcli_core README documentation for factory style calling with parameter passing.
+- Add hptt; a sample HCLI that works with half-duplex audio streams to link disjointed radio network gateways.
+- Move to circleci from travis-ci.
+- Add auto testing for python 3.8 and 3.9
 
 ## [0.4.6]
 - Fix hcli_core to allow application factory style calling.
