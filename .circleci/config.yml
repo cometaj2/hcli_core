@@ -37,6 +37,6 @@ jobs:
           pip install --upgrade pytest
           pip install --upgrade --force-reinstall setuptools
           pip install gunicorn==19.9.0
-          pip install huckle==2.5.7
+          pip install huckle
           pip install -e .
           python -m pytest -v
