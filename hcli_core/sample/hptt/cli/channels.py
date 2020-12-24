@@ -8,7 +8,7 @@ class Channels:
     def __init__(self):
         if not data.DAO().exists():
             self.channels = []
-            self.channels.append(channel.Channel("default", "http://hcli.io", ['http://hcli.io']))
+            self.channels.append(channel.Channel("default", ['http://hcli.io'], ['http://hcli.io']))
             data.DAO(self).save()
             data.DAO().load(self)
 

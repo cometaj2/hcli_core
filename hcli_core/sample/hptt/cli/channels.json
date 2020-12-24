@@ -5,11 +5,9 @@
                 "http://hcli.io"
             ],
             "name": "default",
-            "owner": "http://hcli.io",
-            "stream": {
-                "in": "/657f51da30a26a66e56d5bfd5a42db6af894627cf625bb94f04f5423ab71c72d",
-                "out": "/9af8a66c76e0824a6cd88cf871ffd95f94f13d22c2b072003c286e21b3fd35b3"
-            }
+            "owners": [
+                "http://hcli.io"
+            ]
         }
     ]
 }
