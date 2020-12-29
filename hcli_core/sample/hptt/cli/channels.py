@@ -64,3 +64,22 @@ class Channels:
             channels = channels + channel["name"] + "\n"
 
         return channels
+
+    # acquire channel push to talk (ptt) by channel name
+    def acquire(self, channelname):
+        for pindex, c in enumerate(self.channels):
+            if c["name"] == channelname:
+                c["ptt"] = True
+                data.DAO(self).save()
+                return True
+
+        return False
+
+    # release channel push to talk (ptt) by channel name
+    def release(self, channelname):
+        for pindex, c in enumerate(self.channels):
+            if c["name"] == channelname:
+                c["ptt"] = False
+                data.DAO(self).save()
+
+        return ""

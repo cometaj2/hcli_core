@@ -2,11 +2,13 @@ import json
 import data
 import hashlib
 import base64
+import threading
 
 class Channel:
     name = None
     owners = None
     members = None
+    ptt = None
 
     def __init__(self, name, owners=None, members=None):
         self.name = name
@@ -20,6 +22,8 @@ class Channel:
             self.members = members
         else:
             self.members = []
+
+        self.ptt = False
 
     def serialize(self):
         return data.DAO(self).serialize()   

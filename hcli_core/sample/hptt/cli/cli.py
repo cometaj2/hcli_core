@@ -43,25 +43,47 @@ class CLI:
                 return io.BytesIO(s.encode("utf-8"))
             if self.commands[2] == "stream":
                 if self.inputstream != None and self.commands[3] == '-l':
-                    self.upload()
+                    unquoted = self.commands[4].replace("'", "").replace("\"", "")
+                    jailed = self.chroot.translate(unquoted)
+
+                    # We do a soft form of semaphore lock using a file. This isn't intended to
+                    # be perfectly fair but it should be atomic.
+                    f = None
+                    try:
+                        f = os.open(jailed + ".lock", os.O_CREAT | os.O_EXCL)
+                    except:
+                        raise Exception("The channel is already being streamed to.")
+                    finally:
+                        if f is not None:
+                            os.close(f)
+
+                    n = channels.Channels()
+                    try:
+                        if not n.acquire(unquoted):
+                            raise Exception("There is no such channel to stream to.")
+
+                        self.upload(jailed)
+                    finally:
+                        os.remove(jailed + ".lock")
+                        n.release(unquoted)
+
                     return None
 
                 if self.inputstream == None and self.commands[3] == '-r':
-                    return self.download()
+                    unquoted = self.commands[4].replace("'", "").replace("\"", "")
+                    jailed = self.chroot.translate(unquoted)
+
+                    return self.download(jailed)
 
         return None
 
-    def upload(self):
-        unquoted = self.commands[4].replace("'", "").replace("\"", "")
-        jailed = self.chroot.translate(unquoted)
+    def upload(self, jailed):
         with io.open(jailed, 'wb') as f:
             for chunk in iter(partial(self.inputstream.read, 16384), b''):
                 f.write(chunk)
 
         return None
 
-    def download(self):
-        unquoted = self.commands[4].replace("'", "").replace("\"", "")
-        jailed = self.chroot.translate(unquoted)
+    def download(self, jailed):
         f = open(jailed, "rb")
         return io.BytesIO(f.read())

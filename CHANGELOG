@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.5.2]
+- Fix to work with the latest version of huckle
+- Fix to only allow a single process streaming to a given channel on the hptt sample
+- Update config to state support for python 3.8 and 3.9
+
+## [0.5.1]
+- Update to test with the latest verison of huckle
+
 ## [0.5.0]
 - Fix hcli_core README documentation for factory style calling with parameter passing.
 - Add hptt; a sample HCLI that works with half-duplex audio streams to link disjointed radio network gateways.
