@@ -23,7 +23,7 @@ class Channel:
         else:
             self.members = []
 
-        self.ptt = False
+        self.ptt = "inactive"
 
     def serialize(self):
         return data.DAO(self).serialize()   

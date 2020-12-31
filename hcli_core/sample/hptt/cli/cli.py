@@ -1,6 +1,7 @@
 import json
 import io
 import channels
+import time
 
 import os.path
 from os import path
@@ -12,7 +13,7 @@ class CLI:
     commands = None
     inputstream = None
     chroot = None
-    
+
     def __init__(self, commands, inputstream):
         self.commands = commands
         self.inputstream = inputstream
@@ -41,6 +42,12 @@ class CLI:
                 n = channels.Channels()
                 s = n.listLogicalChannel()
                 return io.BytesIO(s.encode("utf-8"))
+            if self.commands[2] == "ptt":
+                if len(self.commands) > 3:
+                    unquoted = self.commands[3].replace("'", "").replace("\"", "")
+               	    n = channels.Channels()
+                    s = n.getPttStatus(unquoted)
+                    return io.BytesIO(s.encode("utf-8"))
             if self.commands[2] == "stream":
                 if self.inputstream != None and self.commands[3] == '-l':
                     unquoted = self.commands[4].replace("'", "").replace("\"", "")
@@ -64,6 +71,7 @@ class CLI:
 
                         self.upload(jailed)
                     finally:
+                        time.sleep(3)
                         os.remove(jailed + ".lock")
                         n.release(unquoted)
 

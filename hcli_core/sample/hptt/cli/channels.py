@@ -69,7 +69,7 @@ class Channels:
     def acquire(self, channelname):
         for pindex, c in enumerate(self.channels):
             if c["name"] == channelname:
-                c["ptt"] = True
+                c["ptt"] = "active"
                 data.DAO(self).save()
                 return True
 
@@ -79,7 +79,16 @@ class Channels:
     def release(self, channelname):
         for pindex, c in enumerate(self.channels):
             if c["name"] == channelname:
-                c["ptt"] = False
+                c["ptt"] = "inactive"
                 data.DAO(self).save()
+                return True
+
+        return False
+
+    # get channel ptt status
+    def getPttStatus(self, channelname):
+        for pindex, c in enumerate(self.channels):
+            if c["name"] == channelname:
+                return c["ptt"] + "\n"
 
         return ""

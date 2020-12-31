@@ -18,6 +18,10 @@
     "http" : "get"
   },
   {
+    "command" : "hptt channel ptt {p}",
+    "http" : "get"
+  },
+  {
     "command" : "hptt channel stream -l {p}",
     "http" : "post"
   },
@@ -92,6 +96,11 @@
         "href": "hpttchannells",
         "name": "ls",
         "description": "Allows you to list all logical channel names."
+      },
+      {
+        "href": "hpttchannelptt",
+        "name": "ptt",
+        "description": "Allows you to check the PTT status of a logical channel."
       },
       {
         "href": "hpttchannelstream",
@@ -189,6 +198,30 @@
         "description": "The \"ls\" command allows you to list all the named logical PTT channels."
       }
     ]
+  },
+  {
+    "id": "hpttchannelptt",
+    "name": "ptt",
+    "section": [
+      {
+        "name": "name",
+        "description": "ptt - queries the PTT status of a logical channel."
+      },
+      {
+        "name": "synopsis",
+        "description": "hptt channel ptt 'channelname'"
+      },
+      {
+        "name": "description",
+        "description": "The \"ptt\" command queries the status of a logical PTT channel to help establish if a stream can be sent or received."
+      }
+    ],
+    "parameter": {
+        "href": "hpttchannelpttparameter"
+    }
+  },
+  {
+    "id" : "hpttchannelpttparameter"
   },
   {
     "id": "hpttchannelstream",
