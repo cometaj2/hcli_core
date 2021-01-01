@@ -5,7 +5,7 @@ do
     status=`curl 'https://hcli.io/hcli/cli/exec/getexecute?command=hptt%20channel%20ptt%20%27default%27'`
     if [[ "$status" == "active" ]]
     then
-        curl 'https://hcli.io/hcli/cli/exec/getexecute?command=hptt%20channel%20stream%20-r%20%27default%27' | aplay
+        curl 'https://hcli.io/hcli/cli/exec/getexecute?command=tt%20channel%20stream%20-r%20%27default%27' | sox --ignore-length - -t wav - | play -
     fi
     
     sleep 1
