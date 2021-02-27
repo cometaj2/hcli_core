@@ -4,12 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [0.6.6]
-- Fix a bug in the nw sample that returned the wrong allocated ip address when using prefix based allocation.
-
 ## [0.6.5]
 - Update the watch.sh demo script to include a short description of what the script does.
 - Update the listen.sh demo script to include additional information about silence detection fine tuning.
+- Fix a bug in the nw sample that returned the wrong allocated ip address when using prefix based allocation.
 
 ## [0.6.4]
 - Update the watch.sh demo script for hptt to make use of hptt rather than curl for streaming from the service.
