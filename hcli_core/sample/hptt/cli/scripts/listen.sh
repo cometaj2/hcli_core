@@ -40,6 +40,7 @@ done
 # Check for sound, then record and monitor for silence while streaming to the hptt service without blocking.
 # We have a background process that continuously monitors for the silence log to kill cvlc if a long enough silence is detected.
 # Fine tune the negative noise level to help establish the silence floor you want to trigger silence detection on.
+# You can also fine tune the duration d on ffmpeg to change the trigger for silence detection.
 silence &
 
 while :

@@ -121,6 +121,7 @@ class Networks:
                             if str(s[0]) not in pool["allocated"]:
                                 pool["allocated"].append(str(s[0]))
                             pool["free"].remove(value)
+                            ipnetwork = s[0]
                             s = s[1:len(s)]
                             t = collapse_addresses(s)
                             for i in t:
@@ -132,7 +133,7 @@ class Networks:
     
                             pool["free"].sort(key=lambda network: int(network.split("/")[1]), reverse=True)
                             data.DAO(self).save()
-                            subnet = subnet + str(s[0]) + "\n"
+                            subnet = subnet + str(ipnetwork) + "\n"
                             return subnet
                         else:
                             return subnet
