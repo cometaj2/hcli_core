@@ -6,6 +6,7 @@ from hcli import semantic
 from hcli import profile
 from hcli import document
 from hcli import home
+from hcli import secondaryhome
 
 class Command:
     hcli_version = None
@@ -19,7 +20,7 @@ class Command:
             self.description = command['description']
 
 class CommandLink:
-    href = "/hcli/cli/__cdef"
+    href = secondaryhome.SecondaryHomeLink().href + "/__cdef"
     profile = profile.ProfileLink().href + semantic.hcli_command_type
     
     def __init__(self, uid=None, command=None, href=None):
@@ -27,7 +28,7 @@ class CommandLink:
             self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote(command) + "&href=" + href
 
 class CommandController:
-    route = "/hcli/cli/__cdef/{uid}"
+    route = secondaryhome.SecondaryHomeLink().href + "/__cdef/{uid}"
     resource = None
 
     def __init__(self, uid=None, command=None, href=None):
@@ -42,7 +43,7 @@ class CommandController:
             clilink = hal.Link(href=document.DocumentLink(href, command).href,
                                name=name,
                                profile=document.DocumentLink().profile)
-            homelink = hal.Link(href=home.HomeLink().href)
+            homelink = hal.Link(href=secondaryhome.SecondaryHomeLink().href)
 
             self.resource.addLink("self", selflink)
             self.resource.addLink("profile", profilelink)

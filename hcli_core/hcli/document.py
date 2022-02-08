@@ -6,6 +6,7 @@ from hcli import semantic
 from hcli import profile
 from hcli import command as hcommand
 from hcli import home
+from hcli import secondaryhome
 from hcli import option
 from hcli import execution
 from hcli import parameter
@@ -22,7 +23,7 @@ class Document:
             self.section = document['section']
 
 class DocumentLink:
-    href = "/hcli/cli"
+    href = secondaryhome.SecondaryHomeLink().href
     profile = profile.ProfileLink().href + semantic.hcli_document_type
     
     def __init__(self, uid=None, command=None, withparam=None):
@@ -34,7 +35,7 @@ class DocumentLink:
             return
 
 class DocumentController:
-    route = "/hcli/cli/{uid}"
+    route = secondaryhome.SecondaryHomeLink().href + "/{uid}"
     resource = None
 
     def __init__(self, uid=None, command=None):
@@ -45,7 +46,7 @@ class DocumentController:
             self.resource = hal.Resource(Document(arg))
             selflink = hal.Link(href=DocumentLink(uid, command).href)
             profilelink = hal.Link(href=DocumentLink().profile)
-            homelink = hal.Link(href=home.HomeLink().href)
+            homelink = hal.Link(href=secondaryhome.SecondaryHomeLink().href)
 
             self.resource.addLink("self", selflink)
             self.resource.addLink("profile", profilelink)

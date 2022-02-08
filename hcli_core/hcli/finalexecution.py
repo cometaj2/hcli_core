@@ -8,9 +8,10 @@ from hcli import semantic
 from hcli import profile
 from hcli import document
 from hcli import home
+from hcli import secondaryhome
 
 class FinalGetExecutionLink:
-    href = "/hcli/cli/exec/getexecute"
+    href = secondaryhome.SecondaryHomeLink().href + "/exec/getexecute"
     profile = profile.ProfileLink().href + semantic.hcli_execution_type
     
     def __init__(self, command=None):
@@ -18,7 +19,7 @@ class FinalGetExecutionLink:
             self.href = self.href + "?command=" + command
 
 class FinalGetExecutionController:
-    route = "/hcli/cli/exec/getexecute"
+    route = secondaryhome.SecondaryHomeLink().href + "/exec/getexecute"
     resource = None
 
     def __init__(self, command=None):
@@ -30,7 +31,7 @@ class FinalGetExecutionController:
         return self.resource.execute()
 
 class FinalPostExecutionLink:
-    href = "/hcli/cli/exec/postexecute"
+    href = secondaryhome.SecondaryHomeLink().href + "/exec/postexecute"
     profile = profile.ProfileLink().href + semantic.hcli_execution_type
 
     def __init__(self, command=None):
@@ -38,7 +39,7 @@ class FinalPostExecutionLink:
             self.href = self.href + "?command=" + command
 
 class FinalPostExecutionController:
-    route = "/hcli/cli/exec/postexecute"
+    route = secondaryhome.SecondaryHomeLink().href + "/exec/postexecute"
     resource = None
 
     def __init__(self, command=None, inputstream=None):

@@ -6,6 +6,7 @@ from hcli import semantic
 from hcli import profile
 from hcli import document
 from hcli import home
+from hcli import secondaryhome
 
 class Parameter:
     hcli_version = None
@@ -14,7 +15,7 @@ class Parameter:
         self.hcli_version = "1.0"
 
 class ParameterLink:
-    href = "/hcli/cli/__pdef"
+    href = secondaryhome.SecondaryHomeLink().href + "/__pdef"
     profile = profile.ProfileLink().href + semantic.hcli_parameter_type
     
     def __init__(self, uid=None, command=None, href=None):
@@ -22,7 +23,7 @@ class ParameterLink:
             self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote(command) + "&href=" + href
 
 class ParameterController:
-    route = "/hcli/cli/__pdef/{uid}"
+    route = secondaryhome.SecondaryHomeLink().href + "/__pdef/{uid}"
     resource = None
 
     def __init__(self, uid=None, command=None, href=None):
@@ -39,7 +40,7 @@ class ParameterController:
                                name=name,
                                profile=document.DocumentLink().profile,
                                templated=True)
-            homelink = hal.Link(href=home.HomeLink().href)
+            homelink = hal.Link(href=secondaryhome.SecondaryHomeLink().href)
 
             self.resource.addLink("self", selflink)
             self.resource.addLink("profile", profilelink)

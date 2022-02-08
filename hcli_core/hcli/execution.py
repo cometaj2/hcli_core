@@ -6,6 +6,7 @@ from hcli import semantic
 from hcli import profile
 from hcli import document
 from hcli import home
+from hcli import secondaryhome
 from hcli import finalexecution
 
 class Execution:
@@ -20,7 +21,7 @@ class Execution:
             self.http = executable['http']
 
 class ExecutionLink:
-    href = "/hcli/cli/__edef"
+    href = secondaryhome.SecondaryHomeLink().href + "/__edef"
     profile = profile.ProfileLink().href + semantic.hcli_execution_type
     
     def __init__(self, uid=None, command=None):
@@ -28,7 +29,7 @@ class ExecutionLink:
             self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote(command)
 
 class ExecutionController:
-    route = "/hcli/cli/__edef/{uid}"
+    route = secondaryhome.SecondaryHomeLink().href + "/__edef/{uid}"
     resource = None
 
     def __init__(self, uid=None, command=None):
@@ -41,7 +42,7 @@ class ExecutionController:
             self.resource = hal.Resource(Execution(ex))
             selflink = hal.Link(href=ExecutionLink(uid, command).href)
             profilelink = hal.Link(href=ExecutionLink().profile)
-            homelink = hal.Link(href=home.HomeLink().href)
+            homelink = hal.Link(href=secondaryhome.SecondaryHomeLink().href)
 
             if http == 'get':
                 finallink = hal.Link(href=finalexecution.FinalGetExecutionLink(command).href)

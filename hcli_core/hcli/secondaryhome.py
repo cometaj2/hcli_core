@@ -9,10 +9,10 @@ class SecondaryHomeLink:
     href = None
 
     def __init__(self):
-        self.href = "/hcli/cli/"
+        self.href = "/hcli/cli"
 
 class SecondaryHomeController:
-    route = "/hcli/cli/"
+    route = "/hcli/cli"
     resource = None
 
     def __init__(self):

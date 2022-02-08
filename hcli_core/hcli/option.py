@@ -6,6 +6,7 @@ from hcli import semantic
 from hcli import profile
 from hcli import document
 from hcli import home
+from hcli import secondaryhome
 
 class Option:
     hcli_version = None
@@ -19,7 +20,7 @@ class Option:
             self.description = option['description']
 
 class OptionLink:
-    href = "/hcli/cli/__odef"
+    href = secondaryhome.SecondaryHomeLink().href + "/__odef"
     profile = profile.ProfileLink().href + semantic.hcli_option_type
     
     def __init__(self, uid=None, option=None, href=None):
@@ -27,7 +28,7 @@ class OptionLink:
             self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote(option) + "&href=" + href
 
 class OptionController:
-    route = "/hcli/cli/__odef/{uid}"
+    route = secondaryhome.SecondaryHomeLink().href + "/__odef/{uid}"
     resource = None
 
     def __init__(self, uid=None, command=None, href=None):
@@ -41,7 +42,7 @@ class OptionController:
             selflink = hal.Link(href=OptionLink(uid, command, href).href)
             profilelink = hal.Link(href=OptionLink().profile)
             clilink = hal.Link(href=document.DocumentLink(uid, command).href)
-            homelink = hal.Link(href=home.HomeLink().href)
+            homelink = hal.Link(href=secondaryhome.SecondaryHomeLink().href)
 
             self.resource.addLink("self", selflink)
             self.resource.addLink("profile", profilelink)
