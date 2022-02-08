@@ -1,4 +1,5 @@
 from hcli import home
+from hcli import secondaryhome
 from hcli import document
 from hcli import command as hcommand
 from hcli import option
@@ -10,6 +11,11 @@ class HomeApi:
     def on_get(self, req, resp):
         resp.content_type = "application/hal+json"
         resp.body = home.HomeController().serialize()
+
+class SecondaryHomeApi:
+    def on_get(self, req, resp):
+        resp.content_type = "application/hal+json"
+        resp.body = secondaryhome.SecondaryHomeController().serialize()
 
 class DocumentApi:
     def on_get(self, req, resp, uid):
