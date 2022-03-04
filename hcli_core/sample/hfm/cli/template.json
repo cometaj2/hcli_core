@@ -102,14 +102,6 @@
         "description": "The \"ls\" command allows you to list remote."
       }
     ]
-  },
-  {
-    "id": "hfmcp-l"
-  },
-  {
-    "id": "hfmcp-r"
-  },
-  {
-    "id": "hfmcpparameter"  
-  }]
+  }
+  ]
 }

@@ -9,6 +9,12 @@
                 "http://hcli.io"
             ],
             "ptt": "inactive"
+        },
+        {
+            "members": [],
+            "name": "woot",
+            "owners": [],
+            "ptt": "inactive"
         }
     ]
 }

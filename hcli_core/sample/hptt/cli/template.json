@@ -130,9 +130,6 @@
         "href": "hpttchannelcreateparameter"
     }
   },
-  { 
-    "id" : "hpttchannelcreateparameter"
-  },
   {
     "id": "hpttchannelmv",
     "name": "mv",
@@ -154,9 +151,6 @@
         "href": "hpttchannelmvparameter"
     }
   },
-  { 
-    "id" : "hpttchannelmvparameter"
-  },
   {
     "id": "hpttchannelrm",
     "name": "rm",
@@ -177,9 +171,6 @@
     "parameter": {
         "href": "hpttchannelrmparameter"
     }
-  },
-  {
-    "id" : "hpttchannelrmparameter"
   },
   {
     "id": "hpttchannells",
@@ -221,9 +212,6 @@
     }
   },
   {
-    "id" : "hpttchannelpttparameter"
-  },
-  {
     "id": "hpttchannelstream",
     "name": "stream",
     "section": [
@@ -259,15 +247,6 @@
     "parameter" : {
       "href": "hpttchannelstreamparameter"
     }
-  },
-  {
-    "id": "hpttchannelstream-l"
-  },
-  {
-    "id": "hpttchannelstream-r"
-  },
-  {
-    "id": "hpttchannelstreamparameter"
   }
   ]
 }

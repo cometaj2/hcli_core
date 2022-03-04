@@ -133,18 +133,6 @@
     }
   },
   {
-    "id" : "nwls-a"
-  },  
-  {
-    "id" : "nwls-f"
-  },  
-  {
-    "id" : "nwls-fp"
-  },  
-  {
-    "id" : "nwls-fpparameter"
-  },  
-  {
     "id": "nwgroup",
     "name": "group",
     "section": [
@@ -205,9 +193,6 @@
         "href": "nwgroupcreateparameter"
     }
   },
-  { 
-    "id" : "nwgroupcreateparameter"
-  },
   {
     "id": "nwgroupmv",
     "name": "mv",
@@ -229,9 +214,6 @@
         "href": "nwgroupmvparameter"
     }
   },
-  { 
-    "id" : "nwgroupmvparameter"
-  },
   {
     "id": "nwgrouprm",
     "name": "rm",
@@ -252,9 +234,6 @@
     "parameter": {
         "href": "nwgrouprmparameter"
     }
-  },
-  {
-    "id" : "nwgrouprmparameter"
   },
   {
     "id": "nwgroupls",
@@ -318,21 +297,6 @@
     }
   },
   {
-    "id" : "nwallocate-g"
-  },  
-  {
-    "id" : "nwallocate-p"
-  },  
-  {
-    "id" : "nwallocate-n"
-  },  
-  {
-    "id" : "nwallocate-fg"
-  },  
-  { 
-    "id": "nwallocateparameter"
-  },
-  {
     "id": "nwdeallocate",
     "name": "deallocate",
     "section": [
@@ -369,18 +333,6 @@
     "parameter": {
         "href": "nwdeallocateparameter"
     }
-  },
-  {
-    "id" : "nwdeallocate-g"
-  },
-  {
-    "id" : "nwdeallocate-n"
-  },
-  {
-    "id" : "nwdeallocate-fg"
-  },
-  {
-    "id": "nwdeallocateparameter"
   }
   ]
 }

@@ -41,9 +41,6 @@
         }]
     },
     {
-        "id" : "jsonf--version"
-    },
-    {
         "id" : "jsonfgo",
         "name" : "go",
         "section" : [

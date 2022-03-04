@@ -118,11 +118,6 @@
     "parameter": {
         "href": "hubnslsparameter"
     }
-  },
-  {
-    "id": "hubserviceparameter"
-  },
-  {
-    "id": "hubnslsparameter"
-  }]
+  }
+  ]
 }
