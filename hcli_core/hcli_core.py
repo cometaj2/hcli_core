@@ -21,7 +21,7 @@ def connector(plugin_path=None):
         config.parse_template(template.Template())
 
         # We setup the HCLI Connector
-        server = falcon.API()
+        server = falcon.App()
         server.add_route(home.HomeController.route, api.HomeApi())
         server.add_route(secondaryhome.SecondaryHomeController.route, api.SecondaryHomeApi())
         server.add_route(document.DocumentController.route, api.DocumentApi())
