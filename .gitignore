@@ -13,3 +13,5 @@ __pycache__/
 *~
 tests/__pycache__
 networks.json
+Pipfile
+Pipfile.lock
