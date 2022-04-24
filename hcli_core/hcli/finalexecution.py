@@ -25,7 +25,8 @@ class FinalGetExecutionController:
 
     def __init__(self, command=None):
         if command != None:
-            commands = command.split()
+            unquoted = urllib.parse.unquote(command)
+            commands = unquoted.split()
             self.resource = config.cli.CLI(commands, None)
             
     def serialize(self):
@@ -45,7 +46,8 @@ class FinalPostExecutionController:
 
     def __init__(self, command=None, inputstream=None):
         if command != None:
-            commands = command.split()
+            unquoted = urllib.parse.unquote(command)
+            commands = unquoted.split()
             self.resource = config.cli.CLI(commands, inputstream)
 
     def serialize(self):
