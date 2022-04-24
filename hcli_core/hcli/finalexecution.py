@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function
 import json
 import sys
 import config
+import urllib
 from haliot import hal
 from hcli import semantic
 from hcli import profile
@@ -16,7 +17,7 @@ class FinalGetExecutionLink:
     
     def __init__(self, command=None):
         if command != None:
-            self.href = self.href + "?command=" + command
+            self.href = self.href + "?command=" + urllib.parse.quote(command)
 
 class FinalGetExecutionController:
     route = secondaryhome.SecondaryHomeLink().href + "/exec/getexecute"
@@ -36,7 +37,7 @@ class FinalPostExecutionLink:
 
     def __init__(self, command=None):
         if command != None:
-            self.href = self.href + "?command=" + command
+            self.href = self.href + "?command=" + urllib.parse.quote(command)
 
 class FinalPostExecutionController:
     route = secondaryhome.SecondaryHomeLink().href + "/exec/postexecute"
