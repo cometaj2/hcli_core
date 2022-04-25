@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.10.5]
+- Fix deprecated falcon response.body reference in api.py in favor of the recommended response.text.
+
 ## [0.10.4]
 - Fix to additionally create a build distribution in pypi to avoid slower pip incorporation in virtual environments.
 

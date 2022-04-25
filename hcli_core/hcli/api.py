@@ -10,19 +10,19 @@ from hcli import parameter
 class HomeApi:
     def on_get(self, req, resp):
         resp.content_type = "application/hal+json"
-        resp.body = home.HomeController().serialize()
+        resp.text = home.HomeController().serialize()
 
 class SecondaryHomeApi:
     def on_get(self, req, resp):
         resp.content_type = "application/hal+json"
-        resp.body = secondaryhome.SecondaryHomeController().serialize()
+        resp.text = secondaryhome.SecondaryHomeController().serialize()
 
 class DocumentApi:
     def on_get(self, req, resp, uid):
         command = req.params['command']
 
         resp.content_type = "application/hal+json"
-        resp.body = document.DocumentController(uid, command).serialize()
+        resp.text = document.DocumentController(uid, command).serialize()
 
 class CommandApi:
     def on_get(self, req, resp, uid):
@@ -30,7 +30,7 @@ class CommandApi:
         href = req.params['href']
 
         resp.content_type = "application/hal+json"
-        resp.body = hcommand.CommandController(uid, command, href).serialize()
+        resp.text = hcommand.CommandController(uid, command, href).serialize()
 
 class OptionApi:
     def on_get(self, req, resp, uid):
@@ -38,7 +38,7 @@ class OptionApi:
         href = req.params['href']
 
         resp.content_type = "application/hal+json"
-        resp.body = option.OptionController(uid, command, href).serialize()
+        resp.text = option.OptionController(uid, command, href).serialize()
 
 class ParameterApi:
     def on_get(self, req, resp, uid):
@@ -46,14 +46,14 @@ class ParameterApi:
         href = req.params['href']
 
         resp.content_type = "application/hal+json"
-        resp.body = parameter.ParameterController(uid, command, href).serialize()
+        resp.text = parameter.ParameterController(uid, command, href).serialize()
 
 class ExecutionApi:
     def on_get(self, req, resp, uid):
         command = req.params['command']
 
         resp.content_type = "application/hal+json"
-        resp.body = execution.ExecutionController(uid, command).serialize()
+        resp.text = execution.ExecutionController(uid, command).serialize()
 
 class FinalExecutionApi:
     def on_get(self, req, resp):
