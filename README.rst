@@ -79,8 +79,6 @@ Bugs
 
 - No good handling of control over request and response in cli code which can lead to exceptions and empty response client side.
 - The hfm sample HCLI fails disgracefully when copying a remote file name that doesn't exist (server error).
-- Unresolved, but otherwise apparently unimpactful gunicorn deprecated warning (gunicorn/workers/gthread.py:323: DeprecatedWarning: Call to deprecated property body. Please use text instead.
-  respiter = self.wsgi(environ, resp.start_response)).
 
 .. |build status| image:: https://circleci.com/gh/cometaj2/hcli_core.svg?style=shield
 .. _build status: https://circleci.com/gh/cometaj2/huckle
