@@ -15,6 +15,7 @@ if sys.argv[-1] == 'publish':
         sys.exit("publishing from a branch other than master is disallowed.")
     os.system("rm -rf dist")
     os.system("python setup.py sdist")
+    os.system("python setup.py bdist_wheel")
     os.system("twine upload dist/* -r pypi")
     os.system("git tag -a %s -m 'version %s'" % ("hcli_core-" + package.__version__, "hcli_core-" + package.__version__))
     os.system("git push")

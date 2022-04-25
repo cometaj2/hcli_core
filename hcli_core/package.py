@@ -1,4 +1,4 @@
 from __future__ import absolute_import, division, print_function
 
-__version__ = "0.10.3"
+__version__ = "0.10.4"
 dependencies = ["falcon==3.1.0"]
