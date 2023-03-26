@@ -10,7 +10,11 @@
             "http": "post"
         },
         {
-            "command": "hgpt dump",
+            "command": "hgpt chat dump",
+            "http": "get"
+        },
+        {
+            "command": "hgpt context dump",
             "http": "get"
         }
     ],
@@ -29,11 +33,11 @@
                 },
                 {
                     "name": "description",
-                    "description": "The \"hgpt\" HCLI allows you to converse with ChatGPT. You can send content as an input stream, and the AI model will generate a response based on it.\\n\\nThe HCLI relies on the use of a OpenAI generated API key exported as an environment variable (i.e. export OPENAI_API_KEY='secret')"
+                    "description": "The \"hgpt\" HCLI allows you to converse with ChatGPT 3.5 via command line. You can send content as an input stream, and the AI model will generate a response based on it.\\n\\nThe HCLI relies on the use of a OpenAI generated API key exported as an environment variable (i.e. export OPENAI_API_KEY='secret')"
                 },
                 {
                     "name": "examples",
-                    "description": "echo 'hello, how are you?' | hgpt chat\\n\\n(echo 'inspect this cli.py file'; cat cli.py) | hgpt chat\\n\\nhgpt clear\\n\\nhgpt dump"
+                    "description": "echo 'hello, how are you?' | hgpt chat\\n\\n(echo 'inspect this cli.py file'; cat cli.py) | hgpt chat\\n\\nhgpt clear\\n\\nhgpt chat dump\n\nhgpt context dump"
                 }
             ],
             "command": [
@@ -48,9 +52,9 @@
                     "description": "The \"clear\" command clears the ongoing chat history so that you can start a fresh conversation."
                 },
                 {
-                    "href": "hgptdump",
-                    "name": "dump",
-                    "description": "The \"dump\" command retrieves the cumulative conversation with ChatGPT."
+                    "href": "hgptcontext",
+                    "name": "context",
+                    "description": "The \"context\" command allows you to work with the conversation context."
                 }
             ]
         },
@@ -70,7 +74,14 @@
                     "name": "description",
                     "description": "The \"chat\" command allows you to send an input stream, and the AI model will generate a response based on it."
                 }
-            ]
+            ],
+            "command": [
+                {
+                    "href": "hgptchatdump",
+                    "name": "dump",
+                    "description": "The \"dump\" command dumps the cumulative ongoing conversation to the terminal in a readable format."
+                }
+            ]            
         },
         {
             "id": "hgptclear",
@@ -91,22 +102,65 @@
             ]       
         },
         {
-            "id": "hgptdump",
+            "id": "hgptcontext",
+            "name": "context",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "context - allows you to work with the conversation context."
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hgpt context"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"chat\" command allows you to work with the conversation context. The context is what makes the chatbot remember what was previously discussed so that a more coherent conversation can take place."
+                }
+            ],
+            "command": [
+                {
+                    "href": "hgptcontextdump",
+                    "name": "dump",
+                    "description": "The \"dump\" command retrieves the current conversation context."
+                }
+            ]
+        },        
+        {
+            "id": "hgptchatdump",
             "name": "dump",
             "section": [
                 {
                     "name": "name",
-                    "description": "dump - dump the cumulative ongoing conversation to the terminal."
+                    "description": "dump - dumps the current context for the ongoing conversation to the terminal in the native openai json context format."
                 }, 
                 {  
                     "name": "synopsis",
-                    "description": "hgpt dump"
+                    "description": "hgpt chat dump"
                 }, 
                 {  
                     "name": "description",
-                    "description": "The \"dump\" command retrieves the cumulative conversation with ChatGPT and dumps it to the terminal as an output stream."
+                    "description": "The \"dump\" command retrieves the cumulative conversation with the chatbot and dumps it to the terminal as an output stream."
                 }  
             ]      
+        },
+        {
+            "id": "hgptcontextdump",
+            "name": "dump",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "dump - dumps the current conversation context to the terminal in the native openai json context format."
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hgpt context dump"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"dump\" command retrieves the current context for the conversation and dumps it to the terminal as an output stream."
+                }
+            ]
         }        
     ]
 }
