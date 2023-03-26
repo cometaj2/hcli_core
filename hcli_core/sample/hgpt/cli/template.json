@@ -1,0 +1,112 @@
+{
+    "hcliTemplateVersion": "1.0",
+    "executable": [
+        {
+            "command": "hgpt chat",
+            "http": "post"
+        },
+        {
+            "command": "hgpt clear",
+            "http": "post"
+        },
+        {
+            "command": "hgpt dump",
+            "http": "get"
+        }
+    ],
+    "cli": [
+        {
+            "id": "hgpt",
+            "name": "hgpt",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "hgpt - an HCLI for interacting with ChatGPT"
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hgpt <command>"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"hgpt\" HCLI allows you to converse with ChatGPT. You can send content as an input stream, and the AI model will generate a response based on it.\\n\\nThe HCLI relies on the use of a OpenAI generated API key exported as an environment variable (i.e. export OPENAI_API_KEY='secret')"
+                },
+                {
+                    "name": "examples",
+                    "description": "echo 'hello, how are you?' | hgpt chat\\n\\n(echo 'inspect this cli.py file'; cat cli.py) | hgpt chat\\n\\nhgpt clear\\n\\nhgpt dump"
+                }
+            ],
+            "command": [
+                {
+                    "href": "hgptchat",
+                    "name": "chat",
+                    "description": "The \"chat\" command allows you to converse with ChatGPT by sending content from the input stream."
+                },
+                {
+                    "href": "hgptclear",
+                    "name": "clear",
+                    "description": "The \"clear\" command clears the ongoing chat history so that you can start a fresh conversation."
+                },
+                {
+                    "href": "hgptdump",
+                    "name": "dump",
+                    "description": "The \"dump\" command retrieves the cumulative conversation with ChatGPT."
+                }
+            ]
+        },
+        {
+            "id": "hgptchat",
+            "name": "chat",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "chat - converse with ChatGPT"
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hgpt chat"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"chat\" command allows you to send an input stream, and the AI model will generate a response based on it."
+                }
+            ]
+        },
+        {
+            "id": "hgptclear",
+            "name": "clear",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "clear - clears the ongoing conversation."
+                },  
+                {   
+                    "name": "synopsis",
+                    "description": "hgpt clear"
+                },  
+                {   
+                    "name": "description",
+                    "description": "The \"clear\" command clears the ongoing chat history so that you can start a fresh conversation."
+                }   
+            ]       
+        },
+        {
+            "id": "hgptdump",
+            "name": "dump",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "dump - dump the cumulative ongoing conversation to the terminal."
+                }, 
+                {  
+                    "name": "synopsis",
+                    "description": "hgpt dump"
+                }, 
+                {  
+                    "name": "description",
+                    "description": "The \"dump\" command retrieves the cumulative conversation with ChatGPT and dumps it to the terminal as an output stream."
+                }  
+            ]      
+        }        
+    ]
+}

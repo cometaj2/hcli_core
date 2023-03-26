@@ -37,6 +37,8 @@ def main():
                 print(config.sample + "/nw/cli")
             elif sys.argv[2] == "hptt":
                 print(config.sample + "/hptt/cli")
+            elif sys.argv[2] == "hgpt":
+                print(config.sample + "/hgpt/cli")
             
             sys.exit(0)
 

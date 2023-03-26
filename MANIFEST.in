@@ -4,4 +4,5 @@ recursive-include hcli_core/data *
 recursive-include hcli_core/sample *
 recursive-include hcli_core/cli *
 exclude hcli_core/sample/nw/cli/networks.json
+exclude hcli_core/sample/hgpt/cli/chat.output
 prune hcli_core/sample/hfm/cli/chroot
