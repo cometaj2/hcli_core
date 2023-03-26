@@ -2,64 +2,68 @@
     "hcliTemplateVersion": "1.0",
     "executable": [
         {
-            "command": "hgpt chat",
+            "command": "hg chat",
             "http": "post"
         },
         {
-            "command": "hgpt clear",
+            "command": "hg clear",
             "http": "post"
         },
         {
-            "command": "hgpt chat dump",
+            "command": "hg chat dump",
             "http": "get"
         },
         {
-            "command": "hgpt context dump",
+            "command": "hg context get",
             "http": "get"
+        },
+        {
+            "command": "hg context set",
+            "http": "post"
         }
     ],
     "cli": [
         {
-            "id": "hgpt",
-            "name": "hgpt",
+            "id": "hg",
+            "name": "hg",
             "section": [
                 {
                     "name": "name",
-                    "description": "hgpt - an HCLI for interacting with ChatGPT"
+                    "description": "hg - an HCLI for interacting with GPT"
                 },
                 {
                     "name": "synopsis",
-                    "description": "hgpt <command>"
+                    "description": "hg <command>"
                 },
                 {
                     "name": "description",
-                    "description": "The \"hgpt\" HCLI allows you to converse with ChatGPT 3.5 via command line. You can send content as an input stream, and the AI model will generate a response based on it.\\n\\nThe HCLI relies on the use of a OpenAI generated API key exported as an environment variable (i.e. export OPENAI_API_KEY='secret')"
+                    "description": "The \"hg\" HCLI allows you to chat with GPT 3.5 Turbo via command line. You can send content as an input stream, and the AI model will generate a response based on it.\\n\\nThe HCLI relies on the use of a OpenAI generated API key exported as an environment variable (i.e. export OPENAI_API_KEY='secret')"
                 },
                 {
                     "name": "examples",
-                    "description": "echo 'hello, how are you?' | hgpt chat\\n\\n(echo 'inspect this cli.py file'; cat cli.py) | hgpt chat\\n\\nhgpt clear\\n\\nhgpt chat dump\n\nhgpt context dump"
+                    "description": "echo 'hello, how are you?' | hg chat\\n\\n(echo 'inspect this cli.py file'; cat cli.py) | hg chat\\n\\nhg clear\\n\\nhg chat dump\n\nhg context get > context.json\n\ncat context.json | hg context set"
                 }
             ],
             "command": [
                 {
-                    "href": "hgptchat",
+                    "href": "hgchat",
                     "name": "chat",
                     "description": "The \"chat\" command allows you to converse with ChatGPT by sending content from the input stream."
                 },
                 {
-                    "href": "hgptclear",
+                    "href": "hgclear",
                     "name": "clear",
-                    "description": "The \"clear\" command clears the ongoing chat history so that you can start a fresh conversation."
+                    "description": "The \"clear\" command clears the ongoing chat history and context so that you can start a fresh conversation."
                 },
                 {
-                    "href": "hgptcontext",
+                    "href": "hgcontext",
                     "name": "context",
                     "description": "The \"context\" command allows you to work with the conversation context."
                 }
             ]
         },
         {
-            "id": "hgptchat",
+            "id": "hgchat",
             "name": "chat",
             "section": [
                 {
@@ -68,7 +72,7 @@
                 },
                 {
                     "name": "synopsis",
-                    "description": "hgpt chat"
+                    "description": "hg chat"
                 },
                 {
                     "name": "description",
@@ -77,14 +81,14 @@
             ],
             "command": [
                 {
-                    "href": "hgptchatdump",
+                    "href": "hgchatdump",
                     "name": "dump",
                     "description": "The \"dump\" command dumps the cumulative ongoing conversation to the terminal in a readable format."
                 }
             ]            
         },
         {
-            "id": "hgptclear",
+            "id": "hgclear",
             "name": "clear",
             "section": [
                 {
@@ -93,7 +97,7 @@
                 },  
                 {   
                     "name": "synopsis",
-                    "description": "hgpt clear"
+                    "description": "hg clear"
                 },  
                 {   
                     "name": "description",
@@ -102,7 +106,7 @@
             ]       
         },
         {
-            "id": "hgptcontext",
+            "id": "hgcontext",
             "name": "context",
             "section": [
                 {
@@ -111,7 +115,7 @@
                 },
                 {
                     "name": "synopsis",
-                    "description": "hgpt context"
+                    "description": "hg context"
                 },
                 {
                     "name": "description",
@@ -120,14 +124,19 @@
             ],
             "command": [
                 {
-                    "href": "hgptcontextdump",
-                    "name": "dump",
-                    "description": "The \"dump\" command retrieves the current conversation context."
+                    "href": "hgcontextget",
+                    "name": "get",
+                    "description": "The \"get\" command retrieves the current conversation context."
+                },
+                {
+                    "href": "hgcontextset",
+                    "name": "set",
+                    "description": "The \"set\" command sets the context for the conversation from the input stream. The context is expected to follow the openai json context format."
                 }
             ]
         },        
         {
-            "id": "hgptchatdump",
+            "id": "hgchatdump",
             "name": "dump",
             "section": [
                 {
@@ -136,7 +145,7 @@
                 }, 
                 {  
                     "name": "synopsis",
-                    "description": "hgpt chat dump"
+                    "description": "hg chat dump"
                 }, 
                 {  
                     "name": "description",
@@ -145,22 +154,40 @@
             ]      
         },
         {
-            "id": "hgptcontextdump",
-            "name": "dump",
+            "id": "hgcontextget",
+            "name": "get",
             "section": [
                 {
                     "name": "name",
-                    "description": "dump - dumps the current conversation context to the terminal in the native openai json context format."
+                    "description": "get - gets the current conversation context and outputs it to the terminal in the native openai json context format."
                 },
                 {
                     "name": "synopsis",
-                    "description": "hgpt context dump"
+                    "description": "hg context get"
                 },
                 {
                     "name": "description",
-                    "description": "The \"dump\" command retrieves the current context for the conversation and dumps it to the terminal as an output stream."
+                    "description": "The \"get\" command retrieves the current context for the conversation and outputs it to the terminal as an output stream."
                 }
             ]
-        }        
+        },        
+        {
+            "id": "hgcontextset",
+            "name": "set",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "set - sets the current conversation context from an input stream in the native openai json context format."
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hg context get"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"set\" command sets the context for the conversation from the input stream. The context is expected to follow the openai json context format."
+                }
+            ]
+        }           
     ]
 }

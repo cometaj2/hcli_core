@@ -16,7 +16,7 @@ class CLI:
     inputstream = None
     context = None
     message_tokens = 0
-    content_tokens = 0
+    context_tokens = 0
     total_tokens = 0
     max_context_length = 4097
     model = "gpt-3.5-turbo"
@@ -31,16 +31,11 @@ class CLI:
         self.chat_file = self.pwd + "/chat.output"
         self.context_file = self.pwd + "/context.json"
 
-        if os.path.exists(self.context_file):
-            with open(self.context_file, 'r') as f:
-                self.context = json.load(f)
-        else:
-            self.context = []
-
     def execute(self):
+        self.read_context()
+
         if self.commands[1] == "chat":
             if len(self.commands) == 2:
-                openai.api_key = os.environ["OPENAI_API_KEY"]
 
                 if self.inputstream != None:
                     inputstream = self.inputstream.read().decode('utf-8')
@@ -51,6 +46,7 @@ class CLI:
 
                         if self.total_tokens != 0:
                             try:
+                                openai.api_key = os.environ["OPENAI_API_KEY"]
                                 response = openai.ChatCompletion.create(   
                                                                            model=self.model,
                                                                            messages=self.context,
@@ -97,16 +93,22 @@ class CLI:
                 os.remove(self.chat_file)
 
             if os.path.exists(self.context_file):
-                with open(self.context_file, 'w') as f:
-                    self.context = []
-                    json.dump(self.context, f)
+                self.new_context()
 
         if self.commands[1] == "context":        
-            if self.commands[2] == "dump":        
+            if self.commands[2] == "get":        
                 if os.path.exists(self.context_file):
                     f = open(self.context_file, "rb")
                     data = json.load(f)
                     return io.BytesIO(json.dumps(data, indent=4).encode('utf-8'))
+
+            if self.commands[2] == "set":        
+                if os.path.exists(self.context_file):
+                    f = open(self.context_file, "w")
+                    inputstream = self.inputstream.read().decode('utf-8')
+                    self.context = json.loads(inputstream)
+                    json.dump(self.context, f)
+                    return None
 
         return None
 
@@ -114,31 +116,50 @@ class CLI:
         self.context.append(entry)
 
     def count(self):
-        with open(self.context_file, 'r') as f:
-            encoding = tiktoken.get_encoding(self.encoding_base)
+        try:
+            with open(self.context_file, 'r') as f:
+                encoding = tiktoken.get_encoding(self.encoding_base)
 
-            self.message_tokens = 0
-            for item in self.context:
-                if "content" in item:
-                    self.message_tokens += len(encoding.encode(item["content"]))
+                self.message_tokens = 0
+                for item in self.context:
+                    if "content" in item:
+                        self.message_tokens += len(encoding.encode(item["content"]))
 
-            self.context_tokens = 0
-            for item in self.context:
-                self.context_tokens += len(encoding.encode(json.dumps(item)))
+                self.context_tokens = 0
+                for item in self.context:
+                    self.context_tokens += len(encoding.encode(json.dumps(item)))
 
-            # counting tokens isn't straightforward so we add an adjustment factor of 1800 tokens
-            self.total_tokens = self.message_tokens + self.context_tokens
-            message = "Context tokens: " + str(self.total_tokens)
-            #logging.info(message, exc_info=sys.exc_info())
-            logging.info(message)
+                # counting tokens isn't straightforward so we add an adjustment factor of 1800 tokens
+                self.total_tokens = self.message_tokens + self.context_tokens
+                message = "Context tokens: " + str(self.total_tokens)
+                logging.info(message)
 
-            if self.total_tokens > self.max_context_length:
-                return True
-            else:
-                return False
+                if self.total_tokens > self.max_context_length:
+                    return True
+        except:        
+            self.new_context()
+
+        return False
 
     def trim(self):
         while(self.count()):
             self.context.pop(0)
             message = "Context tokens: " + str(self.total_tokens) + ". Trimming the oldest entries to remain under " + str(self.max_context_length) + " tokens."
             logging.info(message)
+
+    def read_context(self):
+        if os.path.exists(self.context_file):
+            try:
+                with open(self.context_file, 'r') as f:
+                    self.context = json.load(f)
+            except:
+                self.new_context()
+        else:
+            self.new_context()
+
+    def new_context(self):
+        with open(self.context_file, 'w') as f:
+            self.context = []
+            json.dump(self.context, f)
+
+        self.total_tokens = 0

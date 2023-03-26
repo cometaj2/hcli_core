@@ -13,7 +13,6 @@ def main():
 
         if sys.argv[1] == "--version":
             show_dependencies()
-
     
         elif sys.argv[1] == "help":
             display_man_page(config.hcli_core_manpage_path)
@@ -37,8 +36,8 @@ def main():
                 print(config.sample + "/nw/cli")
             elif sys.argv[2] == "hptt":
                 print(config.sample + "/hptt/cli")
-            elif sys.argv[2] == "hgpt":
-                print(config.sample + "/hgpt/cli")
+            elif sys.argv[2] == "hg":
+                print(config.sample + "/hg/cli")
             
             sys.exit(0)
 
