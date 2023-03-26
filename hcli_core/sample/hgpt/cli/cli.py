@@ -57,7 +57,8 @@ class CLI:
                     return io.BytesIO(output.encode("utf-8"))
 
         if self.commands[1] == "clear":        
-            os.remove(chat)
+            if os.path.exists(chat):
+                os.remove(chat)
 
         if self.commands[1] == "dump":        
             if os.path.exists(chat):
