@@ -57,7 +57,8 @@ setup(
     keywords='cli client server connector hypermedia rest generic development',
     packages=find_packages(exclude=['__pycache__', 'tests']),
     install_requires=[package.dependencies[0],
-                      package.dependencies[1]],
+                      package.dependencies[1],
+                      package.dependencies[2]],
     include_package_data=True,
     entry_points={
         'console_scripts': [

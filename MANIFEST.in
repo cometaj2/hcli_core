@@ -5,4 +5,5 @@ recursive-include hcli_core/sample *
 recursive-include hcli_core/cli *
 exclude hcli_core/sample/nw/cli/networks.json
 exclude hcli_core/sample/hgpt/cli/chat.output
+exclude hcli_core/sample/hgpt/cli/context.json
 prune hcli_core/sample/hfm/cli/chroot
