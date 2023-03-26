@@ -41,28 +41,38 @@ hcli_core requires a supported version of Python and pip.
 
 You'll need an WSGI compliant application server to run hcli_core. For example, you can use Green Unicorn (https://gunicorn.org/)
 
+.. code-block:: console
+
     $ pip install gunicorn
 
 Install hcli_core via pip. You can launch gunicorn from anywhere by using "hcli_core path". You can also look at the hcli_core help file:
+
+.. code-block:: console
 
     $ pip install hcli_core
 
     $ hcli_core help
 
-    $ gunicorn --workers=5 --threads=2 -b 127.0.0.1:8000 --chdir \`hcli_core path\` "hcli_core:connector()"
+    $ gunicorn --workers=5 --threads=2 -b 127.0.0.1:8000 --chdir `hcli_core path` "hcli_core:connector()"
 
 If you want to load a sample HCLI other than the default, you can try loading the sample hfm (hypertext file manager) HCLI.
 A folder path to any 3rd party HCLI can be provided in the same way:
 
-    $ gunicorn --workers=5 --threads=2 -b 127.0.0.1:8000 --chdir \`hcli_core path\` "hcli_core:connector("\"\"\`hcli_core sample hfm\`"\"\")"
+.. code-block:: console
+
+    $ gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:connector(\"`hcli_core sample hg`\")"
 
 Curl your new service to understand what is being exposed. The HCLI root URL, to use with an HCLI client, is the cli link relation:
+
+.. code-block:: console
 
     $ curl http://127.0.0.1:8000
 
 Install an HCLI client, for example Huckle (https://github.com/cometaj2/huckle), and access the default sample jsonf CLI
 exposed by HCLI Core (you may need to restart your terminal to be able to use jsonf by name directly; otherwise you can attempt
 to source ~/.bash_profile or ~/.bashrc):
+
+.. code-block:: console
 
     $ pip install huckle
 
@@ -72,6 +82,8 @@ to source ~/.bash_profile or ~/.bashrc):
 
 You can also look at the huckle help file:
 
+.. code-block:: console
+    
     $ huckle help
 
 Bugs
