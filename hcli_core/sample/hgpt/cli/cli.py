@@ -1,10 +1,15 @@
 import json
 import io
 import os
+import sys
 import inspect
 import traceback
 import tiktoken
+import logger
 import openai
+
+logging = logger.Logger()
+logging.setLevel(logger.INFO)
 
 class CLI:
     commands = None
@@ -123,7 +128,9 @@ class CLI:
 
             # counting tokens isn't straightforward so we add an adjustment factor of 1800 tokens
             self.total_tokens = self.message_tokens + self.context_tokens
-            print("Total tokens: " + str(self.total_tokens))
+            message = "Context tokens: " + str(self.total_tokens)
+            #logging.info(message, exc_info=sys.exc_info())
+            logging.info(message)
 
             if self.total_tokens > self.max_context_length:
                 return True
@@ -133,4 +140,5 @@ class CLI:
     def trim(self):
         while(self.count()):
             self.context.pop(0)
-            print("Context tokens: " + str(self.total_tokens) + ". Trimming the context to remain under " + str(self.max_context_length) + ".")
+            message = "Context tokens: " + str(self.total_tokens) + ". Trimming the oldest entries to remain under " + str(self.max_context_length) + " tokens."
+            logging.info(message)
