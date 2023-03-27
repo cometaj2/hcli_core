@@ -68,9 +68,9 @@ Curl your new service to understand what is being exposed. The HCLI root URL, to
 
     curl http://127.0.0.1:8000
 
-Install an HCLI client, for example Huckle (https://github.com/cometaj2/huckle), and access the default sample jsonf CLI
-exposed by HCLI Core (you may need to restart your terminal to be able to use jsonf by name directly; otherwise you can attempt
-to source ~/.bash_profile or ~/.bashrc):
+Install an HCLI client, for example Huckle (https://github.com/cometaj2/huckle), and access the sample CLI (e.g. jsonf or hg)
+exposed by HCLI Core. You may need to restart your terminal to be able to use the sample CLI by name directly (e.g. jsonf or hg); otherwise you can attempt
+to source ~/.bash_profile or ~/.bashrc). Note that no CLI is actually installed by huckle. Huckle reads the HCLI semantics dynamically and ends up behaving *like* the CLI it targets:
 
 .. code-block:: console
 
@@ -78,7 +78,7 @@ to source ~/.bash_profile or ~/.bashrc):
 
     huckle cli install http://127.0.0.1:8000
 
-    jsonf help
+    hg help
 
 You can also look at the huckle help file:
 
