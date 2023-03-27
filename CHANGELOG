@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.11.3]
+- Cleanup leftover inconsistencies in README.rst
+
+## [0.11.2]
+- Cleanup of building process to avoid forms of caching (build cleanly from scratch)
+
+## [0.11.1]
+- Cleanup of the README.rst instructions for installing a sample HCLI app
+
 ## [0.11.0]
 - Adding a GPT-3 chatbot sample app (hg)
 

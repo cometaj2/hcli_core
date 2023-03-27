@@ -13,6 +13,8 @@ if sys.argv[-1] == 'publish':
     branch = subprocess.check_output('git rev-parse --abbrev-ref HEAD', shell=True).strip().decode("utf-8") 
     if branch != "master":
         sys.exit("publishing from a branch other than master is disallowed.")
+    os.system("rm -rf hcli_core.egg-info")
+    os.system("rm -rf build")
     os.system("rm -rf dist")
     os.system("python setup.py sdist")
     os.system("python setup.py bdist_wheel")

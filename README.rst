@@ -44,11 +44,14 @@ You'll need an WSGI compliant application server to run hcli_core. For example, 
     pip install gunicorn
 
 Install hcli_core via pip. You can launch gunicorn from anywhere by using "hcli_core path". You can also look at the hcli_core help file.
+
 You can curl your new service to understand what is being exposed. The HCLI root URL, to use with an HCLI client, is the cli link relation.
 
 Install an HCLI client, for example Huckle (https://github.com/cometaj2/huckle), and access the sample CLI (e.g. jsonf or hg)
 exposed by HCLI Core. You may need to restart your terminal to be able to use the sample CLI by name directly (e.g. jsonf or hg); otherwise you can attempt
-to source ~/.bash_profile or ~/.bashrc). Note that no CLI is actually installed by huckle. Huckle reads the HCLI semantics dynamically and ends up behaving *like* the CLI it targets:
+to source ~/.bash_profile or ~/.bashrc).
+
+Note that no CLI is actually installed by huckle. Huckle reads the HCLI semantics dynamically and ends up behaving *like* the CLI it targets:
 
 .. code-block:: console
 
@@ -78,8 +81,6 @@ A folder path to any other 3rd party HCLI can be provided in the same way:
     huckle cli install http://127.0.0.1:8000
 
     hg help
-
-You can also look at the huckle help file:
 
 Bugs
 ----
