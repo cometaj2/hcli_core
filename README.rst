@@ -1,4 +1,4 @@
-HCLI Core |build status|_ |pypi|_
+HCLI Core |pyver|_ |build status|_ |pypi|_
 =================================
 
 An HCLI Connector that can be used to expose a REST API with a built-in CLI, via hypertext
@@ -92,3 +92,5 @@ Bugs
 .. _build status: https://circleci.com/gh/cometaj2/huckle
 .. |pypi| image:: https://badge.fury.io/py/hcli-core.svg
 .. _pypi: https://badge.fury.io/py/hcli-core
+.. |pyver| image:: https://img.shields.io/pypi/pyversions/hcli-core.svg
+.. _pyver: https://pypi.python.org/pypi/hcli-core

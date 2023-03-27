@@ -36,52 +36,8 @@ class CLI:
 
         if self.commands[1] == "chat":
             if len(self.commands) == 2:
-
                 if self.inputstream != None:
-                    inputstream = self.inputstream.read().decode('utf-8')
-                    if inputstream != "":
-                        question = { "role" : "user", "content" : inputstream }
-                        self.add(question)
-                        self.trim()
-
-                        if self.total_tokens != 0:
-                            try:
-                                openai.api_key = os.environ["OPENAI_API_KEY"]
-                                response = openai.ChatCompletion.create(   
-                                                                           model=self.model,
-                                                                           messages=self.context,
-                                                                           temperature=0.5,
-                                                                           max_tokens=2048,
-                                                                           n=1,
-                                                                           stop=None,
-                                                                           frequency_penalty=0.5,
-                                                                           presence_penalty=0.5,
-                                                                       )
-                            except Exception as e:
-                                return io.BytesIO(traceback.format_exc().encode("utf-8"))
-                        else:
-                            error = "ERROR: The token trim backoff reached 0. This means that you sent a stream that was too large to fit within the total allowable context limit of " + str(self.max_context_length) + " tokens, and the last trimming operation ended up completely wiping out the conversation context.\n"
-                            return io.BytesIO(error.encode("utf-8"))
-
-                        # Output for context retention
-                        output_response = response["choices"][0]["message"]
-                        self.add(output_response)
-    
-                        output = response["choices"][0]["message"]["content"]
-                        output = output + "\n"
-                        
-                        # Ouput for human consumption and longstanding conversation tracking
-                        with io.open(self.chat_file, 'a') as f:
-                            f.write("----Question:\n\n")
-                            f.write(inputstream + "\n")
-                            f.write("----Answer:\n\n")
-                            f.write(output + "\n")
-                            f.close()
-
-                        with open(self.context_file, 'w') as f:
-                            json.dump(self.context, f)
-
-                        return io.BytesIO(output.encode("utf-8"))
+                    return self.chat()
                     
             elif len(self.commands) == 3 and self.commands[2] == "dump":
                if os.path.exists(self.chat_file):
@@ -129,7 +85,6 @@ class CLI:
                 for item in self.context:
                     self.context_tokens += len(encoding.encode(json.dumps(item)))
 
-                # counting tokens isn't straightforward so we add an adjustment factor of 1800 tokens
                 self.total_tokens = self.message_tokens + self.context_tokens
                 message = "Context tokens: " + str(self.total_tokens)
                 logging.info(message)
@@ -163,3 +118,49 @@ class CLI:
             json.dump(self.context, f)
 
         self.total_tokens = 0
+
+    def chat(self):    
+        inputstream = self.inputstream.read().decode('utf-8')
+        if inputstream != "":
+            question = { "role" : "user", "content" : inputstream }
+            self.add(question)
+            self.trim()
+
+            if self.total_tokens != 0:
+                try:
+                    openai.api_key = os.environ["OPENAI_API_KEY"]
+                    response = openai.ChatCompletion.create(
+                                                               model=self.model,
+                                                               messages=self.context,
+                                                               temperature=0.5,
+                                                               max_tokens=2048,
+                                                               n=1,
+                                                               stop=None,
+                                                               frequency_penalty=0.5,
+                                                               presence_penalty=0.5,
+                                                           )
+                except Exception as e:
+                    return io.BytesIO(traceback.format_exc().encode("utf-8"))
+            else:
+                error = "ERROR: The token trim backoff reached 0. This means that you sent a stream that was too large to fit within the total allowable context limit of " + str(self.max_context_length) + " tokens, and the last trimming operation ended up completely wiping out the conversation context.\n"
+                return io.BytesIO(error.encode("utf-8"))        
+
+            # Output for context retention
+            output_response = response["choices"][0]["message"]
+            self.add(output_response)
+
+            output = response["choices"][0]["message"]["content"]
+            output = output + "\n"
+
+            # Ouput for human consumption and longstanding conversation tracking
+            with io.open(self.chat_file, 'a') as f:
+                f.write("----Question:\n\n")
+                f.write(inputstream + "\n")
+                f.write("----Answer:\n\n")
+                f.write(output + "\n")
+                f.close()
+
+            with open(self.context_file, 'w') as f:
+                json.dump(self.context, f)
+
+            return io.BytesIO(output.encode("utf-8"))                        

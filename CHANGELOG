@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.11.4]
+- Add Python version badge
+- Remove hg sample comment that no longer applies
+- Refactor hg sample cli.py code to increase clarity
+
 ## [0.11.3]
 - Cleanup leftover inconsistencies in README.rst
 
@@ -14,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Cleanup of the README.rst instructions for installing a sample HCLI app
 
 ## [0.11.0]
-- Adding a GPT-3 chatbot sample app (hg)
+- Adding a GPT-3.5 chatbot sample app (hg)
 
 ## [0.10.6]
 - Remove NOTES.txt and add testing support for python 3.10.
