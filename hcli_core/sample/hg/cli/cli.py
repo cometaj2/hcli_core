@@ -45,8 +45,8 @@ class CLI:
                    return io.BytesIO(f.read())       
 
         if self.commands[1] == "clear":        
-            if os.path.exists(self.chat_file):
-                os.remove(self.chat_file)
+            with open(self.chat_file, "w") as f:
+                f.write("")
 
             if os.path.exists(self.context_file):
                 self.new_context()
@@ -56,7 +56,7 @@ class CLI:
                 if os.path.exists(self.context_file):
                     f = open(self.context_file, "rb")
                     data = json.load(f)
-                    return io.BytesIO(json.dumps(data, indent=4).encode('utf-8'))
+                    return io.BytesIO(json.dumps(data, indent=4).encode('utf-8') + "\n".encode('utf-8'))
 
             if self.commands[2] == "set":        
                 if os.path.exists(self.context_file):
