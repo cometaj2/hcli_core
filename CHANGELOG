@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.11.6]
+- Update to add dry run to publishing to inspect the pypi package properly before publishing
+- Add dummy empty files chat.output and context.json to ensure they are wiped out on pip uninstall
+
 ## [0.11.5]
 - Update to exclude working files for hg HCLI
 

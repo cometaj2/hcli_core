@@ -9,6 +9,20 @@ from codecs import open
 from os import path
 from hcli_core import package
 
+if sys.argv[-1] == 'dry-run':
+    branch = subprocess.check_output('git rev-parse --abbrev-ref HEAD', shell=True).strip().decode("utf-8")
+    if branch != "master":
+        sys.exit("dry-run from a branch other than master is disallowed.")
+    os.system("rm -rf hcli_core.egg-info")
+    os.system("rm -rf build")
+    os.system("rm -rf dist")
+    os.system("echo '' > hcli_core/sample/hg/cli/chat.output")
+    os.system("echo '[]' > hcli_core/sample/hg/cli/context.json")
+    os.system("python setup.py sdist --dry-run")
+    os.system("python setup.py bdist_wheel --dry-run")
+    os.system("twine check dist/*")
+    sys.exit()
+
 if sys.argv[-1] == 'publish':
     branch = subprocess.check_output('git rev-parse --abbrev-ref HEAD', shell=True).strip().decode("utf-8") 
     if branch != "master":
@@ -16,6 +30,8 @@ if sys.argv[-1] == 'publish':
     os.system("rm -rf hcli_core.egg-info")
     os.system("rm -rf build")
     os.system("rm -rf dist")
+    os.system("echo '' > hcli_core/sample/hg/cli/chat.output")
+    os.system("echo '[]' > hcli_core/sample/hg/cli/context.json")
     os.system("python setup.py sdist")
     os.system("python setup.py bdist_wheel")
     os.system("twine check dist/*")
