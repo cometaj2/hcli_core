@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.11.4]
 - Add Python version badge
+- Adding circleci coverage for Python 3.11
 - Remove hg sample comment that no longer applies
 - Refactor hg sample cli.py code to increase clarity
 
