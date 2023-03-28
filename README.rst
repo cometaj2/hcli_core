@@ -1,5 +1,5 @@
 HCLI Core |pyver|_ |build status|_ |pypi|_
-=================================
+==========================================
 
 An HCLI Connector that can be used to expose a REST API with a built-in CLI, via hypertext
 command line interface (HCLI) semantics.
