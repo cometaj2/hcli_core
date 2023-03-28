@@ -58,6 +58,7 @@ setup(
     name='hcli_core',
     version=package.__version__,
     description='An HCLI connector that can be used to expose any CLI expressed through hypertext command line interface (HCLI) semantics.',
+    long_description_content_type="text/x-rst",
     long_description=long_description,
     url='https://github.com/cometaj2/hcli_core',
     author='Jeff Michaud',

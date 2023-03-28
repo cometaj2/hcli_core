@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.11.7]
 - Update to even up carriage returns in blank chat output and context output
+- Update setup.py to make media-type for rst file explicity to text/x-rst to pass twine check
 
 ## [0.11.6]
 - Update to add dry run to publishing to inspect the pypi package properly before publishing
