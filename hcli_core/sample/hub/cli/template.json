@@ -20,7 +20,7 @@
     "section": [
       {
         "name": "name",
-        "description": "hub - an HCLI service discovery hub"
+        "description": "hub - a rudimentary HCLI service discovery hub."
       },
       {
         "name": "synopsis",

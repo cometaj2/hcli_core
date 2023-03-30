@@ -71,8 +71,11 @@ Note that no CLI is actually installed by huckle. Huckle reads the HCLI semantic
 
     jsonf help
 
-If you want to load a sample HCLI other than the default sample application, you can try loading the sample *hg* HCLI (hypertext GPT-3.5 chatbot).
-A folder path to any other 3rd party HCLI can be provided in the same way:
+If you want to load a sample HCLI other than the default sample application, you can try loading one of the sample HCLIs,
+for example, *hg* HCLI (hypertext GPT-3.5 chatbot).
+
+A folder path to any other 3rd party HCLI can be provided in the same way provided they meet CLI interface (cli.py) and
+HCLI template (template.json) requirements:
 
 .. code-block:: console
 
@@ -81,6 +84,54 @@ A folder path to any other 3rd party HCLI can be provided in the same way:
     huckle cli install http://127.0.0.1:8000
 
     hg help
+
+Versioning
+----------
+    
+This project makes use of semantic versioning (http://semver.org) and may make use of the "devx",
+"prealphax", "alphax" "betax", and "rcx" extensions where x is a number (e.g. 0.3.0-prealpha1)
+on github. Only full major.minor.patch releases will be pushed to pip from now on.
+
+Supports
+--------
+
+- Supports HTTP/HTTPS
+
+- HCLI version 1.0 server semantics for:
+
+    - hal+json
+
+- Streaming (application/octet-stream).
+
+- Supports the Web Server Gateway Interface (WSGI) through PEP 3333 and Falcon. HCLI Core is deployable on any WSGI compliant web server (e.g. gunicorn).
+
+- Exposing, via HCLI template, any HCLI as a usable client-side shell CLI.
+
+- Bundled Sample HCLIs:
+
+    - jsonf - a simple formatter for JSON.
+    - hg    - an HCLI for interacting with GPT-3.5-Turbo via terminal input and output streams.
+    - hfm   - a file upload and download manager that works with \*nix terminal shell input and output streams.
+    - hptt  - a rudimentary HCLI Push To Talk (PTT) channel management service.
+    - hub   - a rudimentary HCLI service discovery hub.      
+    - nw    - a flexible IP Address Management (IPAM) service.  
+
+- Support for use of any 3rd party HCLI code that meets CLI interface requirements and HCLI template requirements (i.e. see sample HCLIs).
+
+- Support large input and output streams as application/octet-stream
+
+To Do
+-----
+
+- Automated tests for all bundled HCLI sample CLIs
+
+- A memory layer for the GPT-3.5-Turbo HCLI sample CLI
+
+    - Automatic context switching per NLP on received input stream.
+    - Context blending to mary different contexts.  
+    - Automatic context compression to yield a more substantial memory footprint per context window.
+
+- Separate out HCLI applications from HCLI Core to help avoid application dependencies bleeding onto HCLI Core (e.g. OpenAI).
 
 Bugs
 ----

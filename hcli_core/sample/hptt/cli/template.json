@@ -36,7 +36,7 @@
     "section": [
       {
         "name": "name",
-        "description": "hptt - an HCLI Push To Talk (PTT) channel management service"
+        "description": "hptt - a rudimentary HCLI Push To Talk (PTT) channel management service"
       },
       {
         "name": "synopsis",

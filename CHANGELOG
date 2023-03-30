@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.11.8]
+- Update to README for added support context and to lay out future improvement ideas.
+
 ## [0.11.7]
 - Update to even up carriage returns in blank chat output and context output
 - Update setup.py to make media-type for rst file explicity to text/x-rst to pass twine check

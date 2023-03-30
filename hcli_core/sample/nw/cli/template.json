@@ -56,7 +56,7 @@
     "section": [
       {
         "name": "name",
-        "description": "nw - a network management service"
+        "description": "nw - a flexible IP Address Management (IPAM) service."
       },
       {
         "name": "synopsis",

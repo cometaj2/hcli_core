@@ -20,7 +20,7 @@
     "section": [
       {
         "name": "name",
-        "description": "hfm - a hypertext file manager"
+        "description": "hfm - a file upload and download manager that works with *nix terminal shell input and output streams."
       },
       {
         "name": "synopsis",

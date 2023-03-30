@@ -29,7 +29,7 @@
             "section": [
                 {
                     "name": "name",
-                    "description": "hg - an HCLI for interacting with GPT"
+                    "description": "hg - an HCLI for interacting with GPT-3.5-Turbo via terminal input and output streams"
                 },
                 {
                     "name": "synopsis",
