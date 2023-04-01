@@ -40,10 +40,6 @@ hcli_core requires a supported version of Python and pip.
 You'll need an WSGI compliant application server to run hcli_core. For example, you can use Green Unicorn (https://gunicorn.org/), and an
 HCLI client such as Huckle (https://github.com/cometaj2/huckle). The following runs the default *jsonf* HCLI bundled with HCLI Core.
 
-You may need to restart your terminal after the huckle cli install command to be able to use the sample CLI by name (e.g. jsonf)
-directly (e.g. jsonf or hg); otherwise you can attempt:
-
-Note that no CLI is actually installed by Huckle. Huckle reads the HCLI semantics exposed by the API and ends up behaving *like* the CLI it targets:
 
 .. code-block:: console
 
@@ -51,31 +47,49 @@ Note that no CLI is actually installed by Huckle. Huckle reads the HCLI semantic
     pip install gunicorn
     pip install huckle
     gunicorn --workers=5 --threads=2 -b 127.0.0.1:8000 --chdir `hcli_core path` "hcli_core:connector()"
-    huckle cli install http://127.0.0.1:8000
 
-Help
-----
+Usage
+-----
 
-HCLI Core, Huckle and HCLIs (e.g. jsonf) installed via Huckle can all provide man-style help:
+Open a different shell window.
+
+You may need to restart your shell after the huckle CLI install command below to be able to invoke the sample HCLI by name
+directly (e.g. jsonf).
+
+Note that no CLI is actually installed by Huckle. Huckle reads the HCLI semantics exposed by the API and ends up behaving *like* the CLI it targets.
+
 
 .. code-block:: console
     
-    hcli_core help
-    huckle help
+    huckle cli install http://127.0.0.1:8000
     jsonf help
 
 3rd Party HCLI Installation
 ---------------------------
 
-If you want to load a sample HCLI other than the default sample application, you can try loading one of the sample HCLIs,
-included with HCLI Core. For example, the *hg* HCLI (hypertext GPT-3.5 chatbot).
+If you want to load a sample HCLI other than the default sample application, you can try loading one of the other sample HCLIs
+included with HCLI Core. For example, the *hg* HCLI (hypertext GPT-3.5-Turbo chatbot).
 
-A folder path to any other 3rd party HCLI can be provided in the same way, provided those 3rd party HCLIs meet CLI interface (cli.py) and
-HCLI template (template.json) requirements:
+A folder path to any other 3rd party HCLI can be provided in the same way to the HCLI Connector, provided the 3rd party HCLI meets
+CLI interface (cli.py) and HCLI template (template.json) requirements:
 
 .. code-block:: console
 
+    pip install hcli_core
+    pip install gunicorn
+    pip install huckle
     gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:connector(\"`hcli_core sample hg`\")"
+
+3rd Party HCLI Usage
+--------------------
+
+Open a different shell window.
+
+You may need to restart your shell after the huckle CLI install command below to be able to invoke the sample HCLI by name
+directly (e.g. hg).
+
+.. code-block:: console
+    
     huckle cli install http://127.0.0.1:8000
     hg help
 
@@ -93,14 +107,12 @@ Supports
 - HCLI version 1.0 server semantics for hal+json
 - Web Server Gateway Interface (WSGI) through PEP 3333 and Falcon.
 - Bundled Sample HCLIs:
-
     - jsonf - a simple formatter for JSON.
     - hg    - an HCLI for interacting with GPT-3.5-Turbo via terminal input and output streams.
     - hfm   - a file upload and download manager that works with \*nix terminal shell input and output streams.
     - hptt  - a rudimentary HCLI Push To Talk (PTT) channel management service.
     - hub   - a rudimentary HCLI service discovery hub.      
     - nw    - a flexible IP Address Management (IPAM) service.  
-
 - Support for use of any 3rd party HCLI code that meets CLI interface requirements and HCLI template requirements (i.e. see sample HCLIs).
 - Support large input and output streams as application/octet-stream.
 
@@ -108,15 +120,11 @@ To Do
 -----
 
 - Automated tests for all bundled HCLI samples.
-
 - A memory layer for the GPT-3.5-Turbo HCLI (hg).
-
     - Automatic context switching per NLP on received input stream.
     - Context blending to mary different contexts.  
     - Automatic context compression to yield a more substantial memory footprint per context window.
-
 - A shell mode for the GPT-3.5-Turbo HCLI (hg) to enable shell CLI execution per sought goal.
-
 - Separate out HCLI applications from HCLI Core to help avoid application dependencies bleeding onto HCLI Core (e.g. OpenAI).
 
 Bugs
