@@ -37,52 +37,46 @@ Installation
 
 hcli_core requires a supported version of Python and pip.
 
-You'll need an WSGI compliant application server to run hcli_core. For example, you can use Green Unicorn (https://gunicorn.org/)
+You'll need an WSGI compliant application server to run hcli_core. For example, you can use Green Unicorn (https://gunicorn.org/), and an
+HCLI client such as Huckle (https://github.com/cometaj2/huckle). The following runs the default *jsonf* HCLI bundled with HCLI Core.
 
-.. code-block:: console
+You may need to restart your terminal after the huckle cli install command to be able to use the sample CLI by name (e.g. jsonf)
+directly (e.g. jsonf or hg); otherwise you can attempt:
 
-    pip install gunicorn
-
-Install hcli_core via pip. You can launch gunicorn from anywhere by using "hcli_core path". You can also look at the hcli_core help file.
-
-You can curl your new service to understand what is being exposed. The HCLI root URL, to use with an HCLI client, is the cli link relation.
-
-Install an HCLI client, for example Huckle (https://github.com/cometaj2/huckle), and access the sample CLI (e.g. jsonf or hg)
-exposed by HCLI Core. You may need to restart your terminal to be able to use the sample CLI by name directly (e.g. jsonf or hg); otherwise you can attempt
-to source ~/.bash_profile or ~/.bashrc).
-
-Note that no CLI is actually installed by huckle. Huckle reads the HCLI semantics dynamically and ends up behaving *like* the CLI it targets:
+Note that no CLI is actually installed by Huckle. Huckle reads the HCLI semantics exposed by the API and ends up behaving *like* the CLI it targets:
 
 .. code-block:: console
 
     pip install hcli_core
-
-    hcli_core help
-
-    gunicorn --workers=5 --threads=2 -b 127.0.0.1:8000 --chdir `hcli_core path` "hcli_core:connector()"
-    
-    curl http://127.0.0.1:8000
-    
+    pip install gunicorn
     pip install huckle
-    
-    huckle help
-
+    gunicorn --workers=5 --threads=2 -b 127.0.0.1:8000 --chdir `hcli_core path` "hcli_core:connector()"
     huckle cli install http://127.0.0.1:8000
 
+Help
+----
+
+HCLI Core, Huckle and HCLIs (e.g. jsonf) installed via Huckle can all provide man-style help:
+
+.. code-block:: console
+    
+    hcli_core help
+    huckle help
     jsonf help
 
-If you want to load a sample HCLI other than the default sample application, you can try loading one of the sample HCLIs,
-for example, *hg* HCLI (hypertext GPT-3.5 chatbot).
+3rd Party HCLI Installation
+---------------------------
 
-A folder path to any other 3rd party HCLI can be provided in the same way provided they meet CLI interface (cli.py) and
+If you want to load a sample HCLI other than the default sample application, you can try loading one of the sample HCLIs,
+included with HCLI Core. For example, the *hg* HCLI (hypertext GPT-3.5 chatbot).
+
+A folder path to any other 3rd party HCLI can be provided in the same way, provided those 3rd party HCLIs meet CLI interface (cli.py) and
 HCLI template (template.json) requirements:
 
 .. code-block:: console
 
     gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:connector(\"`hcli_core sample hg`\")"
-
     huckle cli install http://127.0.0.1:8000
-
     hg help
 
 Versioning
@@ -95,18 +89,9 @@ on github. Only full major.minor.patch releases will be pushed to pip from now o
 Supports
 --------
 
-- Supports HTTP/HTTPS
-
-- HCLI version 1.0 server semantics for:
-
-    - hal+json
-
-- Streaming (application/octet-stream).
-
-- Supports the Web Server Gateway Interface (WSGI) through PEP 3333 and Falcon. HCLI Core is deployable on any WSGI compliant web server (e.g. gunicorn).
-
-- Exposing, via HCLI template, any HCLI as a usable client-side shell CLI.
-
+- HTTP/HTTPS.
+- HCLI version 1.0 server semantics for hal+json
+- Web Server Gateway Interface (WSGI) through PEP 3333 and Falcon.
 - Bundled Sample HCLIs:
 
     - jsonf - a simple formatter for JSON.
@@ -117,19 +102,20 @@ Supports
     - nw    - a flexible IP Address Management (IPAM) service.  
 
 - Support for use of any 3rd party HCLI code that meets CLI interface requirements and HCLI template requirements (i.e. see sample HCLIs).
-
-- Support large input and output streams as application/octet-stream
+- Support large input and output streams as application/octet-stream.
 
 To Do
 -----
 
-- Automated tests for all bundled HCLI sample CLIs
+- Automated tests for all bundled HCLI samples.
 
-- A memory layer for the GPT-3.5-Turbo HCLI sample CLI
+- A memory layer for the GPT-3.5-Turbo HCLI (hg).
 
     - Automatic context switching per NLP on received input stream.
     - Context blending to mary different contexts.  
     - Automatic context compression to yield a more substantial memory footprint per context window.
+
+- A shell mode for the GPT-3.5-Turbo HCLI (hg) to enable shell CLI execution per sought goal.
 
 - Separate out HCLI applications from HCLI Core to help avoid application dependencies bleeding onto HCLI Core (e.g. OpenAI).
 
