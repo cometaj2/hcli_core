@@ -92,6 +92,7 @@ directly (e.g. hg).
 .. code-block:: console
     
     huckle cli install http://127.0.0.1:8000
+    eval $(huckle env)
     hg help
 
 Versioning
