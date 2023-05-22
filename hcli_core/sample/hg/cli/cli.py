@@ -38,31 +38,41 @@ class CLI:
             if len(self.commands) == 2:
                 if self.inputstream != None:
                     return self.chat()
-                    
+
             elif len(self.commands) == 3 and self.commands[2] == "dump":
                if os.path.exists(self.chat_file):
                    f = open(self.chat_file, "rb")
-                   return io.BytesIO(f.read())       
+                   return io.BytesIO(f.read())
 
-        if self.commands[1] == "clear":        
+        if self.commands[1] == "clear":
             with open(self.chat_file, "w") as f:
                 f.write("")
 
             if os.path.exists(self.context_file):
                 self.new_context()
 
-        if self.commands[1] == "context":        
-            if self.commands[2] == "get":        
+        if self.commands[1] == "context":
+            if self.commands[2] == "get":
                 if os.path.exists(self.context_file):
                     f = open(self.context_file, "rb")
                     data = json.load(f)
                     return io.BytesIO(json.dumps(data, indent=4).encode('utf-8') + "\n".encode('utf-8'))
 
-            if self.commands[2] == "set":        
+            if self.commands[2] == "set":
                 if os.path.exists(self.context_file):
                     f = open(self.context_file, "w")
                     inputstream = self.inputstream.read().decode('utf-8')
                     self.context = json.loads(inputstream)
+                    json.dump(self.context, f)
+                    return None
+
+        if self.commands[1] == "behavior":
+            if self.commands[2] == "set":
+                if os.path.exists(self.context_file):
+                    f = open(self.context_file, "w")
+                    inputstream = self.inputstream.read().decode('utf-8')
+                    behavior = { "role" : "system", "content" : inputstream }
+                    self.context[0] = behavior
                     json.dump(self.context, f)
                     return None
 
@@ -91,14 +101,14 @@ class CLI:
 
                 if self.total_tokens > self.max_context_length:
                     return True
-        except:        
+        except:
             self.new_context()
 
         return False
 
     def trim(self):
         while(self.count()):
-            self.context.pop(0)
+            self.context.pop(1)
             message = "Context tokens: " + str(self.total_tokens) + ". Trimming the oldest entries to remain under " + str(self.max_context_length) + " tokens."
             logging.info(message)
 
@@ -114,12 +124,12 @@ class CLI:
 
     def new_context(self):
         with open(self.context_file, 'w') as f:
-            self.context = []
+            self.context = [{ "role" : "system", "content" : "" }]
             json.dump(self.context, f)
 
         self.total_tokens = 0
 
-    def chat(self):    
+    def chat(self):
         inputstream = self.inputstream.read().decode('utf-8')
         if inputstream != "":
             question = { "role" : "user", "content" : inputstream }
@@ -143,7 +153,7 @@ class CLI:
                     return io.BytesIO(traceback.format_exc().encode("utf-8"))
             else:
                 error = "ERROR: The token trim backoff reached 0. This means that you sent a stream that was too large to fit within the total allowable context limit of " + str(self.max_context_length) + " tokens, and the last trimming operation ended up completely wiping out the conversation context.\n"
-                return io.BytesIO(error.encode("utf-8"))        
+                return io.BytesIO(error.encode("utf-8"))
 
             # Output for context retention
             output_response = response["choices"][0]["message"]
@@ -163,4 +173,4 @@ class CLI:
             with open(self.context_file, 'w') as f:
                 json.dump(self.context, f)
 
-            return io.BytesIO(output.encode("utf-8"))                        
+            return io.BytesIO(output.encode("utf-8"))
