@@ -60,8 +60,9 @@ Note that no CLI is actually installed by Huckle. Huckle reads the HCLI semantic
 
 
 .. code-block:: console
-    
+
     huckle cli install http://127.0.0.1:8000
+    eval $(huckle env)
     jsonf help
 
 3rd Party HCLI Installation
