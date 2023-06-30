@@ -39,12 +39,15 @@ class CLI:
             self.streamer.connect()
             return
 
+        if self.commands[1] == "disconnect":
+            self.streamer.disconnect()
+            return
+
         if self.commands[1] == "stop":
             self.streamer.stop()
 
         if self.commands[1] == "device":
             if len(self.commands) > 2:
-                print(self.commands[2])
                 self.streamer.device(self.commands[2])
 
         return None

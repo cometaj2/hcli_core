@@ -20,6 +20,10 @@
         {
             "command": "hc connect",
             "http": "post"
+        },
+        {
+            "command": "hc disconnect",
+            "http": "post"
         }
     ],
     "cli": [
@@ -64,6 +68,11 @@
                     "href": "hcconnect",
                     "name": "connect",
                     "description": "The \"connect\" command connects to the GRBL controller."
+                },
+                {
+                    "href": "hcdisconnect",
+                    "name": "disconnect",
+                    "description": "The \"disconnect\" command disconnects from the GRBL controller."
                 }
             ]
         },
@@ -139,6 +148,24 @@
                 {
                     "name": "description",
                     "description": "The \"connect\" command connects to the GRBL controller."
+                }
+            ]
+        },
+        {
+            "id": "hcdisconnect",
+            "name": "connect",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "disconnect - disconnects from the GRBL controller."
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hc disconnect"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"disconnect\" command disconnects from the GRBL controller."
                 }
             ]
         }
