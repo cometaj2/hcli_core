@@ -1,0 +1,146 @@
+{
+    "hcliTemplateVersion": "1.0",
+    "executable": [
+        {
+            "command": "hc",
+            "http": "post"
+        },
+        {
+            "command": "hc scan",
+            "http": "get"
+        },
+        {
+            "command": "hc device {p}",
+            "http": "post"
+        },
+        {
+            "command": "hc stop",
+            "http": "post"
+        },
+        {
+            "command": "hc connect",
+            "http": "post"
+        }
+    ],
+    "cli": [
+        {
+            "id": "hc",
+            "name": "hc",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "hc - an HCLI for interacting with a CNC via GRBL (e.g. an OpenBuilds BlackBox controller via input and output streams"
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hc <command>"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"hc\" HCLI allows you to control a CNC through the command line (e.g. OpenBuilds C-Beam Machine) via the GRBL protocol. You can send G-Code commands as an input stream, and the GRBL service will respond accordingly.\\n\\nThis HCLI relies on the use of a serial port to a GRBL compliant device. You can scan to find out which serial device you can send G-Code streams to."
+                },
+                {
+                    "name": "examples",
+                    "description": "hc scan\\n\\necho '$$' | hc\\n\\ncat test.gcode | hc\\n\\n"
+                }
+            ],
+            "command": [
+                {
+                    "href": "hcscan",
+                    "name": "scan",
+                    "description": "The \"scan\" command scans and lists connected serial devices."
+                },
+                {
+                    "href": "hcdevice",
+                    "name": "device",
+                    "description": "The \"device\" command sets the serial device to use to stream G-Code commands."
+                },
+                {
+                    "href": "hcstop",
+                    "name": "stop",
+                    "description": "The \"stop\" command stops the CNC by sending the ! command to the GRBL controller."
+                },
+                {
+                    "href": "hcconnect",
+                    "name": "connect",
+                    "description": "The \"connect\" command connects to the GRBL controller."
+                }
+            ]
+        },
+        {
+            "id": "hcscan",
+            "name": "scan",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "scan - scan for avaiable serial ports to stream G-Code to."
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hc scan"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"scan\" lists available serial devices that could be used to stream G-Code commands to."
+                }
+            ]
+        },
+        {
+            "id": "hcdevice",
+            "name": "device",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "device - sets the serial device to stream G-Code to."
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hc device {p}"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"device\" command lets you set the serial device to stream G-Code to (e.g. hc serial /dev/tty.usbserial-AR0JI0GV)."
+                }
+            ],
+            "parameter": {
+                "href": "hcdeviceparameter"
+            }
+        },
+        {
+            "id": "hcstop",
+            "name": "stop",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "stop - sends the stop signal (!) to the GRBL controller."
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hc stop"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"stop\" command sends the stop signal (!) to the GRBL controller to force stop all CNC movement. This immediately suspends into a DOOR state and disables the spindle and coolant. If in motion, the machine will decelerate to a stop and then be suspended. If executed during homing, GRBL will instead halt motion and throw a homing alarm."
+                }
+            ]
+        },
+        {
+            "id": "hcconnect",
+            "name": "connect",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "connect - connects to the GRBL controller."
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hc connect"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"connect\" command connects to the GRBL controller."
+                }
+            ]
+        }
+    ]
+}

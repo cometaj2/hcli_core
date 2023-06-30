@@ -113,8 +113,9 @@ Supports
     - hg    - an HCLI for interacting with GPT-3.5-Turbo via terminal input and output streams.
     - hfm   - a file upload and download manager that works with \*nix terminal shell input and output streams.
     - hptt  - a rudimentary HCLI Push To Talk (PTT) channel management service.
-    - hub   - a rudimentary HCLI service discovery hub.      
-    - nw    - a flexible IP Address Management (IPAM) service.  
+    - hub   - a rudimentary HCLI service discovery hub.
+    - nw    - a flexible IP Address Management (IPAM) service.
+    - hc    - an HCLI that can stream G-Code through serial port to a GRBL compliant device (e.g. OpenBuilds C-Beam Machine via a BlackBox controller).
 - Support for use of any 3rd party HCLI code that meets CLI interface requirements and HCLI template requirements (i.e. see sample HCLIs).
 - Support large input and output streams as application/octet-stream.
 
@@ -124,7 +125,7 @@ To Do
 - Automated tests for all bundled HCLI samples.
 - A memory layer for the GPT-3.5-Turbo HCLI (hg).
     - Automatic context switching per NLP on received input stream.
-    - Context blending to mary different contexts.  
+    - Context blending to mary different contexts.
     - Automatic context compression to yield a more substantial memory footprint per context window.
 - A shell mode for the GPT-3.5-Turbo HCLI (hg) to enable shell CLI execution per sought goal.
 - Separate out HCLI applications from HCLI Core to help avoid application dependencies bleeding onto HCLI Core (e.g. OpenAI).
