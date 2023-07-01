@@ -14,7 +14,15 @@
             "http": "post"
         },
         {
+            "command": "hc reset",
+            "http": "post"
+        },
+        {
             "command": "hc stop",
+            "http": "post"
+        },
+        {
+            "command": "hc resume",
             "http": "post"
         },
         {
@@ -60,14 +68,24 @@
                     "description": "The \"device\" command sets the serial device to use to stream G-Code commands."
                 },
                 {
+                    "href": "hcreset",
+                    "name": "reset",
+                    "description": "The \"reset\" command stops the CNC by sending the ctrl-x command to the GRBL controller."
+                },
+                {
                     "href": "hcstop",
                     "name": "stop",
-                    "description": "The \"stop\" command stops the CNC by sending the ! command to the GRBL controller."
+                    "description": "The \"stop\" command pauses the CNC by sending the ! command to the GRBL controller (feed hold)."
+                },
+                {
+                    "href": "hcresume",
+                    "name": "resume",
+                    "description": "The \"resume\" command resumes the CNC by sending the ~ command to the GRBL controller (cycle start)."
                 },
                 {
                     "href": "hcconnect",
                     "name": "connect",
-                    "description": "The \"connect\" command connects to the GRBL controller."
+                    "description": "The \"connect\" command connects to the GRBL controller by attempting to wake it up via the ctrl-x command."
                 },
                 {
                     "href": "hcdisconnect",
@@ -116,12 +134,12 @@
             }
         },
         {
-            "id": "hcstop",
-            "name": "stop",
+            "id": "hcreset",
+            "name": "reset",
             "section": [
                 {
                     "name": "name",
-                    "description": "stop - sends the stop signal (!) to the GRBL controller."
+                    "description": "reset - sends the ctrl-x signal (0x18) to the GRBL controller."
                 },
                 {
                     "name": "synopsis",
@@ -129,7 +147,43 @@
                 },
                 {
                     "name": "description",
-                    "description": "The \"stop\" command sends the stop signal (!) to the GRBL controller to force stop all CNC movement. This immediately suspends into a DOOR state and disables the spindle and coolant. If in motion, the machine will decelerate to a stop and then be suspended. If executed during homing, GRBL will instead halt motion and throw a homing alarm."
+                    "description": "The \"reset\" command sends the ctrl-x signal (0x18) to the GRBL controller. The immediately halts and safely resets Grbl without a power-cycle."
+                }
+            ]
+        },
+        {
+            "id": "hcstop",
+            "name": "stop",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "stop - sends the feed hold signal (!) to the GRBL controller."
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hc stop"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"stop\" command sends the feed hold signal (!) to the GRBL controller to pause motion."
+                }
+            ]
+        },
+        {
+            "id": "hcresume",
+            "name": "resume",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "resume - sends the cycle start signal (~) to the GRBL controller to resume motion."
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hc resume"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"resume\" command sends the cycle start signal (~) to the GRBL controller to resume motion."
                 }
             ]
         },

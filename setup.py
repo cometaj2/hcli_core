@@ -78,7 +78,8 @@ setup(
     packages=find_packages(exclude=['__pycache__', 'tests']),
     install_requires=[package.dependencies[0],
                       package.dependencies[1],
-                      package.dependencies[2]],
+                      package.dependencies[2],
+                      package.dependencies[3]],
     include_package_data=True,
     entry_points={
         'console_scripts': [

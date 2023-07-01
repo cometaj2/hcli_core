@@ -1,4 +1,5 @@
 import json
+import io
 import os
 import inspect
 import sys
@@ -6,7 +7,8 @@ import glob
 import serial
 import io
 import logger
-import streamer
+import service
+from functools import partial
 from serial.tools import list_ports
 
 logging = logger.Logger()
@@ -15,18 +17,23 @@ logging.setLevel(logger.INFO)
 class CLI:
     commands = None
     inputstream = None
-    streamer = None
+    service = None
 
     def __init__(self, commands, inputstream):
         self.commands = commands
         self.inputstream = inputstream
-        self.streamer = streamer.Streamer()
+        self.service = service.Service()
 
     def execute(self):
 
         if len(self.commands) == 1:
             if self.inputstream is not None:
-               self.streamer.stream(self.inputstream.read().decode())
+
+               f = io.BytesIO()
+               for chunk in iter(partial(self.inputstream.read, 16384), b''):
+                   f.write(chunk)
+
+               self.service.add_job(lambda: self.service.stream(f))
 
             return None
 
@@ -36,19 +43,26 @@ class CLI:
             return io.BytesIO(scanned.encode("utf-8"))
 
         if self.commands[1] == "connect":
-            self.streamer.connect()
+            self.service.add_job(self.service.connect)
             return
 
         if self.commands[1] == "disconnect":
-            self.streamer.disconnect()
+            self.service.add_job(self.service.disconnect)
             return
 
+        if self.commands[1] == "reset":
+            self.service.add_job(self.service.reset)
+
         if self.commands[1] == "stop":
-            self.streamer.stop()
+            self.service.add_job(self.service.stop)
+
+        if self.commands[1] == "resume":
+            self.service.add_job(self.service.resume)
 
         if self.commands[1] == "device":
             if len(self.commands) > 2:
-                self.streamer.device(self.commands[2])
+                #self.streamer.device(self.commands[2])
+                pass
 
         return None
 
