@@ -6,13 +6,10 @@ import sys
 import glob
 import serial
 import io
-import logger
 import service
 from functools import partial
 from serial.tools import list_ports
 
-logging = logger.Logger()
-logging.setLevel(logger.INFO)
 
 class CLI:
     commands = None

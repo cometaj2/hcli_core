@@ -4,8 +4,12 @@ import serial
 import re
 import time
 import inspect
+import logger
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
+
+logging = logger.Logger()
+logging.setLevel(logger.INFO)
 
 device = None
 
@@ -29,7 +33,7 @@ class Service:
         return
 
     def connect(self):
-        print ("Initializing Grbl...")
+        logging.info("Initializing Grbl...")
 
         bline = b'\x18'
         device.write(bline)
@@ -38,13 +42,14 @@ class Service:
         line = re.sub('\s|\(.*?\)','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
         while device.inWaiting() > 0 :
             response = device.readline().strip() # wait for grbl response
-            print ("[ " + line + " ] " + response.decode())
+            logging.info("[ " + line + " ] " + response.decode())
 
         device.reset_input_buffer()
         device.reset_output_buffer()
         return
 
     def disconnect(self):
+
         bline = b'\x18'
         device.write(bline)
         device.reset_input_buffer()
@@ -53,6 +58,9 @@ class Service:
 
     def reset(self):
 
+        device.reset_input_buffer()
+        device.reset_output_buffer()
+
         bline = b'\x18'
         device.write(bline)
         time.sleep(2)
@@ -60,7 +68,7 @@ class Service:
         line = re.sub('\s|\(.*?\)','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
         while device.inWaiting() > 0 :
             response = device.readline().strip() # wait for grbl response
-            print ("[ " + line + " ] " + response.decode())
+            logging.info("[ " + line + " ] " + response.decode())
 
         return
 
@@ -68,12 +76,14 @@ class Service:
 
         bline = b'!'
         device.write(bline)
+
         return
 
     def resume(self):
 
         bline = b'~'
         device.write(bline)
+
         return
 
     def stream(self, inputstream):
@@ -102,18 +112,18 @@ class Service:
                 while sum(serial_buffer) >= self.rx_buffer_size-1 | device.inWaiting():
                     response = device.readline().strip() # wait for grbl response 
                     if response.find(str.encode('ok')) >= 0:
-                        print ("[ " + line + " ] " + response.decode())
+                        logging.info("[ " + line + " ] " + response.decode())
                         g_count += 1 # Iterate g-code counter
                         del serial_buffer[0] # Delete the block character count corresponding to the last 'ok'
                     elif response.find(str.encode('ok')) < 0 and response.find(str.encode('error')) < 0:
-                        print ("[ " + line + " ] " + response.decode())
+                        logging.info("[ " + line + " ] " + response.decode())
                     elif response.find(str.encode('error')) >= 0:
-                        print ("[ " + line + " ] " + response.decode())
+                        logging.info("[ " + line + " ] " + response.decode())
                         g_count += 1 # Iterate g-code counter
                         del serial_buffer[0] # Delete the block character count corresponding to the last 'ok'
                         raise Exception("error")
                     elif response.find(str.encode('ok')) < 0:
-                        print ("[ " + line + " ] " + response.decode())
+                        logging.info("[ " + line + " ] " + response.decode())
                         g_count += 1 # Iterate g-code counter
                         del serial_buffer[0] # Delete the block character count corresponding to the last 'ok'
 
@@ -123,18 +133,18 @@ class Service:
             while l_count > g_count:
                 response = device.readline().strip() # Wait for grbl response
                 if response.find(str.encode('ok')) >= 0:
-                    print ("[ " + line + " ] " + response.decode())
+                    logging.info("[ " + line + " ] " + response.decode())
                     g_count += 1 # Iterate g-code counter
                     del serial_buffer[0] # Delete the block character count corresponding to the last 'ok'
                 if response.find(str.encode('ok')) < 0 and response.find(str.encode('error')) < 0:
-                    print ("[ " + line + " ] " + response.decode())
+                    logging.info("[ " + line + " ] " + response.decode())
                 elif response.find(str.encode('error')) >= 0:
-                    print ("[ " + line + " ] " + response.decode())
+                    logging.info("[ " + line + " ] " + response.decode())
                     g_count += 1 # Iterate g-code counter
                     del serial_buffer[0] # Delete the block character count corresponding to the last 'ok'
                     raise Exception("error")
                 elif response.find(str.encode('ok')) < 0:
-                    print ("[ " + line + " ] " + response.decode())
+                    logging.info("[ " + line + " ] " + response.decode())
                     g_count += 1 # Iterate g-code counter
                     del serial_buffer[0] # Delete the block character count corresponding to the last 'ok'
 
