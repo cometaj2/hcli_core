@@ -50,6 +50,9 @@ class CLI:
         if self.commands[1] == "reset":
             self.service.add_job(self.service.reset)
 
+        if self.commands[1] == "status":
+            self.service.add_job(self.service.status)
+
         if self.commands[1] == "stop":
             self.service.add_job(self.service.stop)
 

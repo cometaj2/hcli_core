@@ -72,6 +72,19 @@ class Service:
 
         return
 
+    def status(self):
+
+        bline = b'?'
+        device.write(bline)
+        time.sleep(2)
+     
+        line = re.sub('\s|\(.*?\)','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
+        while device.inWaiting() > 0 :
+            response = device.readline().strip() # wait for grbl response
+            logging.info("[ " + line + " ] " + response.decode())
+
+        return
+
     def stop(self):
 
         bline = b'!'
@@ -151,3 +164,5 @@ class Service:
         except:
             device.reset_input_buffer()
             device.reset_output_buffer()
+            while device.inWaiting() > 0:
+                response = device.readline().strip()

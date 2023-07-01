@@ -18,6 +18,10 @@
             "http": "post"
         },
         {
+            "command": "hc status",
+            "http": "post"
+        },
+        {
             "command": "hc stop",
             "http": "post"
         },
@@ -71,6 +75,11 @@
                     "href": "hcreset",
                     "name": "reset",
                     "description": "The \"reset\" command stops the CNC by sending the ctrl-x command to the GRBL controller."
+                },
+                {
+                    "href": "hcstatus",
+                    "name": "status",
+                    "description": "The \"status\" command returns the current status of the GRBL controller by sending the ? command."
                 },
                 {
                     "href": "hcstop",
@@ -148,6 +157,24 @@
                 {
                     "name": "description",
                     "description": "The \"reset\" command sends the ctrl-x signal (0x18) to the GRBL controller. The immediately halts and safely resets Grbl without a power-cycle."
+                }
+            ]
+        },
+        {
+            "id": "hcstatus",
+            "name": "status",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "status - sends the ctrl-x signal (0x18) to the GRBL controller."
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hc stop"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"status\" command sends the status signal (?) to the GRBL controller. "
                 }
             ]
         },
