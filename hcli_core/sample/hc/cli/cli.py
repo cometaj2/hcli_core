@@ -30,7 +30,11 @@ class CLI:
                for chunk in iter(partial(self.inputstream.read, 16384), b''):
                    f.write(chunk)
 
-               self.service.add_job(lambda: self.service.stream(f))
+               command = f.getvalue().decode().strip()
+               if len(command) > 2 or command == '$h':
+                   self.service.add_job(lambda: self.service.stream(f))
+               else:
+                   self.service.add_job(lambda: self.service.simple_command(f))
 
             return None
 
