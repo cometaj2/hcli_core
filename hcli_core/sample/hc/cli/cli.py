@@ -32,7 +32,7 @@ class CLI:
 
                command = f.getvalue().decode().strip()
                if len(command) > 2 or command == '$h':
-                   self.service.add_job(lambda: self.service.stream(f))
+                   self.service.stream(f)
                else:
                    self.service.add_job(lambda: self.service.simple_command(f))
 
