@@ -81,7 +81,7 @@ class Service:
             response = device.readline().strip() # wait for grbl response
             logging.info("[ " + line + " ] " + response.decode())
 
-        #self.clear()
+        self.clear()
         return
 
     def status(self):

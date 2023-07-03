@@ -55,10 +55,10 @@ class Streamer:
                         logging.info("[ " + line + " ] " + response.decode())
                         g_count += 1
                         del serial_buffer[0] # Delete the block character count corresponding to the last 'ok'
-                    else:
-                        logging.info("[ " + line + " ] " + response.decode())
-                        g_count += 1
-                        del serial_buffer[0] # Delete the block character count corresponding to the last 'ok'
+                    #else:
+                    #    logging.info("[ " + line + " ] " + response.decode())
+                    #    g_count += 1
+                    #    del serial_buffer[0] # Delete the block character count corresponding to the last 'ok'
 
                 device.write(str.encode(line + '\n')) # Send g-code block to grbl
 
@@ -80,10 +80,10 @@ class Streamer:
                     logging.info("[ " + line + " ] " + response.decode())
                     g_count += 1
                     del serial_buffer[0] # Delete the block character count corresponding to the last 'ok'
-                else:
-                    logging.info("[ " + line + " ] " + response.decode())
-                    g_count += 1
-                    del serial_buffer[0] # Delete the block character count corresponding to the last 'ok'
+                #else:
+                #    logging.info("[ " + line + " ] " + response.decode())
+                #    g_count += 1
+                #    del serial_buffer[0] # Delete the block character count corresponding to the last 'ok'
 
         except:
             self.clear(device)
