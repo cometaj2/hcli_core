@@ -6,7 +6,8 @@ import time
 import inspect
 import logger
 import streamer as s
-import queue as q
+import squeue as q
+import filelocker as fl
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -14,29 +15,33 @@ logging = logger.Logger()
 logging.setLevel(logger.INFO)
 
 device = None
+scheduler = None
+streamer = s.Streamer()
 
 class Service:
     rx_buffer_size = 128
     baud_rate = 115200
     device_path = "/dev/tty.usbserial-AR0JI0GV"
     scheduler = None
-    streamer = None
-    root = os.path.dirname(inspect.getfile(lambda: None))
     queue = None
+    root = os.path.dirname(inspect.getfile(lambda: None))
 
     def __init__(self):
         global device
-        device = serial.Serial(self.device_path, self.baud_rate, timeout=1)
-        self.streamer = s.Streamer()
+        global scheduler
 
-        queue = q.Queue()
-        self.scheduler = BackgroundScheduler()
-        self.scheduler.start()
+        device = serial.Serial(self.device_path, self.baud_rate)
+        #device = serial.Serial(self.device_path, self.baud_rate, timeout=1) # timeout if we want to release and retry instead of locking and waiting on device read
+
+        self.queue = q.SQueue()
+        scheduler = BackgroundScheduler()
+        process = self.add_job(self.process_job_queue)
+        scheduler.start()
+
         return
 
     def add_job(self, function):
-        self.scheduler.add_job(function, 'date', run_date=datetime.now(), max_instances=1)
-        return
+        return scheduler.add_job(function, 'date', run_date=datetime.now(), max_instances=1)
 
     def connect(self):
         logging.info("Initializing Grbl...")
@@ -65,17 +70,18 @@ class Service:
         device.close()
 
     def reset(self):
-        self.clear()
+        self.queue.clear()
 
         bline = b'\x18'
         device.write(bline)
-        time.sleep(1)
+        time.sleep(2)
 
         line = re.sub('\s|\(.*?\)','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
         while device.inWaiting():
             response = device.readline().strip() # wait for grbl response
             logging.info("[ " + line + " ] " + response.decode())
 
+        #self.clear()
         return
 
     def status(self):
@@ -137,7 +143,9 @@ class Service:
         streamcopy = io.BytesIO(inputstream.getvalue())
         inputstream.close()
 
-        self.add_job(lambda: self.streamer.stream(device, streamcopy))
+        job = self.queue.put(lambda: streamer.stream(device, streamcopy))
+        logging.info("Queued jobs: " + str(self.queue.qsize()))
+        return
 
     def clear(self):
         device.reset_input_buffer()
@@ -145,12 +153,12 @@ class Service:
         while device.inWaiting():
             response = device.read(200)
 
-    def add_job_to_queue(function):
-        job_queue.put(function))
+    def process_job_queue(self):
 
-    def process_job_queue():
-        while True:
-            if not self.queue.empty():
-                function = self.queue.get()
-                function
+        with streamer.lock:
+            while True:
+                if not streamer.is_running and not self.queue.empty():
+                    job = self.add_job(self.queue.get())
+                    logging.info("Queued jobs: " + str(self.queue.qsize()) + ". Streaming job: " + job.id )
+
                 time.sleep(1)

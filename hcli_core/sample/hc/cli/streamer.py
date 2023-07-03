@@ -2,23 +2,30 @@ import io
 import re
 import serial
 import logger
+import threading
+import time
 
 logging = logger.Logger()
 logging.setLevel(logger.INFO)
 
+# Singleton Streamer
 class Streamer:
     instance = None
     rx_buffer_size = 128
+    is_running = False
+    lock = None
 
     def __new__(cls):
         if cls.instance is None:
 
             cls.instance = super().__new__(cls)
+            cls.lock = threading.Lock()
 
         return cls.instance
 
     # g-code streaming that keeps the GRBL serial buffer full
     def stream(self, device, inputstream):
+        self.is_running = True
         ins = io.StringIO(inputstream.getvalue().decode())
 
         l_count = 0 # line counter
@@ -48,6 +55,10 @@ class Streamer:
                         logging.info("[ " + line + " ] " + response.decode())
                         g_count += 1
                         del serial_buffer[0] # Delete the block character count corresponding to the last 'ok'
+                    else:
+                        logging.info("[ " + line + " ] " + response.decode())
+                        g_count += 1
+                        del serial_buffer[0] # Delete the block character count corresponding to the last 'ok'
 
                 device.write(str.encode(line + '\n')) # Send g-code block to grbl
 
@@ -69,9 +80,20 @@ class Streamer:
                     logging.info("[ " + line + " ] " + response.decode())
                     g_count += 1
                     del serial_buffer[0] # Delete the block character count corresponding to the last 'ok'
+                else:
+                    logging.info("[ " + line + " ] " + response.decode())
+                    g_count += 1
+                    del serial_buffer[0] # Delete the block character count corresponding to the last 'ok'
 
         except:
             self.clear(device)
+        finally:
+            time.sleep(2)
+            self.is_running = False
+            return
+
+        return
+
 
     def clear(self, device):
         device.reset_input_buffer()
