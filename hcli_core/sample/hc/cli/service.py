@@ -7,7 +7,6 @@ import inspect
 import logger
 import streamer as s
 import squeue as q
-import filelocker as fl
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 

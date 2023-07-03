@@ -94,7 +94,6 @@ class Streamer:
 
         return
 
-
     def clear(self, device):
         device.reset_input_buffer()
         device.reset_output_buffer()
