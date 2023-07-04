@@ -53,7 +53,7 @@
                 },
                 {
                     "name": "description",
-                    "description": "The \"hc\" HCLI allows you to control a CNC through the command line (e.g. OpenBuilds C-Beam Machine) via the GRBL protocol. You can send G-Code commands as an input stream, and the GRBL service will respond accordingly.\\n\\nThis HCLI relies on the use of a serial port to a GRBL compliant device. You can scan to find out which serial device you can send G-Code streams to."
+                    "description": "The \"hc\" HCLI allows you to control a CNC through the command line (e.g. OpenBuilds C-Beam Machine) via the GRBL protocol. You can send G-Code commands as an input stream, and the GRBL service will respond accordingly.\\n\\nThis HCLI relies on the use of a serial port to a GRBL compliant device. You can scan to find out which serial device you can send G-Code streams to.\\n\\nNote that the hc CNC HCLI doesn't queue jobs properly for sequential streaming execution in a multiprocess context (e.g. multiple workers under gunicorn. Please configure the environment such that the HCLI runs in a single process (e.g. --workers=1 under a gunicorn configuration. See \"hcli_core help\" for a sample configuration for hc)."
                 },
                 {
                     "name": "examples",

@@ -34,7 +34,7 @@ class CLI:
                if len(command) > 2 or command == '$h':
                    self.service.stream(f)
                else:
-                   self.service.add_job(lambda: self.service.simple_command(f))
+                   self.service.simple_command(f)
 
             return None
 
@@ -44,24 +44,24 @@ class CLI:
             return io.BytesIO(scanned.encode("utf-8"))
 
         if self.commands[1] == "connect":
-            self.service.add_job(self.service.connect)
+            self.service.connect()
             return
 
         if self.commands[1] == "disconnect":
-            self.service.add_job(self.service.disconnect)
+            self.service.disconnect()
             return
 
         if self.commands[1] == "reset":
             self.service.add_job(self.service.reset)
 
         if self.commands[1] == "status":
-            self.service.add_job(self.service.status)
+            self.service.status()
 
         if self.commands[1] == "stop":
-            self.service.add_job(self.service.stop)
+            self.service.stop()
 
         if self.commands[1] == "resume":
-            self.service.add_job(self.service.resume)
+            self.service.resume()
 
         if self.commands[1] == "device":
             if len(self.commands) > 2:

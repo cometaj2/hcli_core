@@ -29,8 +29,10 @@ class Service:
         global device
         global scheduler
 
-        device = serial.Serial(self.device_path, self.baud_rate)
-        #device = serial.Serial(self.device_path, self.baud_rate, timeout=1) # timeout if we want to release and retry instead of locking and waiting on device read
+        #device = serial.Serial(self.device_path, self.baud_rate)
+
+        # timeout if we want to release and retry instead of blocking and waiting on device read
+        device = serial.Serial(self.device_path, self.baud_rate, timeout=1)
 
         self.queue = q.SQueue()
         scheduler = BackgroundScheduler()
@@ -61,8 +63,6 @@ class Service:
 
         bline = b'\x18'
         device.write(bline)
-        device.write(bline)
-        device.write(bline)
         time.sleep(1)
 
         self.clear()
@@ -84,49 +84,26 @@ class Service:
         return
 
     def status(self):
-
-        bline = b'?'
-        device.write(bline)
-        time.sleep(1)
-
-        line = re.sub('\s|\(.*?\)','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
-        while device.inWaiting():
-            response = device.readline().strip() # wait for grbl response
-            logging.info("[ " + line + " ] " + response.decode())
-
+        streamer.put(io.BytesIO(b'?'))
         return
 
     def stop(self):
-
-        bline = b'!'
-        device.write(bline)
-        logging.info("[ " + bline.decode() + " ] " + "ok")
-
+        streamer.put(io.BytesIO(b'!'))
         return
 
     def resume(self):
-
-        bline = b'~'
-        device.write(bline)
-        logging.info("[ " + bline.decode() + " ] " + "ok")
-
+        streamer.put(io.BytesIO(b'~'))
         return
 
     def simple_command(self, inputstream):
 
         ins = io.BytesIO(inputstream.getvalue())
         sl = ins.getvalue().decode().strip()
-        if sl == '!':
-            self.stop()
-            return
-        elif sl == '~':
-            self.resume()
-            return
-        elif sl == '?':
-            self.status()
-            return
 
-        bline = str.encode(sl + '\n')
+        if sl == '?' or sl == '!' or sl == '?':
+            bline = str.encode(sl)
+        else:
+            bline = str.encode(sl + "\n")
         device.write(bline)
         time.sleep(1)
 
