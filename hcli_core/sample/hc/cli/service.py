@@ -86,6 +86,10 @@ class Service:
         immediate.put(io.BytesIO(b'?'))
         return
 
+    def home(self):
+        self.stream(io.BytesIO(b'$H'))
+        return
+
     def stop(self):
         immediate = i.Immediate()
         immediate.put(io.BytesIO(b'!'))

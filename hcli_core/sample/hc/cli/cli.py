@@ -60,6 +60,9 @@ class CLI:
         if self.commands[1] == "stop":
             self.service.stop()
 
+        if self.commands[1] == "home":
+            self.service.home()
+
         if self.commands[1] == "resume":
             self.service.resume()
 

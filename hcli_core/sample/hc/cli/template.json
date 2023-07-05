@@ -14,6 +14,10 @@
             "http": "post"
         },
         {
+            "command": "hc home",
+            "http": "post"
+        },
+        {
             "command": "hc reset",
             "http": "post"
         },
@@ -53,7 +57,7 @@
                 },
                 {
                     "name": "description",
-                    "description": "The \"hc\" HCLI allows you to control a CNC through the command line (e.g. OpenBuilds C-Beam Machine) via the GRBL protocol. You can send G-Code commands as an input stream, and the GRBL service will respond accordingly.\\n\\nThis HCLI relies on the use of a serial port to a GRBL compliant device. You can scan to find out which serial device you can send G-Code streams to.\\n\\nNote that the hc CNC HCLI doesn't queue jobs properly for sequential streaming execution in a multiprocess context (e.g. multiple workers under gunicorn. Please configure the environment such that the HCLI runs in a single process (e.g. --workers=1 under a gunicorn configuration. See \"hcli_core help\" for a sample configuration for hc)."
+                    "description": "The \"hc\" HCLI allows you to control a CNC through the command line (e.g. OpenBuilds C-Beam Machine) via the GRBL protocol. You can send G-Code commands as an input stream, and the GRBL service will respond accordingly.\\n\\nThis HCLI relies on the use of a serial port to a GRBL compliant device. You can scan to find out which serial device you can send G-Code streams to.\\n\\nNote that the hc CNC HCLI doesn't queue jobs properly for sequential streaming execution in a multiprocess context (e.g. multiple workers under gunicorn. Please configure the environment such that the HCLI runs in a single process (e.g. --workers=1 under a gunicorn configuration. See \"hcli_core help\" for a example configuration for hc)."
                 },
                 {
                     "name": "examples",
@@ -95,6 +99,11 @@
                     "href": "hcconnect",
                     "name": "connect",
                     "description": "The \"connect\" command connects to the GRBL controller by attempting to wake it up via the ctrl-x command."
+                },
+                {
+                    "href": "hchome",
+                    "name": "home",
+                    "description": "The \"home\" command is used to home the CNC by sending the '$H' signal."
                 },
                 {
                     "href": "hcdisconnect",
@@ -229,6 +238,24 @@
                 {
                     "name": "description",
                     "description": "The \"connect\" command connects to the GRBL controller."
+                }
+            ]
+        },
+        {
+            "id": "hchome",
+            "name": "home",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "home - sends the CNC to the home position; to the configured limit switches for all the axes."
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hc home"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"home\" command is used to home the CNC by sending the '$H' signal."
                 }
             ]
         },
