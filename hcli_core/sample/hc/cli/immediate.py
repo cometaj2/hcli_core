@@ -19,6 +19,9 @@ class Immediate:
     immediate_queue = None
     immediate = None
     paused = None
+    nudge_count = None
+    nudge_logged = None
+    start_time = None
 
     def __new__(self):
         if self.instance is None:
@@ -28,6 +31,8 @@ class Immediate:
             self.immediate_queue = q.Queue()
             self.immediate = True
             self.paused = False
+            self.nudge_count = 0
+            self.nudge_logged = False
 
         return self.instance
 
@@ -51,7 +56,6 @@ class Immediate:
                         bline = str.encode(sl + "\n").upper()
 
                     device.write(bline)
-                    time.sleep(1)
 
                     line = bline.decode().strip()
 
@@ -64,14 +68,28 @@ class Immediate:
                         response = device.readline().strip()
                         logging.info("[ " + line + " ] " + response.decode())
                     else:
+
+                        self.start_time = time.monotonic()  # Get the current time at the start to evaluate stalling and nudging
+                        while device.inWaiting() == 0:
+                            self.stalled(device)
+                            time.sleep(1)
+
                         while device.inWaiting() > 0:
                             response = device.readline().strip() # wait for grbl response
-                            logging.info("[ " + line + " ] " + response.decode())
+                            if self.nudge_count > 0:
+                                logging.info("[ " + line + " ] " + response.decode())
+                                self.nudge_logged = True
+                                self.nudge_count = 0
+                            elif not self.nudge_logged:
+                                logging.info("[ " + line + " ] " + response.decode())
+
+                            time.sleep(1/100)
+                        self.nudge_logged = False
 
                     if line == '~':
                         self.paused = False
 
-                time.sleep(1/5000)
+                time.sleep(1/100)
 
         except Exception as exception:
             logging.error("[ Immediate processing ] " + str(exception))
@@ -80,3 +98,16 @@ class Immediate:
             self.immediate = False
 
         return
+
+    # If we've been stalled for more than some amount of time, we nudge the GRBL controller with an empty byte array
+    # We reset the timer after nudging to avoid excessive nudging for long operations.
+    def stalled(self, device):
+        current_time = time.monotonic()
+        elapsed_time = current_time - self.start_time
+        logging.debug(elapsed_time)
+
+        if elapsed_time >= 1:
+            self.start_time = time.monotonic()
+            self.nudge_count += 1
+            logging.info("[ Nudge ] " + str(self.nudge_count))
+            device.write(b'\n')    

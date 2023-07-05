@@ -6,13 +6,13 @@ class SQueue:
     instance = None
     queue = None
 
-    def __new__(cls):
-        if cls.instance is None:
+    def __new__(self):
+        if self.instance is None:
 
-            cls.instance = super().__new__(cls)
-            cls.queue = q.Queue()
+            self.instance = super().__new__(self)
+            self.queue = q.Queue()
 
-        return cls.instance
+        return self.instance
 
     def put(self, function):
         return self.queue.put(function)

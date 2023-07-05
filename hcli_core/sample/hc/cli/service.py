@@ -1,4 +1,5 @@
 import io
+import sys
 import os
 import serial
 import re
@@ -43,38 +44,51 @@ class Service:
         return scheduler.add_job(function, 'date', run_date=datetime.now(), max_instances=1)
 
     def connect(self):
-        logging.info("Initializing Grbl...")
+        logging.info("Waking up GRBL...")
 
-        bline = b'\x18'
+        bline = b'\r\n\r\n'
         device.write(bline)
         time.sleep(2)
 
         line = re.sub('\s|\(.*?\)','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
-        while device.inWaiting():
+        while device.inWaiting() > 0:
             response = device.readline().strip() # wait for grbl response
             logging.info("[ " + line + " ] " + response.decode())
 
         self.clear()
         return
 
+    # We kick off to a deferred execution and since we cleared the job queue, shutting down executes immediately.
     def disconnect(self):
+        immediate = i.Immediate()
+        immediate.immediate_queue.queue.clear()
+        self.queue.clear()
+        scheduler.remove_all_jobs()
 
         bline = b'\x18'
         device.write(bline)
-        time.sleep(1)
+        time.sleep(2)
 
-        self.clear()
-        device.close()
+        def shutdown():
+            self.clear()
+            device.close()
+            sys.exit(0)
+
+        job = self.queue.put(lambda: shutdown())
+        return
 
     def reset(self):
+        immediate = i.Immediate()
+        immediate.immediate_queue.queue.clear()
         self.queue.clear()
+        scheduler.remove_all_jobs()
 
         bline = b'\x18'
         device.write(bline)
         time.sleep(2)
 
         line = re.sub('\s|\(.*?\)','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
-        while device.inWaiting():
+        while device.inWaiting() > 0:
             response = device.readline().strip() # wait for grbl response
             logging.info("[ " + line + " ] " + response.decode())
 
@@ -90,6 +104,11 @@ class Service:
         self.stream(io.BytesIO(b'$H'))
         return
 
+    def unlock(self):
+        immediate = i.Immediate()
+        immediate.put(io.BytesIO(b'$X'))
+        return
+
     def stop(self):
         immediate = i.Immediate()
         immediate.put(io.BytesIO(b'!'))
@@ -98,6 +117,11 @@ class Service:
     def resume(self):
         immediate = i.Immediate()
         immediate.put(io.BytesIO(b'~'))
+        return
+
+    def jobs(self):
+        job_names = [job.id for job in scheduler.get_jobs()]
+        print(job_names)
         return
 
     def simple_command(self, inputstream):
@@ -121,7 +145,6 @@ class Service:
             response = device.read(200)
 
     def process_job_queue(self):
-
         with streamer.lock:
             immediate = i.Immediate()
             while True:

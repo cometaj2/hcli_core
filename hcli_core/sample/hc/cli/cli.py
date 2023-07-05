@@ -63,6 +63,9 @@ class CLI:
         if self.commands[1] == "home":
             self.service.home()
 
+        if self.commands[1] == "unlock":
+            self.service.unlock()
+
         if self.commands[1] == "resume":
             self.service.resume()
 

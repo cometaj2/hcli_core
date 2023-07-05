@@ -18,6 +18,10 @@
             "http": "post"
         },
         {
+            "command": "hc unlock",
+            "http": "post"
+        },
+        {
             "command": "hc reset",
             "http": "post"
         },
@@ -78,7 +82,7 @@
                 {
                     "href": "hcreset",
                     "name": "reset",
-                    "description": "The \"reset\" command stops the CNC by sending the ctrl-x command to the GRBL controller."
+                    "description": "The \"reset\" command stops the CNC by sending the soft reset ctrl-x command to the GRBL controller."
                 },
                 {
                     "href": "hcstatus",
@@ -104,6 +108,11 @@
                     "href": "hchome",
                     "name": "home",
                     "description": "The \"home\" command is used to home the CNC by sending the '$H' signal."
+                },
+                {
+                    "href": "hcunlock",
+                    "name": "unlock",
+                    "description": "The \"unlock\" command is used to kill an alarm lock by sending the '$X' signal."
                 },
                 {
                     "href": "hcdisconnect",
@@ -157,7 +166,7 @@
             "section": [
                 {
                     "name": "name",
-                    "description": "reset - sends the ctrl-x signal (0x18) to the GRBL controller."
+                    "description": "reset - sends the soft reset ctrl-x signal (0x18) to the GRBL controller."
                 },
                 {
                     "name": "synopsis",
@@ -165,7 +174,7 @@
                 },
                 {
                     "name": "description",
-                    "description": "The \"reset\" command sends the ctrl-x signal (0x18) to the GRBL controller. The immediately halts and safely resets Grbl without a power-cycle."
+                    "description": "The \"reset\" command sends the ctrl-x signal (0x18) to the GRBL controller. The immediately halts and safely soft resets Grbl without a power-cycle."
                 }
             ]
         },
@@ -256,6 +265,24 @@
                 {
                     "name": "description",
                     "description": "The \"home\" command is used to home the CNC by sending the '$H' signal."
+                }
+            ]
+        },
+        {
+            "id": "hcunlock",
+            "name": "unlock",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "unlock - unlocks the GRBL controller after an alarm is raised."
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hc home"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"unlock\" command is used to kill an alarm lock by sending the '$X' signal."
                 }
             ]
         },
