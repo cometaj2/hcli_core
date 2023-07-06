@@ -44,7 +44,8 @@ class CLI:
             return io.BytesIO(scanned.encode("utf-8"))
 
         if self.commands[1] == "connect":
-            self.service.connect()
+            if len(self.commands) > 2:
+                self.service.connect(self.commands[2])
             return
 
         if self.commands[1] == "disconnect":
@@ -68,11 +69,6 @@ class CLI:
 
         if self.commands[1] == "resume":
             self.service.resume()
-
-        if self.commands[1] == "device":
-            if len(self.commands) > 2:
-                #self.streamer.device(self.commands[2])
-                pass
 
         return None
 

@@ -4,12 +4,12 @@ import serial
 import logger
 import threading
 import queue as q
+import device as d
 import time
 
 logging = logger.Logger()
 logging.setLevel(logger.INFO)
 
-global device
 
 # Singleton Immediate
 class Immediate:
@@ -22,6 +22,7 @@ class Immediate:
     nudge_count = None
     nudge_logged = None
     start_time = None
+    device = None
 
     def __new__(self):
         if self.instance is None:
@@ -33,6 +34,7 @@ class Immediate:
             self.paused = False
             self.nudge_count = 0
             self.nudge_logged = False
+            self.device = d.Device()
 
         return self.instance
 
@@ -42,7 +44,7 @@ class Immediate:
         self.immediate_queue.put(inputstream.getvalue())
         return
 
-    def process_immediate(self, device):
+    def process_immediate(self):
         try:
             while not self.immediate_queue.empty() or self.paused:
                 if not self.immediate_queue.empty():
@@ -55,7 +57,7 @@ class Immediate:
                     else:
                         bline = str.encode(sl + "\n").upper()
 
-                    device.write(bline)
+                    self.device.write(bline)
 
                     line = bline.decode().strip()
 
@@ -65,17 +67,17 @@ class Immediate:
                     if line == '!' or line == '~':
                         logging.info("[ " + line + " ] " + "ok")
                     elif line == '?':
-                        response = device.readline().strip()
+                        response = self.device.readline().strip()
                         logging.info("[ " + line + " ] " + response.decode())
                     else:
 
                         self.start_time = time.monotonic()  # Get the current time at the start to evaluate stalling and nudging
-                        while device.inWaiting() == 0:
-                            self.stalled(device)
+                        while self.device.inWaiting() == 0:
+                            self.stalled()
                             time.sleep(1)
 
-                        while device.inWaiting() > 0:
-                            response = device.readline().strip() # wait for grbl response
+                        while self.device.inWaiting() > 0:
+                            response = self.device.readline().strip() # wait for grbl response
                             if self.nudge_count > 0:
                                 logging.info("[ " + line + " ] " + response.decode())
                                 self.nudge_logged = True
@@ -92,7 +94,7 @@ class Immediate:
                 time.sleep(1/100)
 
         except Exception as exception:
-            logging.error("[ Immediate processing ] " + str(exception))
+            logging.error("[ immediate processing ] " + str(exception))
         finally:
             self.paused = False
             self.immediate = False
@@ -101,7 +103,7 @@ class Immediate:
 
     # If we've been stalled for more than some amount of time, we nudge the GRBL controller with an empty byte array
     # We reset the timer after nudging to avoid excessive nudging for long operations.
-    def stalled(self, device):
+    def stalled(self):
         current_time = time.monotonic()
         elapsed_time = current_time - self.start_time
         logging.debug(elapsed_time)
@@ -109,5 +111,5 @@ class Immediate:
         if elapsed_time >= 1:
             self.start_time = time.monotonic()
             self.nudge_count += 1
-            logging.info("[ Nudge ] " + str(self.nudge_count))
-            device.write(b'\n')    
+            logging.debug("[ nudge ] " + str(self.nudge_count))
+            self.device.write(b'\n')    

@@ -14,6 +14,7 @@ class SQueue:
 
         return self.instance
 
+    # adds a named job to the queue
     def put(self, function):
         return self.queue.put(function)
 

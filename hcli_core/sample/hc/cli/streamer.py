@@ -5,6 +5,7 @@ import logger
 import threading
 import queue as q
 import immediate as i
+import device as d
 import time
 
 logging = logger.Logger()
@@ -19,6 +20,7 @@ class Streamer:
     start_time = None
     nudge_count = None
     nudge_logged = None
+    device = None
 
     def __new__(self):
         if self.instance is None:
@@ -29,11 +31,12 @@ class Streamer:
             self.immediate = True
             self.nudge_count = 0
             self.nudge_logged = False
+            self.device = d.Device()
 
         return self.instance
 
     # simple g-code streaming
-    def stream(self, device, inputstream):
+    def stream(self, inputstream):
         self.is_running = True
         ins = io.StringIO(inputstream.getvalue().decode())
 
@@ -41,15 +44,15 @@ class Streamer:
             for l in ins:
 
                 line = re.sub('\s|\(.*?\)','',l).upper() # Strip comments/spaces/new line and capitalize
-                device.write(str.encode(line + '\n')) # Send g-code block to grbl
+                self.device.write(str.encode(line + '\n')) # Send g-code block to grbl
 
                 self.start_time = time.monotonic()  # Get the current time at the start to evaluate stalling and nudging
-                while device.inWaiting() == 0:
-                    self.stalled(device)
+                while self.device.inWaiting() == 0:
+                    self.stalled()
                     time.sleep(1/100)
 
-                while device.inWaiting() > 0:
-                    response = device.readline().strip()
+                while self.device.inWaiting() > 0:
+                    response = self.device.readline().strip()
                     if self.nudge_count > 0:
                         logging.info("[ " + line + " ] " + response.decode())
                         self.nudge_logged = True
@@ -64,10 +67,10 @@ class Streamer:
                 self.nudge_logged = False
 
                 immediate = i.Immediate()
-                immediate.process_immediate(device)
+                immediate.process_immediate()
 
         except:
-            self.clear(device)
+            self.clear()
         finally:
             time.sleep(2)
             self.nudge_count = 0
@@ -80,7 +83,7 @@ class Streamer:
 
     # If we've been stalled for more than some amount of time, we nudge the GRBL controller with an empty byte array
     # We reset the timer after nudging to avoid excessive nudging for long operations.
-    def stalled(self, device):
+    def stalled(self):
         current_time = time.monotonic()
         elapsed_time = current_time - self.start_time
         logging.debug(elapsed_time)
@@ -88,11 +91,11 @@ class Streamer:
         if elapsed_time >= 2:
             self.start_time = time.monotonic()
             self.nudge_count += 1
-            logging.debug("[ Nudge ] " + str(self.nudge_count))
-            device.write(b'\n')
+            logging.debug("[ nudge ] " + str(self.nudge_count))
+            self.device.write(b'\n')
 
-    def clear(self, device):
-        device.reset_input_buffer()
-        device.reset_output_buffer()
-        while device.inWaiting():
-            response = device.read(200)
+    def clear(self):
+        self.device.reset_input_buffer()
+        self.device.reset_output_buffer()
+        while self.device.inWaiting():
+            response = self.device.read(200)
