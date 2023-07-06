@@ -91,7 +91,7 @@ class Streamer:
         if elapsed_time >= 2:
             self.start_time = time.monotonic()
             self.nudge_count += 1
-            logging.debug("[ nudge ] " + str(self.nudge_count))
+            logging.info("[ nudge " + str(self.nudge_count) + " ] ")
             self.device.write(b'\n')
 
     def clear(self):

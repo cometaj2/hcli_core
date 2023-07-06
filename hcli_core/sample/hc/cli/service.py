@@ -41,7 +41,10 @@ class Service:
 
     def connect(self, device_path):
         self.device.set(device_path)
-        logging.info("[ wake up grbl... ] " + device_path.strip('"'))
+        logging.info("[ wake up grbl... ] ")
+
+        immediate = i.Immediate()
+        immediate.immediate_queue.queue.clear()
 
         bline = b'\r\n\r\n'
         self.device.write(bline)

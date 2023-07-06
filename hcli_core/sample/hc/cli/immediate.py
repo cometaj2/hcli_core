@@ -64,7 +64,7 @@ class Immediate:
                     if line == '!':
                         self.paused = True
 
-                    if line == '!' or line == '~':
+                    if line == '!' or line == '~' or (line == '$X' and self.paused):
                         logging.info("[ " + line + " ] " + "ok")
                     elif line == '?':
                         response = self.device.readline().strip()
@@ -98,6 +98,9 @@ class Immediate:
         finally:
             self.paused = False
             self.immediate = False
+            self.paused = False
+            self.nudge_logged = False
+            self.nudge_count = 0
 
         return
 
@@ -111,5 +114,5 @@ class Immediate:
         if elapsed_time >= 1:
             self.start_time = time.monotonic()
             self.nudge_count += 1
-            logging.debug("[ nudge ] " + str(self.nudge_count))
+            logging.info("[ nudge " + str(self.nudge_count) + " ] ")
             self.device.write(b'\n')    
