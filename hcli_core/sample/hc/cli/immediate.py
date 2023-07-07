@@ -2,9 +2,9 @@ import io
 import re
 import serial
 import logger
-import threading
 import queue as q
 import device as d
+import streamer as s
 import time
 
 logging = logger.Logger()
@@ -15,7 +15,6 @@ logging.setLevel(logger.INFO)
 class Immediate:
     instance = None
     is_running = False
-    lock = None
     immediate_queue = None
     immediate = None
     paused = None
@@ -28,7 +27,6 @@ class Immediate:
         if self.instance is None:
 
             self.instance = super().__new__(self)
-            self.lock = threading.Lock()
             self.immediate_queue = q.Queue()
             self.immediate = True
             self.paused = False
@@ -52,22 +50,22 @@ class Immediate:
                     sl = ins.getvalue().decode().strip()
 
                     bline = b''
-                    if sl == '?' or sl == '!' or sl == '?':
+                    if sl == '!' or sl == '?':
                         bline = str.encode(sl).upper()
                     else:
                         bline = str.encode(sl + "\n").upper()
 
-                    self.device.write(bline)
-
                     line = bline.decode().strip()
+                    if not (line == '$X' and self.paused) and not (line == '$$' and self.paused):
+                        self.device.write(bline)
 
                     if line == '!':
-                        logging.info("[ " + line + " ] " + "ok")
+                        logging.info("[ hc ] " + line + " ] " + "ok")
                         self.paused = True
                     elif line == '$X' and self.paused:
-                        logging.info("[ hc " + line + " ] " + "not during feed hold")
+                        logging.info("[ hc ] " + line + " " + "not during feed hold")
                     elif line == '$$' and self.paused:
-                        logging.info("[ hc " + line + " ] " + "not during feed hold")
+                        logging.info("[ hc ] " + line + " " + "not during feed hold")
                     elif line == '?':
                         response = self.device.readline().strip()
                         logging.info("[ " + line + " ] " + response.decode())
@@ -99,6 +97,8 @@ class Immediate:
                 time.sleep(1/100)
 
         except Exception as exception:
+            streamer = s.Streamer()
+            streamer.abort()
             self.immediate_queue.queue.clear()
 
         finally:
@@ -120,5 +120,11 @@ class Immediate:
         if elapsed_time >= 1:
             self.start_time = time.monotonic()
             self.nudge_count += 1
-            logging.info("[ hc ] nudge " + str(self.nudge_count))
-            self.device.write(b'\n')    
+            logging.debug("[ hc ] nudge " + str(self.nudge_count))
+            self.device.write(b'\n')
+
+    def clear(self):
+        return self.immediate_queue.queue.clear()
+
+    def empty(self):
+        return self.immediate_queue.empty()

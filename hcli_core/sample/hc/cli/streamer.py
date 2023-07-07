@@ -3,7 +3,7 @@ import re
 import serial
 import logger
 import threading
-import queue as q
+import jobqueue as j
 import immediate as i
 import device as d
 import time
@@ -27,7 +27,8 @@ class Streamer:
 
             self.instance = super().__new__(self)
             self.lock = threading.Lock()
-            self.immediate_queue = q.Queue()
+            self.immediate_queue = i.Immediate()
+            self.job_queue = j.JobQueue()
             self.immediate = True
             self.nudge_count = 0
             self.nudge_logged = False
@@ -42,7 +43,6 @@ class Streamer:
 
         try:
             for l in ins:
-
                 line = re.sub('\s|\(.*?\)','',l).upper() # Strip comments/spaces/new line and capitalize
                 self.device.write(str.encode(line + '\n')) # Send g-code block to grbl
 
@@ -67,11 +67,10 @@ class Streamer:
                     time.sleep(1/100)
                 self.nudge_logged = False
 
-                immediate = i.Immediate()
-                immediate.process_immediate()
+                self.immediate_queue.process_immediate()
 
-        except:
-            self.clear()
+        except Exception as e:
+            self.cleanup()
         finally:
             time.sleep(2)
             self.nudge_count = 0
@@ -89,14 +88,28 @@ class Streamer:
         elapsed_time = current_time - self.start_time
         logging.debug(elapsed_time)
 
-        if elapsed_time >= 2:
+        if elapsed_time >= 1:
             self.start_time = time.monotonic()
             self.nudge_count += 1
-            logging.debug("[ hc ] nudge " + str(self.nudge_count))
+            logging.info("[ hc ] nudge " + str(self.nudge_count))
             self.device.write(b'\n')
 
-    def clear(self):
+    def cleanup(self):
         self.device.reset_input_buffer()
         self.device.reset_output_buffer()
         while self.device.inWaiting():
             response = self.device.read(200)
+
+    def abort(self):
+        self.immediate.immediate_queue.clear()
+        self.job_queue.clear()
+        self.cleanup()
+
+        bline = b'\x18'
+        self.device.write(bline)
+        time.sleep(2)
+
+        line = re.sub('\s|\(.*?\)','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
+        while self.device.inWaiting() > 0:
+            response = self.device.readline().strip() # wait for grbl response
+            logging.info("[ " + line + " ] " + response.decode())

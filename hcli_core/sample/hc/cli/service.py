@@ -7,7 +7,7 @@ import time
 import inspect
 import logger
 import streamer as s
-import squeue as q
+import jobqueue as j
 import immediate as i
 import device as d
 from datetime import datetime
@@ -19,18 +19,17 @@ logging.setLevel(logger.INFO)
 class Service:
     device = None
     scheduler = None
-    queue = None
     device = None
     root = os.path.dirname(inspect.getfile(lambda: None))
 
     def __init__(self):
         global scheduler
-        global streamer
 
         scheduler = BackgroundScheduler()
-        streamer = s.Streamer()
+        self.streamer = s.Streamer()
+        self.immediate = i.Immediate()
+        self.job_queue = j.JobQueue()
         self.device = d.Device()
-        self.queue = q.SQueue()
         process = self.add_job(self.process_job_queue)
         scheduler.start()
 
@@ -43,8 +42,7 @@ class Service:
         self.device.set(device_path)
         logging.info("[ hc ] wake up grbl...")
 
-        immediate = i.Immediate()
-        immediate.immediate_queue.queue.clear()
+        self.immediate.clear()
 
         bline = b'\r\n\r\n'
         self.device.write(bline)
@@ -63,16 +61,15 @@ class Service:
 
     # We soft reset,, kick off to a deferred execution and since we cleared the job queue, shutting down executes immediately.
     def disconnect(self):
-        immediate = i.Immediate()
-        immediate.immediate_queue.queue.clear()
-        self.queue.clear()
+        self.immediate.clear()
+        self.job_queue.clear()
 
         bline = b'\x18'
         self.device.write(bline)
         time.sleep(2)
 
         def shutdown():
-            self.clear()
+            self.cleanup()
             self.device.close()
             sys.exit(0)
 
@@ -80,10 +77,9 @@ class Service:
         return
 
     def reset(self):
-        immediate = i.Immediate()
-        immediate.immediate_queue.queue.clear()
-        self.queue.clear()
-        scheduler.remove_all_jobs()
+        self.immediate.clear()
+        self.job_queue.clear()
+        #scheduler.remove_all_jobs()
 
         bline = b'\x18'
         self.device.write(bline)
@@ -94,31 +90,27 @@ class Service:
             response = self.device.readline().strip() # wait for grbl response
             logging.info("[ " + line + " ] " + response.decode())
 
-        self.clear()
+        self.cleanup()
         return
 
     def status(self):
-        immediate = i.Immediate()
-        immediate.put(io.BytesIO(b'?'))
+        self.immediate.put(io.BytesIO(b'?'))
         return
 
     def home(self):
-        self.stream(io.BytesIO(b'$H'))
+        self.stream(io.BytesIO(b'$H'), '$H')
         return
 
     def unlock(self):
-        immediate = i.Immediate()
-        immediate.put(io.BytesIO(b'$X'))
+        self.immediate.put(io.BytesIO(b'$X'))
         return
 
     def stop(self):
-        immediate = i.Immediate()
-        immediate.put(io.BytesIO(b'!'))
+        self.immediate.put(io.BytesIO(b'!'))
         return
 
     def resume(self):
-        immediate = i.Immediate()
-        immediate.put(io.BytesIO(b'~'))
+        self.immediate.put(io.BytesIO(b'~'))
         return
 
     def jobs(self):
@@ -127,8 +119,7 @@ class Service:
         return
 
     def simple_command(self, inputstream):
-        immediate = i.Immediate()
-        immediate.put(io.BytesIO(inputstream.getvalue()))
+        self.immediate.put(io.BytesIO(inputstream.getvalue()))
         return
 
     # send a streaming job to the queue
@@ -136,11 +127,11 @@ class Service:
         streamcopy = io.BytesIO(inputstream.getvalue())
         inputstream.close()
 
-        job = self.queue.put([jobname, lambda: streamer.stream(streamcopy)])
-        logging.info("[ hc ] queued jobs " + str(self.queue.qsize()) + ". " + jobname)
+        job = self.job_queue.put([jobname, lambda: self.streamer.stream(streamcopy)])
+        logging.info("[ hc ] queued jobs " + str(self.job_queue.qsize()) + ". " + jobname)
         return
 
-    def clear(self):
+    def cleanup(self):
         self.device.reset_input_buffer()
         self.device.reset_output_buffer()
         while self.device.inWaiting():
@@ -148,16 +139,15 @@ class Service:
 
     # we process immediate commands first and then queued jobs in sequence
     def process_job_queue(self):
-        with streamer.lock:
-            immediate = i.Immediate()
+        with self.streamer.lock:
             while True:
-                while not streamer.is_running and not immediate.immediate_queue.empty():
-                    immediate.process_immediate()
-                if not streamer.is_running and not self.queue.empty():
-                    queuedjob = self.queue.get()
+                while not self.streamer.is_running and not self.immediate.empty():
+                    self.immediate.process_immediate()
+                if not self.streamer.is_running and not self.job_queue.empty():
+                    queuedjob = self.job_queue.get()
                     jobname = queuedjob[0]
                     lambdajob = queuedjob[1]
                     job = self.add_job(lambdajob)
-                    logging.info("[ hc ] queued jobs " + str(self.queue.qsize()) + ". streaming job: " + job.id + " " + jobname )
+                    logging.info("[ hc ] queued jobs " + str(self.job_queue.qsize()) + ". streaming job: " + job.id + " " + jobname )
 
                 time.sleep(1)
