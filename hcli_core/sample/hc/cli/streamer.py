@@ -29,7 +29,6 @@ class Streamer:
             self.lock = threading.Lock()
             self.immediate_queue = i.Immediate()
             self.job_queue = j.JobQueue()
-            self.immediate = True
             self.nudge_count = 0
             self.nudge_logged = False
             self.device = d.Device()
@@ -74,21 +73,20 @@ class Streamer:
         finally:
             time.sleep(2)
             self.nudge_count = 0
-            self.immediate = False
             self.nudge_logged = False
             self.is_running = False
             return
 
         return
 
-    # If we've been stalled for more than some amount of time, we nudge the GRBL controller with an empty byte array
+    # If we've been stalled for more than some amount of time, we nudge the GRBL controller with a carriage return byte array
     # We reset the timer after nudging to avoid excessive nudging for long operations.
     def stalled(self):
         current_time = time.monotonic()
         elapsed_time = current_time - self.start_time
         logging.debug(elapsed_time)
 
-        if elapsed_time >= 1:
+        if elapsed_time >= 2:
             self.start_time = time.monotonic()
             self.nudge_count += 1
             logging.info("[ hc ] nudge " + str(self.nudge_count))

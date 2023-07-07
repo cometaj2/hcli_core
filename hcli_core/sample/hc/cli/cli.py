@@ -31,7 +31,7 @@ class CLI:
                    f.write(chunk)
 
                command = f.getvalue().decode().strip().upper()
-               if len(command) > 2 or command == '$H':
+               if len(command) > 2:
                    self.service.stream(f, "sampled: " + command.splitlines()[0])
                else:
                    self.service.simple_command(f)
@@ -47,7 +47,7 @@ class CLI:
                        f.write(chunk)
 
                    command = f.getvalue().decode().strip().upper()
-                   if len(command) > 2 or command == '$H':
+                   if len(command) > 2:
                        self.service.stream(f, self.commands[2])
                    else:
                        self.service.simple_command(f)

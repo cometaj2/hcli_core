@@ -17,7 +17,6 @@ class Immediate:
     instance = None
     is_running = False
     immediate_queue = None
-    immediate = None
     paused = None
     nudge_count = None
     nudge_logged = None
@@ -30,7 +29,6 @@ class Immediate:
             self.instance = super().__new__(self)
             self.immediate_queue = q.Queue()
             self.job_queue = j.JobQueue()
-            self.immediate = True
             self.paused = False
             self.nudge_count = 0
             self.nudge_logged = False
@@ -58,15 +56,13 @@ class Immediate:
                         bline = str.encode(sl + "\n").upper()
 
                     line = bline.decode().strip()
-                    if not (line == '$X' and self.paused) and not (line == '$$' and self.paused):
+                    if not ((line == '$H' or line == '$X' or line == '$$') and self.paused):
                         self.device.write(bline)
 
                     if line == '!':
                         logging.info("[ hc ] " + line + " " + "ok")
                         self.paused = True
-                    elif line == '$X' and self.paused:
-                        logging.info("[ hc ] " + line + " " + "not during feed hold")
-                    elif line == '$$' and self.paused:
+                    elif ((line == '$H' or line == '$X' or line == '$$') and self.paused):
                         logging.info("[ hc ] " + line + " " + "not during feed hold")
                     elif line == '?':
                         response = self.device.readline().strip()
@@ -107,21 +103,19 @@ class Immediate:
 
         finally:
             self.paused = False
-            self.immediate = False
-            self.paused = False
             self.nudge_logged = False
             self.nudge_count = 0
 
         return
 
-    # If we've been stalled for more than some amount of time, we nudge the GRBL controller with an empty byte array
+    # If we've been stalled for more than some amount of time, we nudge the GRBL controller with a carriage return byte array
     # We reset the timer after nudging to avoid excessive nudging for long operations.
     def stalled(self):
         current_time = time.monotonic()
         elapsed_time = current_time - self.start_time
         logging.debug(elapsed_time)
 
-        if elapsed_time >= 1:
+        if elapsed_time >= 2:
             self.start_time = time.monotonic()
             self.nudge_count += 1
             logging.debug("[ hc ] nudge " + str(self.nudge_count))

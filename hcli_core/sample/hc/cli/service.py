@@ -98,7 +98,7 @@ class Service:
         return
 
     def home(self):
-        self.stream(io.BytesIO(b'$H'), '$H')
+        self.immediate.put(io.BytesIO(b'$H'))
         return
 
     def unlock(self):
@@ -148,6 +148,6 @@ class Service:
                     jobname = queuedjob[0]
                     lambdajob = queuedjob[1]
                     job = self.add_job(lambdajob)
-                    logging.info("[ hc ] queued jobs " + str(self.job_queue.qsize()) + ". streaming job: " + job.id + " " + jobname )
+                    logging.info("[ hc ] queued jobs " + str(self.job_queue.qsize()) + ". streaming " + jobname )
 
                 time.sleep(1)
