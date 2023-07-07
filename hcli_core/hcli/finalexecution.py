@@ -4,6 +4,7 @@ import json
 import sys
 import config
 import urllib
+import shlex
 from haliot import hal
 from hcli import semantic
 from hcli import profile
@@ -47,7 +48,7 @@ class FinalPostExecutionController:
     def __init__(self, command=None, inputstream=None):
         if command != None:
             unquoted = urllib.parse.unquote(command)
-            commands = unquoted.split()
+            commands = shlex.split(unquoted)
             self.resource = config.cli.CLI(commands, inputstream)
 
     def serialize(self):
