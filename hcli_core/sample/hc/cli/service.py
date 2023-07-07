@@ -28,7 +28,7 @@ class Service:
 
         scheduler = BackgroundScheduler()
         self.streamer = s.Streamer()
-        self.immediate = i.Immediate()
+        self.immediate_queue = i.Immediate()
         self.job_queue = j.JobQueue()
         self.device = d.Device()
         process = self.add_job(self.process_job_queue)
@@ -43,7 +43,7 @@ class Service:
         self.device.set(device_path)
         logging.info("[ hc ] wake up grbl...")
 
-        self.immediate.clear()
+        self.immediate_queue.clear()
 
         bline = b'\r\n\r\n'
         self.device.write(bline)
@@ -62,7 +62,7 @@ class Service:
 
     # We soft reset,, kick off to a deferred execution and since we cleared the job queue, shutting down executes immediately.
     def disconnect(self):
-        self.immediate.clear()
+        self.immediate_queue.clear()
         self.job_queue.clear()
 
         bline = b'\x18'
@@ -78,9 +78,9 @@ class Service:
         return
 
     def reset(self):
-        self.immediate.clear()
+        self.immediate_queue.clear()
         self.job_queue.clear()
-        #scheduler.remove_all_jobs()
+        self.cleanup()
 
         bline = b'\x18'
         self.device.write(bline)
@@ -91,27 +91,26 @@ class Service:
             response = self.device.readline().strip() # wait for grbl response
             logging.info("[ " + line + " ] " + response.decode())
 
-        self.cleanup()
         return
 
     def status(self):
-        self.immediate.put(io.BytesIO(b'?'))
+        self.immediate_queue.put(io.BytesIO(b'?'))
         return
 
     def home(self):
-        self.immediate.put(io.BytesIO(b'$H'))
+        self.immediate_queue.put(io.BytesIO(b'$H'))
         return
 
     def unlock(self):
-        self.immediate.put(io.BytesIO(b'$X'))
+        self.immediate_queue.put(io.BytesIO(b'$X'))
         return
 
     def stop(self):
-        self.immediate.put(io.BytesIO(b'!'))
+        self.immediate_queue.put(io.BytesIO(b'!'))
         return
 
     def resume(self):
-        self.immediate.put(io.BytesIO(b'~'))
+        self.immediate_queue.put(io.BytesIO(b'~'))
         return
 
     def jobs(self):
@@ -123,7 +122,7 @@ class Service:
         return result
 
     def simple_command(self, inputstream):
-        self.immediate.put(io.BytesIO(inputstream.getvalue()))
+        self.immediate_queue.put(io.BytesIO(inputstream.getvalue()))
         return
 
     # send a streaming job to the queue
@@ -145,8 +144,8 @@ class Service:
     def process_job_queue(self):
         with self.streamer.lock:
             while True:
-                while not self.streamer.is_running and not self.immediate.empty():
-                    self.immediate.process_immediate()
+                while not self.streamer.is_running and not self.immediate_queue.empty():
+                    self.immediate_queue.process_immediate()
                 if not self.streamer.is_running and not self.job_queue.empty():
                     queuedjob = self.job_queue.get()
                     jobname = queuedjob[0]

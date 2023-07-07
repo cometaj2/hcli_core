@@ -96,9 +96,9 @@ class Immediate:
 
         except Exception as exception:
             streamer = s.Streamer()
-            streamer.abort()
-            self.immediate_queue.clear()
+            self.clear()
             self.job_queue.clear()
+            streamer.abort()
             self.cleanup()
 
         finally:
@@ -118,7 +118,7 @@ class Immediate:
         if elapsed_time >= 2:
             self.start_time = time.monotonic()
             self.nudge_count += 1
-            logging.debug("[ hc ] nudge " + str(self.nudge_count))
+            logging.info("[ hc ] nudge " + str(self.nudge_count))
             self.device.write(b'\n')
 
     def cleanup(self):

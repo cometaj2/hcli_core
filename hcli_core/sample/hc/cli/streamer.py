@@ -89,7 +89,7 @@ class Streamer:
         if elapsed_time >= 2:
             self.start_time = time.monotonic()
             self.nudge_count += 1
-            logging.debug("[ hc ] nudge " + str(self.nudge_count))
+            logging.info("[ hc ] nudge " + str(self.nudge_count))
             self.immediate_queue.process_immediate()
             self.device.write(b'\n')
 
