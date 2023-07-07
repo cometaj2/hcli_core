@@ -61,7 +61,8 @@ class Streamer:
                         logging.info("[ " + line + " ] " + response.decode())
 
                     if response.find(b'error') >= 0:
-                        raise Exception("gcode error")
+                        logging.info("[ hc ] gcode error " + response.decode())
+                        raise Exception("[ hc ] gcode error " + response.decode())
 
                     time.sleep(1/100)
                 self.nudge_logged = False
@@ -91,7 +92,7 @@ class Streamer:
         if elapsed_time >= 2:
             self.start_time = time.monotonic()
             self.nudge_count += 1
-            logging.info("[ nudge " + str(self.nudge_count) + " ] ")
+            logging.debug("[ hc ] nudge " + str(self.nudge_count))
             self.device.write(b'\n')
 
     def clear(self):

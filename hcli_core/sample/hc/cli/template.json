@@ -6,6 +6,10 @@
             "http": "post"
         },
         {
+            "command": "hc -j {p}",
+            "http": "post"
+        },
+        {
             "command": "hc scan",
             "http": "get"
         },
@@ -110,7 +114,17 @@
                     "name": "disconnect",
                     "description": "The \"disconnect\" command disconnects from the GRBL controller."
                 }
-            ]
+            ],
+            "option": [
+                {
+                    "href": "hc-j",
+                    "name": "-j",
+                    "description": "The \"-j\" option is used to help supply a friendly job name to indicate job purpose and sequencing."
+                }
+            ],
+            "parameter": {
+                "href": "hc-job"
+            }
         },
         {
             "id": "hcscan",

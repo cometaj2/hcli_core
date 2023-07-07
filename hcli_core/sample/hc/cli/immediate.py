@@ -62,15 +62,16 @@ class Immediate:
                     line = bline.decode().strip()
 
                     if line == '!':
-                        self.paused = True
-
-                    if line == '!' or line == '~' or (line == '$X' and self.paused):
                         logging.info("[ " + line + " ] " + "ok")
+                        self.paused = True
+                    elif line == '$X' and self.paused:
+                        logging.info("[ hc " + line + " ] " + "not during feed hold")
+                    elif line == '$$' and self.paused:
+                        logging.info("[ hc " + line + " ] " + "not during feed hold")
                     elif line == '?':
                         response = self.device.readline().strip()
                         logging.info("[ " + line + " ] " + response.decode())
                     else:
-
                         self.start_time = time.monotonic()  # Get the current time at the start to evaluate stalling and nudging
                         while self.device.inWaiting() == 0:
                             self.stalled()
@@ -85,6 +86,10 @@ class Immediate:
                             elif not self.nudge_logged:
                                 logging.info("[ " + line + " ] " + response.decode())
 
+                            if response.find(b'error') >= 0:
+                                logging.info("[ hc ] gcode error " + response.decode())
+                                raise Exception("[ hc ] gcode error " + response.decode())
+
                             time.sleep(1/100)
                         self.nudge_logged = False
 
@@ -94,7 +99,8 @@ class Immediate:
                 time.sleep(1/100)
 
         except Exception as exception:
-            logging.error("[ immediate processing ] " + str(exception))
+            self.immediate_queue.queue.clear()
+
         finally:
             self.paused = False
             self.immediate = False
@@ -114,5 +120,5 @@ class Immediate:
         if elapsed_time >= 1:
             self.start_time = time.monotonic()
             self.nudge_count += 1
-            logging.info("[ nudge " + str(self.nudge_count) + " ] ")
+            logging.info("[ hc ] nudge " + str(self.nudge_count))
             self.device.write(b'\n')    

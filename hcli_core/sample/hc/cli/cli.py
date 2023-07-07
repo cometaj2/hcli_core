@@ -32,42 +32,58 @@ class CLI:
 
                command = f.getvalue().decode().strip().upper()
                if len(command) > 2 or command == '$H':
-                   self.service.stream(f)
+                   self.service.stream(f, "sampled: " + command.splitlines()[0])
                else:
                    self.service.simple_command(f)
 
             return None
 
-        if self.commands[1] == "scan":
+        elif self.commands[1] == "-j":
+            if len(self.commands) > 2:
+                if self.inputstream is not None:
+
+                   f = io.BytesIO()
+                   for chunk in iter(partial(self.inputstream.read, 16384), b''):
+                       f.write(chunk)
+
+                   command = f.getvalue().decode().strip().upper()
+                   if len(command) > 2 or command == '$H':
+                       self.service.stream(f, self.commands[2])
+                   else:
+                       self.service.simple_command(f)
+
+                return None
+
+        elif self.commands[1] == "scan":
             scanned = json.dumps(self.scan(), indent=4) + "\n"
 
             return io.BytesIO(scanned.encode("utf-8"))
 
-        if self.commands[1] == "connect":
+        elif self.commands[1] == "connect":
             if len(self.commands) > 2:
                 self.service.connect(self.commands[2])
             return
 
-        if self.commands[1] == "disconnect":
+        elif self.commands[1] == "disconnect":
             self.service.disconnect()
             return
 
-        if self.commands[1] == "reset":
+        elif self.commands[1] == "reset":
             self.service.add_job(self.service.reset)
 
-        if self.commands[1] == "status":
+        elif self.commands[1] == "status":
             self.service.status()
 
-        if self.commands[1] == "stop":
+        elif self.commands[1] == "stop":
             self.service.stop()
 
-        if self.commands[1] == "home":
+        elif self.commands[1] == "home":
             self.service.home()
 
-        if self.commands[1] == "unlock":
+        elif self.commands[1] == "unlock":
             self.service.unlock()
 
-        if self.commands[1] == "resume":
+        elif self.commands[1] == "resume":
             self.service.resume()
 
         return None

@@ -22,7 +22,7 @@ class Device:
     def set(self, device_path):
         self.device_path = device_path.strip('"')
         self.device = serial.Serial(self.device_path, self.baud_rate, timeout=1)
-        logging.info("[ Connected ] " + self.device_path)
+        logging.info("[ hc ] connected to " + self.device_path)
 
     def write(self, serialbytes):
         self.device.write(serialbytes)

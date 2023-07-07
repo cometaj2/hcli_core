@@ -41,7 +41,7 @@ class Service:
 
     def connect(self, device_path):
         self.device.set(device_path)
-        logging.info("[ wake up grbl... ] ")
+        logging.info("[ hc ] wake up grbl...")
 
         immediate = i.Immediate()
         immediate.immediate_queue.queue.clear()
@@ -61,12 +61,11 @@ class Service:
 
         return
 
-    # We kick off to a deferred execution and since we cleared the job queue, shutting down executes immediately.
+    # We soft reset,, kick off to a deferred execution and since we cleared the job queue, shutting down executes immediately.
     def disconnect(self):
         immediate = i.Immediate()
         immediate.immediate_queue.queue.clear()
         self.queue.clear()
-        scheduler.remove_all_jobs()
 
         bline = b'\x18'
         self.device.write(bline)
@@ -133,12 +132,12 @@ class Service:
         return
 
     # send a streaming job to the queue
-    def stream(self, inputstream):
+    def stream(self, inputstream, jobname):
         streamcopy = io.BytesIO(inputstream.getvalue())
         inputstream.close()
 
-        job = self.queue.put(lambda: streamer.stream(streamcopy))
-        logging.info("[ queued jobs " + str(self.queue.qsize()) + " ] ")
+        job = self.queue.put([jobname, lambda: streamer.stream(streamcopy)])
+        logging.info("[ hc ] queued jobs " + str(self.queue.qsize()) + ". " + jobname)
         return
 
     def clear(self):
@@ -155,7 +154,10 @@ class Service:
                 while not streamer.is_running and not immediate.immediate_queue.empty():
                     immediate.process_immediate()
                 if not streamer.is_running and not self.queue.empty():
-                    job = self.add_job(self.queue.get())
-                    logging.info("[ queued jobs " + str(self.queue.qsize()) + " ] streaming job: " + job.id )
+                    queuedjob = self.queue.get()
+                    jobname = queuedjob[0]
+                    lambdajob = queuedjob[1]
+                    job = self.add_job(lambdajob)
+                    logging.info("[ hc ] queued jobs " + str(self.queue.qsize()) + ". streaming job: " + job.id + " " + jobname )
 
                 time.sleep(1)
