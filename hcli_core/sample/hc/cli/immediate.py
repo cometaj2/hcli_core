@@ -97,7 +97,7 @@ class Immediate:
         except Exception as exception:
             streamer = s.Streamer()
             streamer.abort()
-            self.immediate_queue.queue.clear()
+            self.immediate_queue.clear()
             self.job_queue.clear()
             self.cleanup()
 

@@ -1,4 +1,5 @@
 import io
+import json
 import sys
 import os
 import serial
@@ -114,9 +115,12 @@ class Service:
         return
 
     def jobs(self):
-        job_names = [job.id for job in scheduler.get_jobs()]
-        print(job_names)
-        return
+        result = {}
+        jobs = list(self.job_queue.queue.queue)
+        for i, job in enumerate(jobs, start=1):
+            result[str(i)] = job[0]
+
+        return result
 
     def simple_command(self, inputstream):
         self.immediate.put(io.BytesIO(inputstream.getvalue()))

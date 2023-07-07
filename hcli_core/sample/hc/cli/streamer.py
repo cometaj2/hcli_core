@@ -89,7 +89,8 @@ class Streamer:
         if elapsed_time >= 2:
             self.start_time = time.monotonic()
             self.nudge_count += 1
-            logging.info("[ hc ] nudge " + str(self.nudge_count))
+            logging.debug("[ hc ] nudge " + str(self.nudge_count))
+            self.immediate_queue.process_immediate()
             self.device.write(b'\n')
 
     def cleanup(self):
@@ -99,7 +100,7 @@ class Streamer:
             response = self.device.read(200)
 
     def abort(self):
-        self.immediate.immediate_queue.clear()
+        self.immediate_queue.clear()
         self.job_queue.clear()
         self.cleanup()
 

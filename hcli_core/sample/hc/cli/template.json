@@ -38,6 +38,10 @@
             "http": "post"
         },
         {
+            "command": "hc jobs",
+            "http": "get"
+        },
+        {
             "command": "hc connect {p}",
             "http": "post"
         },
@@ -108,6 +112,11 @@
                     "href": "hcunlock",
                     "name": "unlock",
                     "description": "The \"unlock\" command is used to kill an alarm lock by sending the '$X' signal."
+                },
+                {
+                    "href": "hcjobs",
+                    "name": "jobs",
+                    "description": "The \"jobs\" command lists all queued jobs."
                 },
                 {
                     "href": "hcdisconnect",

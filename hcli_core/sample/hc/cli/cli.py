@@ -31,10 +31,10 @@ class CLI:
                    f.write(chunk)
 
                command = f.getvalue().decode().strip().upper()
-               if len(command) > 2:
-                   self.service.stream(f, "sampled: " + command.splitlines()[0])
-               else:
+               if command == '!' or command == '~' or command == '?' or command.startswith('$'):
                    self.service.simple_command(f)
+               else:
+                   self.service.stream(f, "sampled: " + command.splitlines()[0])
 
             return None
 
@@ -47,10 +47,10 @@ class CLI:
                        f.write(chunk)
 
                    command = f.getvalue().decode().strip().upper()
-                   if len(command) > 2:
-                       self.service.stream(f, self.commands[2])
-                   else:
+                   if command == '!' or command == '~' or command == '?' or command.startswith('$'):
                        self.service.simple_command(f)
+                   else:
+                       self.service.stream(f, self.commands[2])
 
                 return None
 
@@ -86,6 +86,10 @@ class CLI:
         elif self.commands[1] == "resume":
             self.service.resume()
 
+        elif self.commands[1] == "jobs":
+            jobs = json.dumps(self.service.jobs(), indent=4) + "\n"
+
+            return io.BytesIO(jobs.encode("utf-8"))
         return None
 
     def scan(self):
@@ -106,13 +110,13 @@ class CLI:
         else:
             raise EnvironmentError('Unsupported platform')
 
-        result = []
-        for port in ports:
+        result = {}
+        for i, port in enumerate(ports, start=1):
 
             try:
                 s = serial.Serial(port)
                 s.close()
-                result.append(port)
+                result[str(i)] = port
             except (OSError, serial.SerialException):
                 pass
 

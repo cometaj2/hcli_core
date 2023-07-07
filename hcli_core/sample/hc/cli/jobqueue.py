@@ -28,4 +28,4 @@ class JobQueue:
         return self.queue.empty()
 
     def clear(self):
-        self.queue.queue.clear()
+        return self.queue.queue.clear()
