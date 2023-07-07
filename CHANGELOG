@@ -5,7 +5,8 @@ The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [0.13.0]
-- Add hc, a sample HCLI to enable streaming of G-Code to a CNC through a GRBL compliant device.
+- Add hc, a sample HCLI to enable streaming of G-Code to a CNC through a GRBL 1.1 compliant device.
+- Fix parameter quoted string split argument problem
 
 ## [0.12.3]
 - Fix edge case when system doesn't exist in the context.json.
