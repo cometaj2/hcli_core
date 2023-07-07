@@ -3,6 +3,7 @@ import re
 import serial
 import logger
 import queue as q
+import jobqueue as j
 import device as d
 import streamer as s
 import time
@@ -28,6 +29,7 @@ class Immediate:
 
             self.instance = super().__new__(self)
             self.immediate_queue = q.Queue()
+            self.job_queue = j.JobQueue()
             self.immediate = True
             self.paused = False
             self.nudge_count = 0
@@ -60,7 +62,7 @@ class Immediate:
                         self.device.write(bline)
 
                     if line == '!':
-                        logging.info("[ hc ] " + line + " ] " + "ok")
+                        logging.info("[ hc ] " + line + " " + "ok")
                         self.paused = True
                     elif line == '$X' and self.paused:
                         logging.info("[ hc ] " + line + " " + "not during feed hold")
@@ -100,6 +102,8 @@ class Immediate:
             streamer = s.Streamer()
             streamer.abort()
             self.immediate_queue.queue.clear()
+            self.job_queue.clear()
+            self.cleanup()
 
         finally:
             self.paused = False
@@ -122,6 +126,12 @@ class Immediate:
             self.nudge_count += 1
             logging.debug("[ hc ] nudge " + str(self.nudge_count))
             self.device.write(b'\n')
+
+    def cleanup(self):
+        self.device.reset_input_buffer()
+        self.device.reset_output_buffer()
+        while self.device.inWaiting():
+            response = device.read(200)
 
     def clear(self):
         return self.immediate_queue.queue.clear()
