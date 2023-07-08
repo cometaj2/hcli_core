@@ -115,7 +115,7 @@ Supports
     - hptt  - a rudimentary HCLI Push To Talk (PTT) channel management service.
     - hub   - a rudimentary HCLI service discovery hub.
     - nw    - a flexible IP Address Management (IPAM) service.
-    - hc    - a serial port G-Code streamer for GRBL compliant controller (e.g. OpenBuilds C-Beam Machine via a BlackBox controller v1.1g).
+    - hc    - a serial port G-Code streamer for GRBL compliant controller (e.g. OpenBuilds BlackBox controller v1.1g).
 - Support for use of any 3rd party HCLI code that meets CLI interface requirements and HCLI template requirements (i.e. see sample HCLIs).
 - Support large input and output streams as application/octet-stream.
 
@@ -129,6 +129,8 @@ To Do
     - Automatic context compression to yield a more substantial memory footprint per context window.
 - A shell mode for the GPT-3.5-Turbo HCLI (hg) to enable shell CLI execution per sought goal.
 - Separate out HCLI applications from HCLI Core to help avoid application dependencies bleeding onto HCLI Core (e.g. OpenAI).
+- Update GRBL controller HCLI (hc) to include support for additional commands and/or echo of hexadecimal values.
+- Update hc to include job removal and insertion.
 
 Bugs
 ----
