@@ -7,9 +7,11 @@ import jobqueue as j
 import immediate as i
 import device as d
 import time
+import error
 
 logging = logger.Logger()
 logging.setLevel(logger.INFO)
+
 
 # Singleton Streamer
 class Streamer:
@@ -21,6 +23,7 @@ class Streamer:
     nudge_count = None
     nudge_logged = None
     device = None
+    terminate = None
 
     def __new__(self):
         if self.instance is None:
@@ -32,12 +35,15 @@ class Streamer:
             self.nudge_count = 0
             self.nudge_logged = False
             self.device = d.Device()
+            self.exception_event = threading.Event()
+            self.terminate = False
 
         return self.instance
 
     # simple g-code streaming
     def stream(self, inputstream):
         self.is_running = True
+        self.terminate = False
         ins = io.StringIO(inputstream.getvalue().decode())
 
         try:
@@ -51,23 +57,32 @@ class Streamer:
                     time.sleep(1/100)
 
                 while self.device.inWaiting() > 0:
+                    if self.terminate == True:
+                        raise TerminationException("[ hc ] terminate ")
+
                     response = self.device.readline().strip()
+                    rs = response.decode()
                     if self.nudge_count > 0:
-                        logging.info("[ " + line + " ] " + response.decode())
+                        logging.info("[ " + line + " ] " + rs)
                         self.nudge_logged = True
                         self.nudge_count = 0
                     elif not self.nudge_logged:
-                        logging.info("[ " + line + " ] " + response.decode())
+                        logging.info("[ " + line + " ] " + rs)
 
                     if response.find(b'error') >= 0:
-                        logging.info("[ hc ] gcode error " + response.decode())
-                        raise Exception("[ hc ] gcode error " + response.decode())
+                        logging.info("[ hc ] " + rs + " " + error.messages[rs])
+                        raise Exception("[ hc ] " + rs + " " + error.messages[rs])
 
                     time.sleep(1/100)
                 self.nudge_logged = False
 
                 self.immediate_queue.process_immediate()
+                if self.terminate == True:
+                    raise TerminationException("[ hc ] terminate ")
 
+        except TerminationException as e:
+            self.immediate_queue.abort()
+            self.device.abort()
         except Exception as e:
             self.immediate_queue.abort()
             self.device.abort()
@@ -77,7 +92,7 @@ class Streamer:
             self.nudge_count = 0
             self.nudge_logged = False
             self.is_running = False
-            return
+            self.terminate = False
 
         return
 
@@ -91,14 +106,11 @@ class Streamer:
         if elapsed_time >= 2:
             self.start_time = time.monotonic()
             self.nudge_count += 1
-            logging.info("[ hc ] nudge " + str(self.nudge_count))
+            logging.debug("[ hc ] nudge " + str(self.nudge_count))
             self.immediate_queue.process_immediate()
             self.device.write(b'\n')
 
     def abort(self):
-        self.immediate_queue.clear()
-        self.job_queue.clear()
-
         bline = b'\x18'
         self.device.write(bline)
         time.sleep(2)
@@ -107,3 +119,14 @@ class Streamer:
         while self.device.inWaiting() > 0:
             response = self.device.readline().strip() # wait for grbl response
             logging.info("[ " + line + " ] " + response.decode())
+
+        self.job_queue.clear()
+
+        self.nudge_count = 0
+        self.nudge_logged = False
+        self.is_running = False
+        self.terminate = False
+
+
+class TerminationException(Exception):
+    pass

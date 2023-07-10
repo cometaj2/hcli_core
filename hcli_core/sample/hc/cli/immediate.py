@@ -7,6 +7,7 @@ import jobqueue as j
 import device as d
 import streamer as s
 import time
+import error
 
 logging = logger.Logger()
 logging.setLevel(logger.INFO)
@@ -32,6 +33,7 @@ class Immediate:
             self.nudge_count = 0
             self.nudge_logged = False
             self.device = d.Device()
+            self.terminate = False
 
         return self.instance
 
@@ -43,6 +45,7 @@ class Immediate:
 
     def process_immediate(self):
         try:
+            self.terminate = False
             while not self.immediate_queue.empty() or self.paused:
                 if not self.immediate_queue.empty():
                     ins = io.BytesIO(self.immediate_queue.get())
@@ -62,7 +65,7 @@ class Immediate:
                         logging.info("[ hc ] " + line + " " + "ok")
                         self.paused = True
                     elif (line.startswith('$') and self.paused):
-                        logging.info("[ hc ] " + line + " " + "not on feed hold nor while streaming")
+                        logging.info("[ hc ] " + line + " " + "not on feed hold nor while streaming a job")
                     elif line == '?':
                         response = self.device.readline().strip()
                         logging.info("[ " + line + " ] " + response.decode())
@@ -73,17 +76,18 @@ class Immediate:
                             time.sleep(1)
 
                         while self.device.inWaiting() > 0:
-                            response = self.device.readline().strip() # wait for grbl response
+                            response = self.device.readline().strip()
+                            rs = response.decode()
                             if self.nudge_count > 0:
-                                logging.info("[ " + line + " ] " + response.decode())
+                                logging.info("[ " + line + " ] " + rs)
                                 self.nudge_logged = True
                                 self.nudge_count = 0
                             elif not self.nudge_logged:
-                                logging.info("[ " + line + " ] " + response.decode())
+                                logging.info("[ " + line + " ] " + rs)
 
                             if response.find(b'error') >= 0:
-                                logging.info("[ hc ] gcode error " + response.decode())
-                                raise Exception("[ hc ] gcode error " + response.decode())
+                                logging.info("[ hc ] " + rs + " " + error.messages[rs])
+                                raise Exception("[ hc ] " + rs + " " + error.messages[rs])
 
                             time.sleep(1/100)
                         self.nudge_logged = False
@@ -92,6 +96,8 @@ class Immediate:
                         self.paused = False
 
                 time.sleep(1/100)
+                if self.terminate == True:
+                    break
 
         except Exception as exception:
             streamer = s.Streamer()
@@ -103,6 +109,7 @@ class Immediate:
             self.paused = False
             self.nudge_logged = False
             self.nudge_count = 0
+            self.terminate = False
 
         return
 
@@ -116,7 +123,7 @@ class Immediate:
         if elapsed_time >= 2:
             self.start_time = time.monotonic()
             self.nudge_count += 1
-            logging.info("[ hc ] nudge " + str(self.nudge_count))
+            logging.debug("[ hc ] nudge " + str(self.nudge_count))
             self.device.write(b'\n')
 
     def clear(self):

@@ -131,6 +131,8 @@ To Do
 - Separate out HCLI applications from HCLI Core to help avoid application dependencies bleeding onto HCLI Core (e.g. OpenAI).
 - Update GRBL controller HCLI (hc) to include support for additional commands and/or echo of hexadecimal values.
 - Update hc to include job removal and insertion.
+- Update hc to function in a multi-process environment (e.g. multiple workers in gunicorn).
+- Implement GRBL emulation tests for hc.
 
 Bugs
 ----

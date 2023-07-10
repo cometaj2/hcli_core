@@ -60,11 +60,11 @@ class Service:
 
         return
 
-    # We soft reset,, kick off to a deferred execution and since we cleared the job queue, shutting down executes immediately.
+    # We cleanup the queues and disconnect by issuing an immediate shut down function execution.
     def disconnect(self):
-        self.immediate_queue.abort()
         self.device.abort()
-        self.streamer.abort()
+        self.immediate_queue.abort()
+        self.job_queue.clear()
 
         def shutdown():
             self.device.close()
@@ -74,10 +74,6 @@ class Service:
         return
 
     def reset(self):
-        self.immediate_queue.clear()
-        self.job_queue.clear()
-        self.cleanup()
-
         bline = b'\x18'
         self.device.write(bline)
         time.sleep(2)
@@ -86,6 +82,9 @@ class Service:
         while self.device.inWaiting() > 0:
             response = self.device.readline().strip() # wait for grbl response
             logging.info("[ " + line + " ] " + response.decode())
+
+        self.streamer.terminate = True
+        self.immediate_queue.terminate = True
 
         return
 
@@ -130,12 +129,6 @@ class Service:
         logging.info("[ hc ] queued jobs " + str(self.job_queue.qsize()) + ". " + jobname)
         return
 
-    def cleanup(self):
-        self.device.reset_input_buffer()
-        self.device.reset_output_buffer()
-        while self.device.inWaiting():
-            response = device.read(200)
-
     # we process immediate commands first and then queued jobs in sequence
     def process_job_queue(self):
         with self.streamer.lock:
@@ -144,7 +137,6 @@ class Service:
                     self.immediate_queue.process_immediate()
                 if not self.streamer.is_running and not self.job_queue.empty():
                     queuedjob = self.job_queue.get()
-                    print(queuedjob)
                     jobname = queuedjob[0]
                     lambdajob = queuedjob[1]
                     job = self.add_job(lambdajob)

@@ -5,8 +5,9 @@ The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [0.13.2]
-- Fix hc disconnect and abort procedure for immediate, device, and streamer.
+- Fix hc disconnect and abort procedure for immediate, device, and streamer (graceful termination).
 - Update to disallow all $ commands on feed hold to avoid stalling immediate processing.
+- Add error messages on error code exceptions.
 
 ## [0.13.1]
 - Add hc jobs listing support
