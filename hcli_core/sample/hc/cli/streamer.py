@@ -69,7 +69,9 @@ class Streamer:
                 self.immediate_queue.process_immediate()
 
         except Exception as e:
-            self.cleanup()
+            self.immediate_queue.abort()
+            self.device.abort()
+            self.abort()
         finally:
             time.sleep(2)
             self.nudge_count = 0
@@ -93,16 +95,9 @@ class Streamer:
             self.immediate_queue.process_immediate()
             self.device.write(b'\n')
 
-    def cleanup(self):
-        self.device.reset_input_buffer()
-        self.device.reset_output_buffer()
-        while self.device.inWaiting():
-            response = self.device.read(200)
-
     def abort(self):
         self.immediate_queue.clear()
         self.job_queue.clear()
-        self.cleanup()
 
         bline = b'\x18'
         self.device.write(bline)

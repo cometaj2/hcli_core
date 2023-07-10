@@ -15,7 +15,6 @@ logging.setLevel(logger.INFO)
 # Singleton Immediate
 class Immediate:
     instance = None
-    is_running = False
     immediate_queue = None
     paused = None
     nudge_count = None
@@ -56,14 +55,14 @@ class Immediate:
                         bline = str.encode(sl + "\n").upper()
 
                     line = bline.decode().strip()
-                    if not ((line == '$H' or line == '$X' or line == '$$') and self.paused):
+                    if not (line.startswith('$') and self.paused):
                         self.device.write(bline)
 
                     if line == '!':
                         logging.info("[ hc ] " + line + " " + "ok")
                         self.paused = True
-                    elif ((line == '$H' or line == '$X' or line == '$$') and self.paused):
-                        logging.info("[ hc ] " + line + " " + "not during feed hold")
+                    elif (line.startswith('$') and self.paused):
+                        logging.info("[ hc ] " + line + " " + "not on feed hold nor while streaming")
                     elif line == '?':
                         response = self.device.readline().strip()
                         logging.info("[ " + line + " ] " + response.decode())
@@ -96,10 +95,9 @@ class Immediate:
 
         except Exception as exception:
             streamer = s.Streamer()
-            self.clear()
-            self.job_queue.clear()
+            self.abort()
+            self.device.abort()
             streamer.abort()
-            self.cleanup()
 
         finally:
             self.paused = False
@@ -121,14 +119,14 @@ class Immediate:
             logging.info("[ hc ] nudge " + str(self.nudge_count))
             self.device.write(b'\n')
 
-    def cleanup(self):
-        self.device.reset_input_buffer()
-        self.device.reset_output_buffer()
-        while self.device.inWaiting():
-            response = device.read(200)
-
     def clear(self):
         return self.immediate_queue.queue.clear()
 
     def empty(self):
         return self.immediate_queue.empty()
+
+    def abort(self):
+        self.clear()
+        self.paused = False
+        self.nudge_logged = False
+        self.nudge_count = 0

@@ -62,19 +62,15 @@ class Service:
 
     # We soft reset,, kick off to a deferred execution and since we cleared the job queue, shutting down executes immediately.
     def disconnect(self):
-        self.immediate_queue.clear()
-        self.job_queue.clear()
-
-        bline = b'\x18'
-        self.device.write(bline)
-        time.sleep(2)
+        self.immediate_queue.abort()
+        self.device.abort()
+        self.streamer.abort()
 
         def shutdown():
-            self.cleanup()
             self.device.close()
             sys.exit(0)
 
-        job = self.queue.put(lambda: shutdown())
+        job = self.add_job(lambda: shutdown())
         return
 
     def reset(self):
@@ -148,6 +144,7 @@ class Service:
                     self.immediate_queue.process_immediate()
                 if not self.streamer.is_running and not self.job_queue.empty():
                     queuedjob = self.job_queue.get()
+                    print(queuedjob)
                     jobname = queuedjob[0]
                     lambdajob = queuedjob[1]
                     job = self.add_job(lambdajob)

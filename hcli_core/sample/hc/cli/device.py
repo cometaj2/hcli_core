@@ -45,3 +45,9 @@ class Device:
 
     def close(self):
         return self.device.close()
+
+    def abort(self):
+        self.device.reset_input_buffer()
+        self.device.reset_output_buffer()
+        while self.device.inWaiting():
+            response = self.device.read(200)
