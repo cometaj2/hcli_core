@@ -31,7 +31,7 @@ class CLI:
                    f.write(chunk)
 
                command = f.getvalue().decode().strip().upper()
-               if command == '!' or command == '~' or command == '?' or command.startswith('$'):
+               if command == '!' or command == '~' or command == '?' or command.startswith('$') or command.strip() == '':
                    self.service.simple_command(f)
                else:
                    self.service.stream(f, "sampled: " + command.splitlines()[0])

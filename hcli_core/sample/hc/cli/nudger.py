@@ -36,9 +36,9 @@ class Nudger:
         logging.debug(elapsed_time)
 
         if elapsed_time >= 2:
-            self.stalled_start_time = time.monotonic()
+            self.nudge_start_time = time.monotonic()
             self.nudge_count += 1
-            logging.debug("[ hc ] nudge " + str(self.nudge_count))
+            logging.info("[ hc ] nudge " + str(self.nudge_count))
             self.device.write(b'\n')
 
     def logged(self, nudgedlog):
