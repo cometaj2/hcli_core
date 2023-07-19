@@ -38,6 +38,7 @@ class CLI:
 
             return None
 
+        # a named job
         elif self.commands[1] == "-j":
             if len(self.commands) > 2:
                 if self.inputstream is not None:
@@ -47,10 +48,10 @@ class CLI:
                        f.write(chunk)
 
                    command = f.getvalue().decode().strip().upper()
-                   if command == '!' or command == '~' or command == '?' or command.startswith('$'):
-                       self.service.simple_command(f)
-                   else:
-                       self.service.stream(f, self.commands[2])
+                   #if command == '!' or command == '~' or command == '?' or command.startswith('$'):
+                   #    self.service.simple_command(f)
+                   #else:
+                   self.service.stream(f, self.commands[2])
 
                 return None
 
