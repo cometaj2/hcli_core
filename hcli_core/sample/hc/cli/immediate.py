@@ -6,6 +6,7 @@ import queue as q
 import jobqueue as j
 import device as d
 import streamer as s
+import nudger as n
 import time
 import error
 
@@ -18,9 +19,6 @@ class Immediate:
     instance = None
     immediate_queue = None
     paused = None
-    nudge_count = None
-    nudge_logged = None
-    start_time = None
     device = None
 
     def __new__(self):
@@ -30,8 +28,7 @@ class Immediate:
             self.immediate_queue = q.Queue()
             self.job_queue = j.JobQueue()
             self.paused = False
-            self.nudge_count = 0
-            self.nudge_logged = False
+            self.nudger = n.Nudger()
             self.device = d.Device()
             self.terminate = False
 
@@ -70,32 +67,28 @@ class Immediate:
                         response = self.device.readline().strip()
                         logging.info("[ " + line + " ] " + response.decode())
                     else:
-                        self.start_time = time.monotonic()  # Get the current time at the start to evaluate stalling and nudging
+                        self.nudger.start()  # Get the current time at the start to evaluate stalling and nudging
                         while self.device.inWaiting() == 0:
-                            self.stalled()
+                            self.nudger.nudge()
                             time.sleep(1)
 
                         while self.device.inWaiting() > 0:
                             response = self.device.readline().strip()
                             rs = response.decode()
-                            if self.nudge_count > 0:
-                                logging.info("[ " + line + " ] " + rs)
-                                self.nudge_logged = True
-                                self.nudge_count = 0
-                            elif not self.nudge_logged:
+                            if not self.nudger.logged("[ " + line + " ] " + rs):
                                 logging.info("[ " + line + " ] " + rs)
 
                             if response.find(b'error') >= 0:
                                 logging.info("[ hc ] " + rs + " " + error.messages[rs])
                                 raise Exception("[ hc ] " + rs + " " + error.messages[rs])
 
-                            time.sleep(1/100)
-                        self.nudge_logged = False
+                            time.sleep(0.01)
+                        self.nudger.reset()
 
                     if line == '~':
                         self.paused = False
 
-                time.sleep(1/100)
+                time.sleep(0.01)
                 if self.terminate == True:
                     break
 
@@ -106,25 +99,11 @@ class Immediate:
             streamer.abort()
 
         finally:
+            self.nudger.reset()
             self.paused = False
-            self.nudge_logged = False
-            self.nudge_count = 0
             self.terminate = False
 
         return
-
-    # If we've been stalled for more than some amount of time, we nudge the GRBL controller with a carriage return byte array
-    # We reset the timer after nudging to avoid excessive nudging for long operations.
-    def stalled(self):
-        current_time = time.monotonic()
-        elapsed_time = current_time - self.start_time
-        logging.debug(elapsed_time)
-
-        if elapsed_time >= 2:
-            self.start_time = time.monotonic()
-            self.nudge_count += 1
-            logging.debug("[ hc ] nudge " + str(self.nudge_count))
-            self.device.write(b'\n')
 
     def clear(self):
         return self.immediate_queue.queue.clear()
@@ -135,5 +114,4 @@ class Immediate:
     def abort(self):
         self.clear()
         self.paused = False
-        self.nudge_logged = False
-        self.nudge_count = 0
+        self.nudger.reset()
