@@ -8,7 +8,6 @@ import nudger as n
 import error
 
 logging = logger.Logger()
-logging.setLevel(logger.INFO)
 
 
 # Singleton Jogger to track jogging motion. The jogger errs on the side of caution and should stops if it's not getting a heartbeat.

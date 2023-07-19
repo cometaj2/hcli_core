@@ -11,7 +11,6 @@ import time
 import error
 
 logging = logger.Logger()
-logging.setLevel(logger.INFO)
 
 
 # Singleton Streamer

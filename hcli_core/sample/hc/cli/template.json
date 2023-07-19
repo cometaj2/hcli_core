@@ -309,7 +309,11 @@
                 },
                 {
                     "name": "description",
-                    "description": "The \"jog\" command accepts an input stream of arrow keys from the terminal to send corresponding jog commands to the GRBL controller."
+                    "description": "The \"jog\" command accepts an input stream of arrow key bytes from the terminal to send corresponding jog commands to the GRBL controller."
+                },
+                {
+                    "name": "example",
+                    "description": "trap 'stty sane' SIGINT; stty -icanon -echo; while input=$(dd bs=20 count=1 2>/dev/null); do echo \"$input\" | hc jog; done"
                 }
             ]
         },

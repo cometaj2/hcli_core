@@ -3,7 +3,6 @@ import logger
 import device as d
 
 logging = logger.Logger()
-logging.setLevel(logger.INFO)
 
 
 class Nudger:
@@ -33,12 +32,12 @@ class Nudger:
     def nudge(self):
         current_time = time.monotonic()
         elapsed_time = current_time - self.nudge_start_time
-        logging.debug(elapsed_time)
+        logging.debug("[ hc ] elapsed time: " + str(elapsed_time))
 
         if elapsed_time >= 2:
             self.nudge_start_time = time.monotonic()
             self.nudge_count += 1
-            logging.info("[ hc ] nudge " + str(self.nudge_count))
+            logging.debug("[ hc ] nudge " + str(self.nudge_count))
             self.device.write(b'\n')
 
     def logged(self, nudgedlog):

@@ -2,7 +2,6 @@ import serial
 import logger
 
 logging = logger.Logger()
-logging.setLevel(logger.INFO)
 
 
 # Singleton device for serial port access
