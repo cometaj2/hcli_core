@@ -32,7 +32,7 @@ class Service:
 
         scheduler = BackgroundScheduler()
         self.streamer = s.Streamer()
-        self.immediate_queue = i.Immediate()
+        self.immediate = i.Immediate()
         self.job_queue = j.JobQueue()
         self.device = d.Device()
         self.jogger = jog.Jogger()
@@ -48,7 +48,7 @@ class Service:
         self.device.set(device_path)
         logging.info("[ hc ] wake up grbl...")
 
-        self.immediate_queue.clear()
+        self.immediate.clear()
 
         bline = b'\r\n\r\n'
         self.device.write(bline)
@@ -68,7 +68,7 @@ class Service:
     # We cleanup the queues and disconnect by issuing an immediate shut down function execution.
     def disconnect(self):
         self.device.abort()
-        self.immediate_queue.abort()
+        self.immediate.abort()
         self.job_queue.clear()
 
         def shutdown():
@@ -89,28 +89,28 @@ class Service:
             logging.info("[ " + line + " ] " + response.decode())
 
         self.streamer.terminate = True
-        self.immediate_queue.terminate = True
+        self.immediate.terminate = True
 
         return
 
     def status(self):
-        self.immediate_queue.put(io.BytesIO(b'?'))
+        self.immediate.put(io.BytesIO(b'?'))
         return
 
     def home(self):
-        self.immediate_queue.put(io.BytesIO(b'$H'))
+        self.immediate.put(io.BytesIO(b'$H'))
         return
 
     def unlock(self):
-        self.immediate_queue.put(io.BytesIO(b'$X'))
+        self.immediate.put(io.BytesIO(b'$X'))
         return
 
     def stop(self):
-        self.immediate_queue.put(io.BytesIO(b'!'))
+        self.immediate.put(io.BytesIO(b'!'))
         return
 
     def resume(self):
-        self.immediate_queue.put(io.BytesIO(b'~'))
+        self.immediate.put(io.BytesIO(b'~'))
         return
 
     def jobs(self):
@@ -149,7 +149,7 @@ class Service:
             self.jogger.put([True, gcode])
 
     def simple_command(self, inputstream):
-        self.immediate_queue.put(io.BytesIO(inputstream.getvalue()))
+        self.immediate.put(io.BytesIO(inputstream.getvalue()))
         return
 
     # send a streaming job to the queue
@@ -165,8 +165,8 @@ class Service:
     def process_job_queue(self):
         with self.streamer.lock:
             while True:
-                while not self.streamer.is_running and not self.immediate_queue.empty():
-                    self.immediate_queue.process_immediate()
+                while not self.streamer.is_running and not self.immediate.empty():
+                    self.immediate.process_immediate()
                 if not self.streamer.is_running and not self.jogger.empty():
                     self.jogger.jog()
                 if not self.streamer.is_running and not self.job_queue.empty():
