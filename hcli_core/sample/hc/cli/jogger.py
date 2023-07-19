@@ -113,11 +113,11 @@ class Jogger:
                 if not self.nudger.logged("[ " + line + " ] " + rs):
                     logging.info("[ " + line + " ] " + rs)
 
-                if response.find(b'error') >= 0:
+                if response.find(b'error') >= 0 or response.find(b'MSG:Reset') >= 0:
                     logging.info("[ hc ] " + rs + " " + error.messages[rs])
                     raise Exception("[ hc ] " + rs + " " + error.messages[rs])
 
-                time.sleep(0.01)
+                time.sleep(0.5)
 
             self.device.abort()
 
