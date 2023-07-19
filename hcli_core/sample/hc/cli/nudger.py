@@ -48,8 +48,3 @@ class Nudger:
             self.nudge_count = 0
 
         return self.nudge_logged
-
-    def reset(self):
-        self.nudge_count = 0
-        self.nudge_logged = False
-        self.nudge_time = 0

@@ -83,7 +83,6 @@ class Immediate:
                                 raise Exception("[ hc ] " + rs + " " + error.messages[rs])
 
                             time.sleep(0.01)
-                        self.nudger.reset()
 
                     if line == '~':
                         self.paused = False
@@ -99,7 +98,6 @@ class Immediate:
             streamer.abort()
 
         finally:
-            self.nudger.reset()
             self.paused = False
             self.terminate = False
 
@@ -114,4 +112,3 @@ class Immediate:
     def abort(self):
         self.clear()
         self.paused = False
-        self.nudger.reset()
