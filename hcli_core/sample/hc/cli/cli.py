@@ -86,6 +86,12 @@ class CLI:
         elif self.commands[1] == "resume":
             self.service.resume()
 
+        elif self.commands[1] == "jog":
+            if self.inputstream is not None:
+               self.service.jog(self.inputstream)
+
+            return None
+
         elif self.commands[1] == "jobs":
             jobs = json.dumps(self.service.jobs(), indent=4) + "\n"
 

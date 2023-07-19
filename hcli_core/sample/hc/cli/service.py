@@ -11,16 +11,20 @@ import streamer as s
 import jobqueue as j
 import immediate as i
 import device as d
+import jogger as jog
 from datetime import datetime
+from functools import partial
 from apscheduler.schedulers.background import BackgroundScheduler
 
 logging = logger.Logger()
 logging.setLevel(logger.INFO)
 
+
 class Service:
     device = None
     scheduler = None
     device = None
+    jogger = None
     root = os.path.dirname(inspect.getfile(lambda: None))
 
     def __init__(self):
@@ -31,6 +35,7 @@ class Service:
         self.immediate_queue = i.Immediate()
         self.job_queue = j.JobQueue()
         self.device = d.Device()
+        self.jogger = jog.Jogger()
         process = self.add_job(self.process_job_queue)
         scheduler.start()
 
@@ -116,6 +121,33 @@ class Service:
 
         return result
 
+    # real-time jogging by continuously reading the inputstream
+    def jog(self, inputstream):
+        cases = {
+            b'\x1b[D': lambda chunk: self.trim(chunk, b'\x1b[D', b'$J=G91 G21 X-1000 F2000\n'),    # left
+            b'\x1b[C': lambda chunk: self.trim(chunk, b'\x1b[C', b'$J=G91 G21 X1000 F2000\n'),     # right
+            b'\x1b[A': lambda chunk: self.trim(chunk, b'\x1b[A', b'$J=G91 G21 Y1000 F2000\n'),     # up
+            b'\x1b[B': lambda chunk: self.trim(chunk, b'\x1b[B', b'$J=G91 G21 Y-1000 F2000\n')     # down
+        }
+
+        for chunk in iter(partial(inputstream.read, 16384), b''):
+            logging.debug("[ hc ] chunk " + str(chunk))
+            action = cases.get(chunk[:3], lambda chunk: None)
+            action(chunk)
+
+            time.sleep(0.0001)
+
+        return
+
+    def trim(self, chunk, code, gcode):
+        chunk = chunk[len(code):]
+        while chunk.startswith(code):
+            chunk = chunk[len(code):]
+        if not chunk.startswith(b'\n'):
+            self.jogger.put([False, b'\n'])
+        else:
+            self.jogger.put([True, gcode])
+
     def simple_command(self, inputstream):
         self.immediate_queue.put(io.BytesIO(inputstream.getvalue()))
         return
@@ -135,6 +167,8 @@ class Service:
             while True:
                 while not self.streamer.is_running and not self.immediate_queue.empty():
                     self.immediate_queue.process_immediate()
+                if not self.streamer.is_running and not self.jogger.empty():
+                    self.jogger.jog()
                 if not self.streamer.is_running and not self.job_queue.empty():
                     queuedjob = self.job_queue.get()
                     jobname = queuedjob[0]
@@ -142,4 +176,4 @@ class Service:
                     job = self.add_job(lambdajob)
                     logging.info("[ hc ] queued jobs " + str(self.job_queue.qsize()) + ". streaming " + jobname )
 
-                time.sleep(1)
+                time.sleep(0.1)

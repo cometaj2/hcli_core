@@ -11,7 +11,7 @@
         },
         {
             "command": "hc scan",
-            "http": "get"
+            "http": "post"
         },
         {
             "command": "hc home",
@@ -40,6 +40,10 @@
         {
             "command": "hc jobs",
             "http": "get"
+        },
+        {
+            "command": "hc jog",
+            "http": "post"
         },
         {
             "command": "hc connect {p}",
@@ -117,6 +121,11 @@
                     "href": "hcjobs",
                     "name": "jobs",
                     "description": "The \"jobs\" command lists all queued jobs."
+                },
+                {
+                    "href": "hcjog",
+                    "name": "jog",
+                    "description": "The \"jog\" command allows for real-time jogging via the arrow keys."
                 },
                 {
                     "href": "hcdisconnect",
@@ -265,6 +274,42 @@
                 {
                     "name": "description",
                     "description": "The \"home\" command is used to home the CNC by sending the '$H' signal."
+                }
+            ]
+        },
+        {
+            "id": "hcjobs",
+            "name": "home",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "jobs - returns a list of jobs that are queued up to be streamed to the GRBL controller."
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hc jobs"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"jobs\" command is used to return a list of queued jobs."
+                }
+            ]
+        },
+        {
+            "id": "hcjog",
+            "name": "home",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "jog - jogs the CNC via the $J signal to the GRBL controller."
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hc jog"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"jog\" command accepts an input stream of arrow keys from the terminal to send corresponding jog commands to the GRBL controller."
                 }
             ]
         },
