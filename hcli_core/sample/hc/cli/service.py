@@ -113,6 +113,11 @@ class Service:
         self.immediate.put(io.BytesIO(b'~'))
         return
 
+    def zero(self):
+        zero = b'G00 X0 Y0 Z0'
+        self.stream(io.BytesIO(zero), "sampled: " + str(zero))
+        return
+
     def jobs(self):
         result = {}
         jobs = list(self.job_queue.queue.queue)

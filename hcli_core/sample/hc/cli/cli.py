@@ -87,6 +87,9 @@ class CLI:
         elif self.commands[1] == "resume":
             self.service.resume()
 
+        elif self.commands[1] == "zero":
+            self.service.zero()
+
         elif self.commands[1] == "jog":
             if self.inputstream is not None:
                self.service.jog(self.inputstream)
