@@ -137,12 +137,12 @@ class Service:
     # real-time jogging by continuously reading the inputstream
     def jog(self, inputstream):
         cases = {
-            b'\x1b[D': lambda chunk: self.compress(chunk, b'\x1b[D', b'$J=G91 G21 X-1000 F2000\n'),    # xleft
-            b'\x1b[C': lambda chunk: self.compress(chunk, b'\x1b[C', b'$J=G91 G21 X1000 F2000\n'),     # xright
-            b'\x1b[A': lambda chunk: self.compress(chunk, b'\x1b[A', b'$J=G91 G21 Y1000 F2000\n'),     # yup
-            b'\x1b[B': lambda chunk: self.compress(chunk, b'\x1b[B', b'$J=G91 G21 Y-1000 F2000\n'),    # ydown
-            b';':      lambda chunk: self.compress(chunk, b';', b'$J=G91 G21 Z1000 F2000\n'),          # zup
-            b'/':      lambda chunk: self.compress(chunk, b'/', b'$J=G91 G21 Z-1000 F2000\n')          # zdown
+            b'\x1b[D': lambda chunk: self.execute(b'$J=G91 G21 X-1000 F2000\n'),    # xleft
+            b'\x1b[C': lambda chunk: self.execute(b'$J=G91 G21 X1000 F2000\n'),     # xright
+            b'\x1b[A': lambda chunk: self.execute(b'$J=G91 G21 Y1000 F2000\n'),     # yup
+            b'\x1b[B': lambda chunk: self.execute(b'$J=G91 G21 Y-1000 F2000\n'),    # ydown
+            b';':      lambda chunk: self.execute(b'$J=G91 G21 Z1000 F2000\n'),     # zup
+            b'/':      lambda chunk: self.execute(b'$J=G91 G21 Z-1000 F2000\n')     # zdown
         }
 
         for chunk in iter(partial(inputstream.read, 16384), b''):
@@ -158,10 +158,7 @@ class Service:
 
         return
 
-    def compress(self, chunk, code, gcode):
-        chunk = chunk[len(code):]
-        while chunk.startswith(code):
-            chunk = chunk[len(code):]
+    def execute(self, gcode):
         if gcode is not None:
             self.jogger.put([True, gcode])
         else:
@@ -193,6 +190,6 @@ class Service:
                     jobname = queuedjob[0]
                     lambdajob = queuedjob[1]
                     job = self.add_job(lambdajob)
-                    logging.info("[ hc ] queued jobs " + str(self.job_queue.qsize()) + ". streaming " + jobname )
+                    logging.info("[ hc ] jobs left " + str(self.job_queue.qsize()) + ". streaming " + jobname )
 
                 time.sleep(0.1)

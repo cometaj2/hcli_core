@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.14.1]
+- Fix to have streaming job with control commands unwrap to be executed via immediate to have clean defered execution of immediate commands.
+- Simplify jogger keycode to gcode case logic. Chunk keycode stripping is no longer needed.
+
 ## [0.14.0]
 - Add real-time continuous Jog via keyboard input feed (arrow keys, ; and /).
 - Add a queue wait to ensure complete streaming job execution before picking up the next job

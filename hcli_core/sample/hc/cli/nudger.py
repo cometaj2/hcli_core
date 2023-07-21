@@ -1,6 +1,7 @@
 import time
 import logger
 import device as d
+import immediate as i
 
 logging = logger.Logger()
 
@@ -18,6 +19,7 @@ class Nudger:
         self.nudge_logged = False
         self.nudge_time = 0
         self.device = d.Device()
+        self.immediate = i.Immediate()
 
         return
 
@@ -32,7 +34,7 @@ class Nudger:
     def nudge(self):
         current_time = time.monotonic()
         elapsed_time = current_time - self.nudge_start_time
-        logging.debug("[ hc ] elapsed time: " + str(elapsed_time))
+        #logging.debug("[ hc ] elapsed time: " + str(elapsed_time))
 
         if elapsed_time >= 2:
             self.nudge_start_time = time.monotonic()

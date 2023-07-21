@@ -28,7 +28,7 @@ class Streamer:
 
             self.instance = super().__new__(self)
             self.lock = threading.Lock()
-            self.immediate_queue = i.Immediate()
+            self.immediate = i.Immediate()
             self.job_queue = j.JobQueue()
             self.device = d.Device()
             self.nudger = n.Nudger()
@@ -46,6 +46,12 @@ class Streamer:
         try:
             for l in ins:
                 line = re.sub('\s|\(.*?\)','',l).upper() # Strip comments/spaces/new line and capitalize
+
+                # we unwrap the defered job containing controls into an immediate command execution.
+                if line == '!' or line == '~' or line == '?' or line.startswith('$') or line.strip() == '':
+                    self.immediate.put(inputstream)
+                    break
+
                 self.device.write(str.encode(line + '\n')) # Send g-code block to grbl
 
                 self.nudger.start()  # Get the current time at the start to evaluate stalling and nudging
@@ -68,17 +74,17 @@ class Streamer:
 
                     time.sleep(0.01)
 
-                self.immediate_queue.process_immediate()
+                self.immediate.process_immediate()
                 if self.terminate == True:
                     raise TerminationException("[ hc ] terminate ")
 
             self.wait()
 
         except TerminationException as e:
-            self.immediate_queue.abort()
+            self.immediate.abort()
             self.device.abort()
         except Exception as e:
-            self.immediate_queue.abort()
+            self.immediate.abort()
             self.device.abort()
             self.abort()
         finally:
@@ -117,7 +123,7 @@ class Streamer:
                stop = True 
 
             time.sleep(0.1)
-            self.immediate_queue.process_immediate()
+            self.immediate.process_immediate()
             if self.terminate == True:
                 raise TerminationException("[ hc ] terminate ")
 
