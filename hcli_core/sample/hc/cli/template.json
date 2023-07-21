@@ -73,11 +73,11 @@
                 },
                 {
                     "name": "description",
-                    "description": "The \"hc\" HCLI allows you to control a CNC through the command line (e.g. OpenBuilds C-Beam Machine) via the GRBL protocol. You can send G-Code commands as an input stream, and the GRBL service will respond accordingly.\\n\\nThis HCLI relies on the use of a serial port to a GRBL compliant device. You can scan to find out which serial device you can send G-Code streams to.\\n\\nNote that the hc CNC HCLI doesn't queue jobs properly for sequential streaming execution in a multiprocess context (e.g. multiple workers under gunicorn. Please configure the environment such that the HCLI runs in a single process (e.g. --workers=1 under a gunicorn configuration. See \"hcli_core help\" for a example configuration for hc)."
+                    "description": "The \"hc\" CNC HCLI allows you to control a CNC through the command line (e.g. OpenBuilds C-Beam Machine) via the GRBL protocol. You can send control commands and gcode commands as an input stream, and the hc service will respond accordingly.\\n\\nThis HCLI relies on the use of a serial port to a GRBL compliant controller. You can scan to find out which serial device you can send gcode streams to.\\n\\nNote that the hc CNC HCLI doesn't queue jobs properly for sequential streaming execution in a multiprocess context (e.g. multiple workers under gunicorn. Please configure the environment such that the HCLI runs in a single process (e.g. --workers=1 under a gunicorn configuration. See \"hcli_core help\" for a example configuration for hc).\\n\\nThis HCLI handles sequencing of queued jobs properly (i.e. hc -j 'jobname' by waiting for the GRBL to report being idle before picking up the next job in the queue. This allows for job sequences to be an admixture of gcode and commands such as feed hold '!' or status '?', which wouldn't normally be intermixed with gcode files. This feature, coupled with HCLI's native capabilities allows for complex scripted or coded automated job sequences."
                 },
                 {
                     "name": "examples",
-                    "description": "hc scan\\n\\nhc connect /dev/tty.usbserial-AR0JI0GV\\n\\necho '$$' | hc\\n\\ncat test.gcode | hc\\n\\n"
+                    "description": "hc scan\\n\\nhc connect /dev/tty.usbserial-AR0JI0GV\\n\\necho '$$' | hc\\n\\ncat test.gcode | hc\\n\\ncat test.gcode | hc -j 'test job'"
                 }
             ],
             "command": [
@@ -134,12 +134,12 @@
                 {
                     "href": "hczero",
                     "name": "zero",
-                    "description": "The \"zero\" command sends the G00 X0 Y0 Z0 gcode to go to working coordinates 0, 0, 0 for x, y, and z."
+                    "description": "The \"zero\" command sends the G00 X0 Y0, then G0 Z0, gcode blocks to send the CNC to working coordinates 0, 0, 0 for x, y, and z."
                 },
                 {
                     "href": "hcdisconnect",
                     "name": "disconnect",
-                    "description": "The \"disconnect\" command disconnects from the GRBL controller."
+                    "description": "The \"disconnect\" command disconnects from the GRBL controller, which also interrupts any ongoing operation."
                 }
             ],
             "option": [
@@ -159,7 +159,7 @@
             "section": [
                 {
                     "name": "name",
-                    "description": "scan - scan for avaiable serial ports to stream G-Code to."
+                    "description": "scan - scan for avaiable serial ports to stream gcode to."
                 },
                 {
                     "name": "synopsis",
@@ -167,7 +167,7 @@
                 },
                 {
                     "name": "description",
-                    "description": "The \"scan\" lists available serial devices that could be used to stream G-Code commands to."
+                    "description": "The \"scan\" lists available serial devices that could be used to stream control and gcode commands to."
                 }
             ]
         },
@@ -185,7 +185,7 @@
                 },
                 {
                     "name": "description",
-                    "description": "The \"reset\" command sends the ctrl-x signal (0x18) to the GRBL controller. The immediately halts and safely soft resets Grbl without a power-cycle."
+                    "description": "The \"reset\" command sends the ctrl-x signal (0x18) to the GRBL controller. This immediately halts and safely soft resets Grbl without a power-cycle. The immediate queue, job queue and serial buffers are also cleared to avoid subsequent commands executing unexpectedly."
                 }
             ]
         },
@@ -318,7 +318,7 @@
                 },
                 {
                     "name": "description",
-                    "description": "The \"jog\" command accepts an input stream of arrow key bytes from the terminal to send corresponding jog commands to the GRBL controller."
+                    "description": "The \"jog\" command accepts an input stream of arrow key bytes from the terminal and sends corresponding jog commands to the GRBL controller.\n\nThe left and right arrow keys control the x-axis, the up and down arrow keys the y-axis, and ; and / the z-axis."
                 },
                 {
                     "name": "example",
@@ -358,7 +358,7 @@
                 },
                 {
                     "name": "description",
-                    "description": "The \"zero\" command goes to working coordinates 0, 0, 0. A 'G00 X0 Y0 Z0' gcode signal."
+                    "description": "The \"zero\" command goes to working coordinates 0, 0, 0 via a 'G00 X0 Y0' gcode block then 'G0 Z0' gcode block."
                 }
             ]
         },
