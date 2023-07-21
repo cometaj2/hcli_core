@@ -88,8 +88,10 @@ class Service:
             response = self.device.readline().strip() # wait for grbl response
             logging.info("[ " + line + " ] " + response.decode())
 
+        self.job_queue.clear()
         self.streamer.terminate = True
         self.immediate.terminate = True
+        self.device.abort()
 
         return
 
@@ -116,8 +118,12 @@ class Service:
     def zero(self):
         zero = b'G0 X0 Y0'
         self.stream(io.BytesIO(zero), "sampled: " + str(zero))
+
         zero = b'G0 Z0'
         self.stream(io.BytesIO(zero), "sampled: " + str(zero))
+
+        status = b'?'
+        self.stream(io.BytesIO(status), "sampled: " + str(status))
         return
 
     def jobs(self):
@@ -140,7 +146,7 @@ class Service:
         }
 
         for chunk in iter(partial(inputstream.read, 16384), b''):
-            logging.info("[ hc ] chunk " + str(chunk))
+            logging.debug("[ hc ] chunk " + str(chunk))
             first = chunk[:1]
             if first == b'\x1b':
                 action = cases.get(chunk[:3], lambda chunk: None)

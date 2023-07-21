@@ -72,6 +72,8 @@ class Streamer:
                 if self.terminate == True:
                     raise TerminationException("[ hc ] terminate ")
 
+            self.wait()
+
         except TerminationException as e:
             self.immediate_queue.abort()
             self.device.abort()
@@ -80,7 +82,6 @@ class Streamer:
             self.device.abort()
             self.abort()
         finally:
-            time.sleep(2)
             self.is_running = False
             self.terminate = False
 
@@ -101,6 +102,24 @@ class Streamer:
         self.is_running = False
         self.terminate = False
 
+    # we wait for idle before existing the streamer to avoid stacking up multiple jobs on top of one another (helps with non gcode jobs)
+    def wait(self):
+        bline = b'?'
+        stop = False
+
+        while not stop:
+            self.device.write(bline)
+
+            response = self.device.readline().strip()
+            line = re.sub('\s|\(.*?\)','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
+            logging.debug("[ " + line + " ] " + response.decode())
+            if response.find(b'<Idle|') >= 0:
+               stop = True 
+
+            time.sleep(0.1)
+            self.immediate_queue.process_immediate()
+            if self.terminate == True:
+                raise TerminationException("[ hc ] terminate ")
 
 class TerminationException(Exception):
     pass
