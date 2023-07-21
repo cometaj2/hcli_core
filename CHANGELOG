@@ -5,7 +5,8 @@ The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [0.14.0]
-- Add real-time Jog via keyboard input feed.
+- Add real-time continuous Jog via keyboard input feed (arrow keys, ; and /).
+- Add a queue wait to ensure complete streaming job execution before picking up the next job
 
 ## [0.13.2]
 - Fix hc disconnect and abort procedure for immediate, device, and streamer (graceful termination).

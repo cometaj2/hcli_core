@@ -129,7 +129,7 @@
                 {
                     "href": "hcjog",
                     "name": "jog",
-                    "description": "The \"jog\" command allows for real-time jogging via the arrow keys."
+                    "description": "The \"jog\" command allows for real-time continuous jogging via the arrow keys."
                 },
                 {
                     "href": "hczero",
@@ -318,7 +318,7 @@
                 },
                 {
                     "name": "description",
-                    "description": "The \"jog\" command accepts an input stream of arrow key bytes from the terminal and sends corresponding jog commands to the GRBL controller.\n\nThe left and right arrow keys control the x-axis, the up and down arrow keys the y-axis, and ; and / the z-axis."
+                    "description": "The \"jog\" command accepts a continuous input stream of arrow key bytes from the terminal and sends corresponding jog commands to the GRBL controller.\n\nThe left and right arrow keys control the x-axis, the up and down arrow keys the y-axis, and ; and / the z-axis."
                 },
                 {
                     "name": "example",
