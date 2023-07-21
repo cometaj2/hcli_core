@@ -114,7 +114,9 @@ class Service:
         return
 
     def zero(self):
-        zero = b'G00 X0 Y0 Z0'
+        zero = b'G0 X0 Y0'
+        self.stream(io.BytesIO(zero), "sampled: " + str(zero))
+        zero = b'G0 Z0'
         self.stream(io.BytesIO(zero), "sampled: " + str(zero))
         return
 
