@@ -139,7 +139,7 @@ class Jogger:
         self.is_running = False
 
     # real-time jogging by continuously reading the inputstream
-    def parse_stream(self, inputstream):
+    def parse(self, inputstream):
         cases = {
             b'\x1b[D': lambda chunk: self.execute(b'$J=G91 G21 X-1000 F2000\n'),    # xleft
             b'\x1b[C': lambda chunk: self.execute(b'$J=G91 G21 X1000 F2000\n'),     # xright
