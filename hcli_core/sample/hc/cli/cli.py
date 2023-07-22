@@ -49,9 +49,6 @@ class CLI:
                        f.write(chunk)
 
                    command = f.getvalue().decode().strip().upper()
-                   #if command == '!' or command == '~' or command == '?' or command.startswith('$'):
-                   #    self.service.simple_command(f)
-                   #else:
                    self.service.stream(f, self.commands[2])
 
                 return None
