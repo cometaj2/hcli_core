@@ -9,6 +9,7 @@ import io
 import service
 from functools import partial
 from serial.tools import list_ports
+from collections import OrderedDict
 
 
 class CLI:
@@ -97,7 +98,8 @@ class CLI:
             return None
 
         elif self.commands[1] == "jobs":
-            jobs = json.dumps(self.service.jobs(), indent=4) + "\n"
+            reversal = OrderedDict(sorted(self.service.jobs().items(), reverse=True))
+            jobs = json.dumps(reversal, indent=4) + "\n"
 
             return io.BytesIO(jobs.encode("utf-8"))
         return None

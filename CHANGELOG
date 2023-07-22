@@ -6,7 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.14.1]
 - Fix to have streaming job with control commands unwrap to be executed via immediate to have clean defered execution of immediate commands.
+- Fix wait in streamer to help ensure the ? status wait mechanism doesn't bleed in the log output.
+- Fix job queue clear on reset to avoid queued immediate command executing after a reset.
 - Simplify jogger keycode to gcode case logic. Chunk keycode stripping is no longer needed.
+- Cleanup log output on job sequence (inverted order).
 
 ## [0.14.0]
 - Add real-time continuous Jog via keyboard input feed (arrow keys, ; and /).

@@ -42,6 +42,7 @@ class Streamer:
         self.is_running = True
         self.terminate = False
         ins = io.StringIO(inputstream.getvalue().decode())
+        line = ""
 
         try:
             for l in ins:
@@ -78,7 +79,7 @@ class Streamer:
                 if self.terminate == True:
                     raise TerminationException("[ hc ] terminate ")
 
-            self.wait()
+            self.wait(line)
 
         except TerminationException as e:
             self.immediate.abort()
@@ -88,8 +89,8 @@ class Streamer:
             self.device.abort()
             self.abort()
         finally:
-            self.is_running = False
             self.terminate = False
+            self.is_running = False
 
         return
 
@@ -109,23 +110,43 @@ class Streamer:
         self.terminate = False
 
     # we wait for idle before existing the streamer to avoid stacking up multiple jobs on top of one another (helps with non gcode jobs)
-    def wait(self):
+    def wait(self, line):
         bline = b'?'
         stop = False
 
         while not stop:
             self.device.write(bline)
 
-            response = self.device.readline().strip()
-            line = re.sub('\s|\(.*?\)','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
-            logging.debug("[ " + line + " ] " + response.decode())
-            if response.find(b'<Idle|') >= 0:
-               stop = True 
+            self.nudger.start()  # Get the current time at the start to evaluate stalling and nudging
+            while self.device.inWaiting() == 0:
+                self.nudger.nudge()
+                time.sleep(0.01)
 
-            time.sleep(0.1)
+            while self.device.inWaiting() > 0:
+                if self.terminate == True:
+                    raise TerminationException("[ hc ] terminate ")
+
+                response = self.device.readline().strip()
+                rs = response.decode()
+
+                if response.find(b'<Idle|') >= 0:
+                    stop = True
+
+                if response.find(b'<Idle|') < 0 and response.find(b'<Alarm|') < 0 and response.find(b'<Run|') < 0:
+                    logging.info("[ " + line + " ] " + response.decode())
+
+                if response.find(b'error') >= 0 or response.find(b'MSG:Reset') >= 0:
+                    logging.info("[ hc ] " + rs + " " + error.messages[rs])
+                    raise Exception("[ hc ] " + rs + " " + error.messages[rs])
+
+                time.sleep(0.01)
+
             self.immediate.process_immediate()
             if self.terminate == True:
+                #self.device.abort()
                 raise TerminationException("[ hc ] terminate ")
+
+            time.sleep(0.2)
 
 class TerminationException(Exception):
     pass

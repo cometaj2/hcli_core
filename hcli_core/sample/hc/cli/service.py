@@ -79,6 +79,8 @@ class Service:
         return
 
     def reset(self):
+        self.job_queue.clear()
+
         bline = b'\x18'
         self.device.write(bline)
         time.sleep(2)
@@ -88,7 +90,6 @@ class Service:
             response = self.device.readline().strip() # wait for grbl response
             logging.info("[ " + line + " ] " + response.decode())
 
-        self.job_queue.clear()
         self.streamer.terminate = True
         self.immediate.terminate = True
         self.device.abort()
@@ -100,7 +101,8 @@ class Service:
         return
 
     def home(self):
-        self.immediate.put(io.BytesIO(b'$H'))
+        home = b'$H'
+        self.stream(io.BytesIO(home), home.decode())
         return
 
     def unlock(self):
@@ -117,13 +119,13 @@ class Service:
 
     def zero(self):
         zero = b'G0 X0 Y0'
-        self.stream(io.BytesIO(zero), "sampled: " + str(zero))
+        self.stream(io.BytesIO(zero), zero.decode())
 
         zero = b'G0 Z0'
-        self.stream(io.BytesIO(zero), "sampled: " + str(zero))
+        self.stream(io.BytesIO(zero), zero.decode())
 
         status = b'?'
-        self.stream(io.BytesIO(status), "sampled: " + str(status))
+        self.stream(io.BytesIO(status), status.decode())
         return
 
     def jobs(self):
@@ -174,7 +176,7 @@ class Service:
         inputstream.close()
 
         job = self.job_queue.put([jobname, lambda: self.streamer.stream(streamcopy)])
-        logging.info("[ hc ] queued jobs " + str(self.job_queue.qsize()) + ". " + jobname)
+        logging.info("[ hc ] queueing job " + str(self.job_queue.qsize()) + ": " + jobname)
         return
 
     # we process immediate commands first and then queued jobs in sequence
@@ -186,10 +188,17 @@ class Service:
                 if not self.streamer.is_running and not self.jogger.empty():
                     self.jogger.jog()
                 if not self.streamer.is_running and not self.job_queue.empty():
+                    # we display all jobs in the queue for reference before streaming the next job.
+                    jobs = self.jobs()
+                    logging.info("[ hc ] ------------------------------------------")
+                    logging.info("[ hc ] " + str(self.job_queue.qsize()) + " jobs")
+                    for key, value in reversed(jobs.items()):
+                        logging.info("[ hc ] job " + key + ": " + value)
+
                     queuedjob = self.job_queue.get()
                     jobname = queuedjob[0]
                     lambdajob = queuedjob[1]
                     job = self.add_job(lambdajob)
-                    logging.info("[ hc ] jobs left " + str(self.job_queue.qsize()) + ". streaming " + jobname )
+                    logging.info("[ hc ] streaming " + jobname)
 
                 time.sleep(0.1)
