@@ -13,7 +13,6 @@ import immediate as i
 import device as d
 import jogger as jog
 from datetime import datetime
-from functools import partial
 from apscheduler.schedulers.background import BackgroundScheduler
 
 logging = logger.Logger()
@@ -138,33 +137,8 @@ class Service:
 
     # real-time jogging by continuously reading the inputstream
     def jog(self, inputstream):
-        cases = {
-            b'\x1b[D': lambda chunk: self.execute(b'$J=G91 G21 X-1000 F2000\n'),    # xleft
-            b'\x1b[C': lambda chunk: self.execute(b'$J=G91 G21 X1000 F2000\n'),     # xright
-            b'\x1b[A': lambda chunk: self.execute(b'$J=G91 G21 Y1000 F2000\n'),     # yup
-            b'\x1b[B': lambda chunk: self.execute(b'$J=G91 G21 Y-1000 F2000\n'),    # ydown
-            b';':      lambda chunk: self.execute(b'$J=G91 G21 Z1000 F2000\n'),     # zup
-            b'/':      lambda chunk: self.execute(b'$J=G91 G21 Z-1000 F2000\n')     # zdown
-        }
-
-        for chunk in iter(partial(inputstream.read, 16384), b''):
-            logging.debug("[ hc ] chunk " + str(chunk))
-            first = chunk[:1]
-            if first == b'\x1b':
-                action = cases.get(chunk[:3], lambda chunk: None)
-            else:
-                action = cases.get(chunk[:1], lambda chunk: None)
-            action(chunk)
-
-            time.sleep(0.0001)
-
+        self.jogger.parse_stream(inputstream)
         return
-
-    def execute(self, gcode):
-        if gcode is not None:
-            self.jogger.put([True, gcode])
-        else:
-            self.jogger.put([False, b'\n'])
 
     def simple_command(self, inputstream):
         self.immediate.put(io.BytesIO(inputstream.getvalue()))

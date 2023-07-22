@@ -6,6 +6,7 @@ import logger
 import queue as q
 import nudger as n
 import error
+from functools import partial
 
 logging = logger.Logger()
 
@@ -136,3 +137,33 @@ class Jogger:
 
         self.clear()
         self.is_running = False
+
+    # real-time jogging by continuously reading the inputstream
+    def parse_stream(self, inputstream):
+        cases = {
+            b'\x1b[D': lambda chunk: self.execute(b'$J=G91 G21 X-1000 F2000\n'),    # xleft
+            b'\x1b[C': lambda chunk: self.execute(b'$J=G91 G21 X1000 F2000\n'),     # xright
+            b'\x1b[A': lambda chunk: self.execute(b'$J=G91 G21 Y1000 F2000\n'),     # yup
+            b'\x1b[B': lambda chunk: self.execute(b'$J=G91 G21 Y-1000 F2000\n'),    # ydown
+            b';':      lambda chunk: self.execute(b'$J=G91 G21 Z1000 F2000\n'),     # zup
+            b'/':      lambda chunk: self.execute(b'$J=G91 G21 Z-1000 F2000\n')     # zdown
+        }
+
+        for chunk in iter(partial(inputstream.read, 16384), b''):
+            logging.debug("[ hc ] chunk " + str(chunk))
+            first = chunk[:1]
+            if first == b'\x1b':
+                action = cases.get(chunk[:3], lambda chunk: None)
+            else:
+                action = cases.get(chunk[:1], lambda chunk: None)
+            action(chunk)
+
+            time.sleep(0.0001)
+
+        return
+
+    def execute(self, gcode):
+        if gcode is not None:
+            self.put([True, gcode])
+        else:
+            self.put([False, b'\n']) 

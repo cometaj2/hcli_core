@@ -95,6 +95,8 @@ class Streamer:
         return
 
     def abort(self):
+        self.job_queue.clear()
+
         bline = b'\x18'
         self.device.write(bline)
         time.sleep(2)
@@ -104,7 +106,6 @@ class Streamer:
             response = self.device.readline().strip() # wait for grbl response
             logging.info("[ " + line + " ] " + response.decode())
 
-        self.job_queue.clear()
 
         self.is_running = False
         self.terminate = False
