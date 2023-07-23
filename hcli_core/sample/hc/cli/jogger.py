@@ -24,6 +24,7 @@ class Jogger:
     nudger = None
     feed = None
     mode = None
+    scale = None
 
     def __new__(self):
         if self.instance is None:
@@ -33,6 +34,8 @@ class Jogger:
             self.device = d.Device()
             self.nudger = n.Nudger()
             self.feed = 2000
+            self.scale = 1
+            self.imperial = 25.4
             self.mode = "continuous"
 
             self.is_running = False
@@ -153,6 +156,9 @@ class Jogger:
             b'/':      lambda chunk: self.modal_execute("zdown"),
             b'-':      lambda chunk: self.set_feed(-250),
             b'=':      lambda chunk: self.set_feed(250),
+            b'[':      lambda chunk: self.set_scale(-1),
+            b']':      lambda chunk: self.set_scale(1),
+            b's':      lambda chunk: self.jogger_status(),
             b'i':      lambda chunk: self.set_mode("incremental"),
             b'c':      lambda chunk: self.set_mode("continuous")
         }
@@ -195,12 +201,12 @@ class Jogger:
     #$J=G91G21X100F2000
     def modal_execute(self, axis):
         incremental = {
-            "xright": b'$J=G91G21X25.4F2000\n',
-            "xleft" : b'$J=G91G21X-25.4F2000\n',
-            "yup"   : b'$J=G91G21Y25.4F2000\n',
-            "ydown" : b'$J=G91G21Y-25.4F2000\n',
-            "zup"   : b'$J=G91G21Z25.4F2000\n',
-            "zdown" : b'$J=G91G21Z-25.4F2000\n'
+            "xright": b'$J=G91G21X' + str(self.unit()).encode() + b'F2000\n',
+            "xleft" : b'$J=G91G21X-' + str(self.unit()).encode() + b'F2000\n',
+            "yup"   : b'$J=G91G21Y' + str(self.unit()).encode() + b'F2000\n',
+            "ydown" : b'$J=G91G21Y-' + str(self.unit()).encode() + b'F2000\n',
+            "zup"   : b'$J=G91G21Z' + str(self.unit()).encode() + b'F2000\n',
+            "zdown" : b'$J=G91G21Z-' + str(self.unit()).encode() + b'F2000\n'
         }
 
         continuous = {
@@ -223,3 +229,21 @@ class Jogger:
         else:
             if self.mode == "continuous":
                 self.put([False, b'\n']) 
+
+    def set_scale(self, increment):
+        self.scale += increment
+        if self.scale < 1: self.scale = 1
+        if self.scale > 4: self.scale = 4
+        logging.info("[ hc ] jogger scale: " + str(10 ** (self.scale - 4)) + "\"")
+        return self.scale
+
+    def unit(self):
+        result = self.imperial / (10 ** (abs(self.scale - 4)))
+        return result
+
+    def jogger_status(self):
+        logging.info("[ hc ] ------------------------------------------")
+        logging.info("[ hc ] jogger mode: " + str(self.mode))
+        logging.info("[ hc ] jogger feed: " + str(self.feed))
+        if self.mode == "incremental":
+            logging.info("[ hc ] jogger scale: " + str(10 ** (self.scale - 4)) + "\"")
