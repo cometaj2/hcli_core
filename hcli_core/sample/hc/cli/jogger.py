@@ -23,6 +23,7 @@ class Jogger:
     jog_count = None
     nudger = None
     feed = None
+    mode = None
 
     def __new__(self):
         if self.instance is None:
@@ -32,6 +33,7 @@ class Jogger:
             self.device = d.Device()
             self.nudger = n.Nudger()
             self.feed = 2000
+            self.mode = "continuous"
 
             self.is_running = False
 
@@ -74,7 +76,8 @@ class Jogger:
                 self.start_time = time.monotonic()
                 self.expire_count += 1
                 logging.info("[ hc ] jogger expiration ")
-                self.heart(False)
+                if self.mode == "continuous":
+                    self.heart(False)
                 self.is_running = False
                 self.jog_count = 0;
                 self.clear()
@@ -142,14 +145,16 @@ class Jogger:
     # real-time jogging by continuously reading the inputstream
     def parse(self, inputstream):
         cases = {
-            b'\x1b[D': lambda chunk: self.execute(b'$J=G91 G21 X-1000 F' + str(self.feed).encode() + b'\n'),    # xleft
-            b'\x1b[C': lambda chunk: self.execute(b'$J=G91 G21 X1000 F' + str(self.feed).encode() + b'\n'),     # xright
-            b'\x1b[A': lambda chunk: self.execute(b'$J=G91 G21 Y1000 F' + str(self.feed).encode() + b'\n'),     # yup
-            b'\x1b[B': lambda chunk: self.execute(b'$J=G91 G21 Y-1000 F' + str(self.feed).encode() + b'\n'),    # ydown
-            b';':      lambda chunk: self.execute(b'$J=G91 G21 Z1000 F' + str(self.feed).encode() + b'\n'),     # zup
-            b'/':      lambda chunk: self.execute(b'$J=G91 G21 Z-1000 F' + str(self.feed).encode() + b'\n'),    # zdown
-            b'-':      lambda chunk: self.set_feed(-500),
-            b'=':      lambda chunk: self.set_feed(500)
+            b'\x1b[D': lambda chunk: self.modal_execute("xleft"),
+            b'\x1b[C': lambda chunk: self.modal_execute("xright"),
+            b'\x1b[A': lambda chunk: self.modal_execute("yup"),
+            b'\x1b[B': lambda chunk: self.modal_execute("ydown"),
+            b';':      lambda chunk: self.modal_execute("zup"),
+            b'/':      lambda chunk: self.modal_execute("zdown"),
+            b'-':      lambda chunk: self.set_feed(-250),
+            b'=':      lambda chunk: self.set_feed(250),
+            b'i':      lambda chunk: self.set_mode("incremental"),
+            b'c':      lambda chunk: self.set_mode("continuous")
         }
 
         for chunk in iter(partial(inputstream.read, 16384), b''):
@@ -165,6 +170,11 @@ class Jogger:
 
         return
 
+    def set_mode(self, mode):
+        self.mode = mode
+        logging.info("[ hc ] jogger mode: " + str(self.mode))
+        return self.mode
+
     def set_feed(self, feed):
         self.feed += feed
         if self.feed > 2000: self.feed = 2000
@@ -172,8 +182,44 @@ class Jogger:
         logging.info("[ hc ] jogger feed: " + str(self.feed))
         return self.feed
 
+    #inches (0.001, 0.01, 0.1, 1)
+    #$J=G91G21X0.0254F2000
+    #$J=G91G21X0.254F2000
+    #$J=G91G21X2.54F2000
+    #$J=G91G21X25.4F2000
+
+    #mm (0.1, 1, 10, 100)
+    #$J=G91G21X0.1F2000
+    #$J=G91G21X1F2000
+    #$J=G91G21X10F2000
+    #$J=G91G21X100F2000
+    def modal_execute(self, axis):
+        incremental = {
+            "xright": b'$J=G91G21X25.4F2000\n',
+            "xleft" : b'$J=G91G21X-25.4F2000\n',
+            "yup"   : b'$J=G91G21Y25.4F2000\n',
+            "ydown" : b'$J=G91G21Y-25.4F2000\n',
+            "zup"   : b'$J=G91G21Z25.4F2000\n',
+            "zdown" : b'$J=G91G21Z-25.4F2000\n'
+        }
+
+        continuous = {
+            "xright": b'$J=G91 G21 X1000 F' + str(self.feed).encode() + b'\n',
+            "xleft" : b'$J=G91 G21 X-1000 F' + str(self.feed).encode() + b'\n',
+            "yup"   : b'$J=G91 G21 Y1000 F' + str(self.feed).encode() + b'\n',
+            "ydown" : b'$J=G91 G21 Y-1000 F' + str(self.feed).encode() + b'\n',
+            "zup"   : b'$J=G91 G21 Z1000 F' + str(self.feed).encode() + b'\n',
+            "zdown" : b'$J=G91 G21 Z-1000 F' + str(self.feed).encode() + b'\n'
+        }
+
+        if self.mode == "continuous":
+            self.execute(continuous.get(axis))
+        elif self.mode == "incremental":
+            self.execute(incremental.get(axis))
+
     def execute(self, gcode):
         if gcode is not None:
             self.put([True, gcode])
         else:
-            self.put([False, b'\n']) 
+            if self.mode == "continuous":
+                self.put([False, b'\n']) 
