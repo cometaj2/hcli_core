@@ -22,6 +22,7 @@ class Jogger:
     jogger_queue = None
     jog_count = None
     nudger = None
+    feed = None
 
     def __new__(self):
         if self.instance is None:
@@ -30,6 +31,7 @@ class Jogger:
             self.heartbeat = False
             self.device = d.Device()
             self.nudger = n.Nudger()
+            self.feed = 2000
 
             self.is_running = False
 
@@ -67,7 +69,6 @@ class Jogger:
         if not self.heartbeat == False:
             current_time = time.monotonic()
             elapsed_time = (current_time - self.start_time)
-            logging.debug(elapsed_time)
 
             if elapsed_time >= 1/4:
                 self.start_time = time.monotonic()
@@ -141,12 +142,14 @@ class Jogger:
     # real-time jogging by continuously reading the inputstream
     def parse(self, inputstream):
         cases = {
-            b'\x1b[D': lambda chunk: self.execute(b'$J=G91 G21 X-1000 F2000\n'),    # xleft
-            b'\x1b[C': lambda chunk: self.execute(b'$J=G91 G21 X1000 F2000\n'),     # xright
-            b'\x1b[A': lambda chunk: self.execute(b'$J=G91 G21 Y1000 F2000\n'),     # yup
-            b'\x1b[B': lambda chunk: self.execute(b'$J=G91 G21 Y-1000 F2000\n'),    # ydown
-            b';':      lambda chunk: self.execute(b'$J=G91 G21 Z1000 F2000\n'),     # zup
-            b'/':      lambda chunk: self.execute(b'$J=G91 G21 Z-1000 F2000\n')     # zdown
+            b'\x1b[D': lambda chunk: self.execute(b'$J=G91 G21 X-1000 F' + str(self.feed).encode() + b'\n'),    # xleft
+            b'\x1b[C': lambda chunk: self.execute(b'$J=G91 G21 X1000 F' + str(self.feed).encode() + b'\n'),     # xright
+            b'\x1b[A': lambda chunk: self.execute(b'$J=G91 G21 Y1000 F' + str(self.feed).encode() + b'\n'),     # yup
+            b'\x1b[B': lambda chunk: self.execute(b'$J=G91 G21 Y-1000 F' + str(self.feed).encode() + b'\n'),    # ydown
+            b';':      lambda chunk: self.execute(b'$J=G91 G21 Z1000 F' + str(self.feed).encode() + b'\n'),     # zup
+            b'/':      lambda chunk: self.execute(b'$J=G91 G21 Z-1000 F' + str(self.feed).encode() + b'\n'),    # zdown
+            b'-':      lambda chunk: self.set_feed(-500),
+            b'=':      lambda chunk: self.set_feed(500)
         }
 
         for chunk in iter(partial(inputstream.read, 16384), b''):
@@ -161,6 +164,13 @@ class Jogger:
             time.sleep(0.0001)
 
         return
+
+    def set_feed(self, feed):
+        self.feed += feed
+        if self.feed > 2000: self.feed = 2000
+        if self.feed <= 0: self. feed = 1
+        logging.info("[ hc ] jogger feed: " + str(self.feed))
+        return self.feed
 
     def execute(self, gcode):
         if gcode is not None:
