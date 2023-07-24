@@ -127,7 +127,7 @@ class Jogger:
                     logging.info("[ hc ] " + rs + " " + error.messages[rs])
                     raise Exception("[ hc ] " + rs + " " + error.messages[rs])
 
-                time.sleep(0.5)
+                time.sleep(0.2)
 
             self.device.abort()
 
