@@ -318,7 +318,7 @@
                 },
                 {
                     "name": "description",
-                    "description": "The \"jog\" command accepts a continuous input stream of arrow key bytes from the terminal and sends corresponding jog commands to the GRBL controller.\n\nThe left and right arrow keys control the x-axis, the up and down arrow keys the y-axis, and ; and / the z-axis."
+                    "description": "The \"jog\" command accepts a continuous input stream of arrow key bytes from the terminal and sends corresponding jog commands to the GRBL controller.\\n\\n\"left\" x-.\\n\\n\"right\" x+.\\n\\n\"up\" y+.\\n\\n\"down\" y-.\\n\\n\";\" z+.\\n\\n\"/\" z-.\\n\\n\"-\" reduces the feed rate by 250.\\n\\n\"=\" increases the feed rate by 250.\\n\\n\"[\" reduces the increment scaling factor by 1.\\n\\n\"]\" increases the increment scaling factor by 1.\\n\\n\"s\" output jogger status.\\n\\n\"u\" toggles the unit (imperial (default) vs metric).\\n\\n\"i\" sets incremental mode.\\n\\n\"c\" sets continuous mode"
                 },
                 {
                     "name": "example",
