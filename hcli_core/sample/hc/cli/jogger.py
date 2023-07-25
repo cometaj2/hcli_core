@@ -180,18 +180,6 @@ class Jogger:
 
         return
 
-    def set_mode(self, mode):
-        self.mode = mode
-        logging.info("[ hc ] jogger mode: " + str(self.mode))
-        return self.mode
-
-    def set_feed(self, feed):
-        self.feed += feed
-        if self.feed > 2000: self.feed = 2000
-        if self.feed <= 0: self. feed = 1
-        logging.info("[ hc ] jogger feed: " + str(self.feed))
-        return self.feed
-
     #inches (0.001, 0.01, 0.1, 1)
     #$J=G91G21X0.0254F2000
     #$J=G91G21X0.254F2000
@@ -205,12 +193,12 @@ class Jogger:
     #$J=G91G21X100F2000
     def modal_execute(self, axis):
         incremental = {
-            "xright": b'$J=G91 G21 X' + str(self.conversion()).encode() + b' F2000\n',
-            "xleft" : b'$J=G91 G21 X-' + str(self.conversion()).encode() + b' F2000\n',
-            "yup"   : b'$J=G91 G21 Y' + str(self.conversion()).encode() + b' F2000\n',
-            "ydown" : b'$J=G91 G21 Y-' + str(self.conversion()).encode() + b' F2000\n',
-            "zup"   : b'$J=G91 G21 Z' + str(self.conversion()).encode() + b' F2000\n',
-            "zdown" : b'$J=G91 G21 Z-' + str(self.conversion()).encode() + b' F2000\n'
+            "xright": b'$J=G91 G21 X' + str(self.conversion()).encode() + b' F' + str(self.feed).encode() + b'\n',
+            "xleft" : b'$J=G91 G21 X-' + str(self.conversion()).encode() + b' F' + str(self.feed).encode() + b'\n',
+            "yup"   : b'$J=G91 G21 Y' + str(self.conversion()).encode() + b' F' + str(self.feed).encode() + b'\n',
+            "ydown" : b'$J=G91 G21 Y-' + str(self.conversion()).encode() + b' F' + str(self.feed).encode() + b'\n',
+            "zup"   : b'$J=G91 G21 Z' + str(self.conversion()).encode() + b' F' + str(self.feed).encode() + b'\n',
+            "zdown" : b'$J=G91 G21 Z-' + str(self.conversion()).encode() + b' F' + str(self.feed).encode() + b'\n'
         }
 
         continuous = {
@@ -234,14 +222,23 @@ class Jogger:
             if self.mode == "continuous":
                 self.put([False, b'\n']) 
 
+    def set_mode(self, mode):
+        self.mode = mode
+        self.jogger_status()
+        return self.mode
+
+    def set_feed(self, feed):
+        self.feed += feed
+        if self.feed > 2000: self.feed = 2000
+        if self.feed <= 0: self. feed = 1
+        self.jogger_status()
+        return self.feed
+
     def set_scale(self, increment):
         self.scale += increment
         if self.scale < 1: self.scale = 1
         if self.scale > 4: self.scale = 4
-        if self.unit == "imperial":
-            logging.info("[ hc ] jogger scale: " + str(10 ** (self.scale - 4)) + "\"")
-        elif self.unit == "metric":
-            logging.info("[ hc ] jogger scale: " + str(self.metric * (10 ** (self.scale - 2))) + "mm")
+        self.jogger_status()
         return self.scale
 
     def toggle_unit(self):
@@ -249,7 +246,7 @@ class Jogger:
             self.unit = "metric"
         elif self.unit == "metric":
             self.unit = "imperial"
-        logging.info("[ hc ] jogger unit: " + str(self.unit))
+        self.jogger_status()
         return
 
     def conversion(self):

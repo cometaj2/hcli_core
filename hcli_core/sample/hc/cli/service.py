@@ -165,7 +165,6 @@ class Service:
                     # we display all jobs in the queue for reference before streaming the next job.
                     jobs = self.jobs()
                     logging.info("[ hc ] ------------------------------------------")
-                    logging.info("[ hc ] " + str(self.job_queue.qsize()) + " jobs")
                     for key, value in reversed(jobs.items()):
                         logging.info("[ hc ] job " + key + ": " + value)
 
