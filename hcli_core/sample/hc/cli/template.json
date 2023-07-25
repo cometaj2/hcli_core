@@ -318,7 +318,7 @@
                 },
                 {
                     "name": "description",
-                    "description": "The \"jog\" command accepts a continuous input stream of arrow key bytes from the terminal and sends corresponding jog commands to the GRBL controller.\\n\\n\"left\" x-.\\n\\n\"right\" x+.\\n\\n\"up\" y+.\\n\\n\"down\" y-.\\n\\n\";\" z+.\\n\\n\"/\" z-.\\n\\n\"-\" reduces the feed rate by 250.\\n\\n\"=\" increases the feed rate by 250.\\n\\n\"[\" reduces the increment scaling factor by 1.\\n\\n\"]\" increases the increment scaling factor by 1.\\n\\n\"s\" output jogger status.\\n\\n\"u\" toggles the unit (imperial (default) vs metric).\\n\\n\"i\" sets incremental mode.\\n\\n\"c\" sets continuous mode"
+                    "description": "The \"jog\" command accepts a continuous input stream of arrow key bytes from the terminal and sends corresponding jog commands to the GRBL controller.\\n\\n\"left\" x-.\\n\\n\"right\" x+.\\n\\n\"up\" y+.\\n\\n\"down\" y-.\\n\\n\";\" z+.\\n\\n\"/\" z-.\\n\\n\"-\" reduces the feed rate by 250.\\n\\n\"=\" increases the feed rate by 250.\\n\\n\"[\" reduces the increment scaling factor by 1.\\n\\n\"]\" increases the increment scaling factor by 1.\\n\\n\"s\" output jogger status.\\n\\n\"u\" toggles the unit; imperial (default) or metric.\\n\\n\"i\" sets incremental mode.\\n\\n\"c\" sets continuous mode (default)"
                 },
                 {
                     "name": "example",
