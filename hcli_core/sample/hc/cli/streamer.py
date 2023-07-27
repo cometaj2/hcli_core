@@ -130,10 +130,10 @@ class Streamer:
                 response = self.device.readline().strip()
                 rs = response.decode()
 
-                if response.find(b'<Idle|') >= 0:
+                if response.find(b'<Idle|') >= 0 or response.find(b'<Check|') >= 0:
                     stop = True
 
-                if response.find(b'<Idle|') < 0 and response.find(b'<Alarm|') < 0 and response.find(b'<Run|') < 0:
+                if response.find(b'|Bf:') < 0 and response.find(b'|FS:') < 0:
                     logging.info("[ " + line + " ] " + response.decode())
 
                 if response.find(b'error') >= 0 or response.find(b'MSG:Reset') >= 0:

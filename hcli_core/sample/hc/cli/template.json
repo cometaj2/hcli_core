@@ -50,6 +50,10 @@
             "http": "post"
         },
         {
+            "command": "hc setzero xyz",
+            "http": "post"
+        },
+        {
             "command": "hc connect {p}",
             "http": "post"
         },
@@ -135,6 +139,11 @@
                     "href": "hczero",
                     "name": "zero",
                     "description": "The \"zero\" command sends the G00 X0 Y0, then G0 Z0, gcode blocks to send the CNC to working coordinates 0, 0, 0 for x, y, and z."
+                },
+                {
+                    "href": "hcsetzero",
+                    "name": "setzero",
+                    "description": "The \"setzero\" command is used to setup the (G54 Coordinates) to zero for, x, y, or z."
                 },
                 {
                     "href": "hcdisconnect",
@@ -363,6 +372,35 @@
             ]
         },
         {
+            "id": "hcsetzero",
+            "name": "setzero",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "setzero - tells the GRBL controller to set the work offset to zero relative to machine coordinates (G54) for x, y, or z."
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hc setzero"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"setzero\" command is used to setup the (G54 Coordinates) to zero for, x, y, or z."
+                },
+                {
+                    "name": "example",
+                    "description": "hc setzero xyz"
+                } 
+            ],
+            "command": [
+                {
+                    "href": "hcsetzeroxyz",
+                    "name": "xyz",
+                    "description": "Sets zero for xyz."
+                }
+            ]
+        },
+        {
             "id": "hcdisconnect",
             "name": "disconnect",
             "section": [
@@ -377,6 +415,24 @@
                 {
                     "name": "description",
                     "description": "The \"disconnect\" command disconnects from the GRBL controller."
+                }
+            ]
+        },
+        {
+            "id": "hcsetzeroxyz",
+            "name": "xyz",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "xyz - sets zero for x, y, and z (G54 coordinates)."
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hc setzero xyz"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"xyz\" command sets zero for x, y, and z on the work offset relative to machine coordinates (G54)."
                 }
             ]
         }

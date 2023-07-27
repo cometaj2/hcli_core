@@ -88,6 +88,11 @@ class CLI:
         elif self.commands[1] == "zero":
             self.service.zero()
 
+        elif self.commands[1] == "setzero":
+            if len(self.commands) > 2:
+                if self.commands[2] == "xyz":
+                    self.service.setzeroxyz()
+
         elif self.commands[1] == "jog":
             if self.inputstream is not None:
                self.service.jog(self.inputstream)

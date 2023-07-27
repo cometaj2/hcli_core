@@ -127,6 +127,12 @@ class Service:
         self.stream(io.BytesIO(status), status.decode())
         return
 
+    def setzeroxyz(self):
+        setzero = b'G10 L20 P0 X0 Y0 Z0'
+        self.stream(io.BytesIO(setzero), setzero.decode())
+
+        status = b'?'
+        self.stream(io.BytesIO(status), status.decode())
     def jobs(self):
         result = {}
         jobs = list(self.job_queue.queue.queue)
