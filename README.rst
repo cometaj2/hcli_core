@@ -53,8 +53,7 @@ Usage
 
 Open a different shell window.
 
-You may need to restart your shell after the huckle CLI install command below to be able to invoke the sample HCLI by name
-directly (e.g. jsonf).
+Setup the huckle env eval in your .bash_profile (or other bash configuration) to avoid having to execute eval everytime you want to invoke HCLIs by name (e.g. jsonf).
 
 Note that no CLI is actually installed by Huckle. Huckle reads the HCLI semantics exposed by the API and ends up behaving *like* the CLI it targets.
 
@@ -86,8 +85,7 @@ CLI interface (cli.py) and HCLI template (template.json) requirements:
 
 Open a different shell window.
 
-You may need to restart your shell after the huckle CLI install command below to be able to invoke the sample HCLI by name
-directly (e.g. hg).
+Setup the huckle env eval in your .bash_profile (or other bash configuration) to avoid having to execute eval everytime you want to invoke HCLIs by name (e.g. hg).
 
 .. code-block:: console
     
@@ -115,7 +113,7 @@ Supports
     - hptt  - a rudimentary HCLI Push To Talk (PTT) channel management service.
     - hub   - a rudimentary HCLI service discovery hub.
     - nw    - a flexible IP Address Management (IPAM) service.
-    - hc    - a serial port G-Code streamer for GRBL compliant controller (e.g. OpenBuilds BlackBox controller v1.1g).
+    - hc    - a gcode streamer for GRBL compliant controller and a CNC interface (e.g. OpenBuilds BlackBox controller v1.1g and Interface CNC Touch).
 - Support for use of any 3rd party HCLI code that meets CLI interface requirements and HCLI template requirements (i.e. see sample HCLIs).
 - Support large input and output streams as application/octet-stream.
 
@@ -128,7 +126,7 @@ To Do
     - Context blending to mary different contexts.
     - Automatic context compression to yield a more substantial memory footprint per context window.
 - A shell mode for the GPT-3.5-Turbo HCLI (hg) to enable shell CLI execution per sought goal.
-- Separate out HCLI applications from HCLI Core to help avoid application dependencies bleeding onto HCLI Core (e.g. OpenAI).
+- Separate out HCLI applications from HCLI Core to help avoid application dependencies bleeding onto HCLI Core (e.g. OpenAI, GRBL, pyserial, etc.).
 - Update GRBL controller HCLI (hc) to include support for additional commands and/or echo of hexadecimal values.
 - Update hc to include job removal and insertion.
 - Update hc to function in a multi-process environment (e.g. multiple workers in gunicorn).
