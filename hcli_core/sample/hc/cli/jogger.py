@@ -112,10 +112,7 @@ class Jogger:
                 self.expire()
                 time.sleep(0.0001)
 
-            self.nudger.start()  # Get the current time at the start to evaluate stalling and nudging
-            while self.device.inWaiting() == 0:
-                self.nudger.nudge()
-                time.sleep(0.01)
+            self.nudger.wait()  # Get the current time at the start to evaluate stalling and nudging
 
             while self.device.inWaiting() > 0:
                 response = self.device.readline().strip()

@@ -66,10 +66,7 @@ class Immediate:
                         response = self.device.readline().strip()
                         logging.info("[ " + line + " ] " + response.decode())
                     else:
-                        self.nudger.start()  # Get the current time at the start to evaluate stalling and nudging
-                        while self.device.inWaiting() == 0:
-                            self.nudger.nudge()
-                            time.sleep(0.01)
+                        self.nudger.wait() # Get the current time at the start to evaluate stalling and nudging
 
                         while self.device.inWaiting() > 0:
                             response = self.device.readline().strip()

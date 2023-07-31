@@ -49,3 +49,9 @@ class Nudger:
             self.nudge_count = 0
 
         return self.nudge_logged
+
+    def wait(self):
+        self.start()  # Get the current time at the start to evaluate stalling and nudging
+        while self.device.inWaiting() == 0:
+            self.nudge()
+            time.sleep(0.01)

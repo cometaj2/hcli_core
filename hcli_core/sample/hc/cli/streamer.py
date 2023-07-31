@@ -55,10 +55,7 @@ class Streamer:
 
                 self.device.write(str.encode(line + '\n')) # Send g-code block to grbl
 
-                self.nudger.start()  # Get the current time at the start to evaluate stalling and nudging
-                while self.device.inWaiting() == 0:
-                    self.nudger.nudge()
-                    time.sleep(0.01)
+                self.nudger.wait()  # Get the current time at the start to evaluate stalling and nudging
 
                 while self.device.inWaiting() > 0:
                     if self.terminate == True:
@@ -118,10 +115,7 @@ class Streamer:
         while not stop:
             self.device.write(bline)
 
-            self.nudger.start()  # Get the current time at the start to evaluate stalling and nudging
-            while self.device.inWaiting() == 0:
-                self.nudger.nudge()
-                time.sleep(0.01)
+            self.nudger.wait()  # Get the current time at the start to evaluate stalling and nudging
 
             while self.device.inWaiting() > 0:
                 if self.terminate == True:
