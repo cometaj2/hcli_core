@@ -228,7 +228,7 @@ class Jogger:
     def set_feed(self, feed):
         self.feed += feed
         if self.feed > 2000: self.feed = 2000
-        if self.feed <= 0: self. feed = 1
+        if self.feed <= 0: self.feed = 1
         self.jogger_status()
         return self.feed
 
