@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.17.0]
 - Add hc logs to poll a log tail when access to server log stdout isn't available (single client polling only).
+- Add hc jobs server log output and consolidate log reversal and log output into the jobs service.
 
 ## [0.16.0]
 - Fix missing pyserial dependency in package.

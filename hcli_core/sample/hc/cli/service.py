@@ -14,6 +14,7 @@ import device as d
 import jogger as jog
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
+from collections import OrderedDict
 
 logging = logger.Logger()
 logging.setLevel(logger.INFO)
@@ -133,13 +134,21 @@ class Service:
 
         status = b'?'
         self.stream(io.BytesIO(status), status.decode())
+
     def jobs(self):
         result = {}
         jobs = list(self.job_queue.queue.queue)
         for i, job in enumerate(jobs, start=1):
             result[str(i)] = job[0]
 
-        return result
+        reversal = OrderedDict(sorted(result.items(), reverse=True))
+
+        if reversal.items():
+            logging.info("[ hc ] ------------------------------------------")
+            for key, value in reversal.items():
+                logging.info("[ hc ] job " + key + ": " + value)
+
+        return reversal
 
     # real-time jogging by continuously reading the inputstream
     def jog(self, inputstream):
@@ -173,9 +182,6 @@ class Service:
                 if not self.streamer.is_running and not self.job_queue.empty():
                     # we display all jobs in the queue for reference before streaming the next job.
                     jobs = self.jobs()
-                    logging.info("[ hc ] ------------------------------------------")
-                    for key, value in reversed(jobs.items()):
-                        logging.info("[ hc ] job " + key + ": " + value)
 
                     queuedjob = self.job_queue.get()
                     jobname = queuedjob[0]
