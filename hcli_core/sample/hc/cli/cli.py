@@ -88,6 +88,9 @@ class CLI:
         elif self.commands[1] == "zero":
             self.service.zero()
 
+        elif self.commands[1] == "logs":
+            return self.service.tail()
+
         elif self.commands[1] == "setzero":
             if len(self.commands) > 2:
                 if self.commands[2] == "xyz":

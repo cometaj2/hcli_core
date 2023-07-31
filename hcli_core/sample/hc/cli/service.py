@@ -159,6 +159,9 @@ class Service:
         logging.info("[ hc ] queueing job " + str(self.job_queue.qsize()) + ": " + jobname)
         return
 
+    def tail(self):
+         yield logging.tail()
+
     # we process immediate commands first and then queued jobs in sequence
     def process_job_queue(self):
         with self.streamer.lock:

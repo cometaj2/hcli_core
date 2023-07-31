@@ -50,6 +50,10 @@
             "http": "post"
         },
         {
+            "command": "hc logs",
+            "http": "get"
+        },
+        {
             "command": "hc setzero xyz",
             "http": "post"
         },
@@ -139,6 +143,11 @@
                     "href": "hczero",
                     "name": "zero",
                     "description": "The \"zero\" command sends the G00 X0 Y0, then G0 Z0, gcode blocks to send the CNC to working coordinates 0, 0, 0 for x, y, and z."
+                },
+                {
+                    "href": "hclogs",
+                    "name": "logs",
+                    "description": "The \"logs\" command allows for a client to poll for a log tail against the hc service log output stream."
                 },
                 {
                     "href": "hcsetzero",
@@ -368,6 +377,28 @@
                 {
                     "name": "description",
                     "description": "The \"zero\" command goes to working coordinates 0, 0, 0 via a 'G00 X0 Y0' gcode block then 'G0 Z0' gcode block."
+                }
+            ]
+        },
+        {
+            "id": "hclogs",
+            "name": "logs",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "logs - tails hc service logs."
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hc zero"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"logs\" command allows for a client to poll for a log tail against the hc service log output stream."
+                },
+                {
+                    "name": "examples",
+                    "description": "while true; do hc logs; sleep 0.01; done"
                 }
             ]
         },
