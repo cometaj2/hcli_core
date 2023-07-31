@@ -69,6 +69,8 @@ class Service:
             self.simple_command(io.BytesIO(b'$$'))
             self.simple_command(io.BytesIO(b'$I'))
             self.simple_command(io.BytesIO(b'$G'))
+        else:
+            self.device.close()
 
         return connected
 

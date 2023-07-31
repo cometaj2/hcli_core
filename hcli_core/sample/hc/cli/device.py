@@ -43,7 +43,9 @@ class Device:
         return self.device.reset_output_buffer()
 
     def close(self):
-        return self.device.close()
+        result = self.device.close()
+        logging.info("[ hc ] disconnected from " + self.device_path)
+        return result
 
     def abort(self):
         self.device.reset_input_buffer()
