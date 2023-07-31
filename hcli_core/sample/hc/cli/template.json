@@ -58,6 +58,10 @@
             "http": "post"
         },
         {
+            "command": "hc connect",
+            "http": "post"
+        },
+        {
             "command": "hc connect {p}",
             "http": "post"
         },
@@ -275,11 +279,11 @@
                 },
                 {
                     "name": "description",
-                    "description": "The \"connect\" command connects to the GRBL controller via a serial port provided as parameter."
+                    "description": "The \"connect\" command connects to the GRBL controller via a serial port provided as an optional parameter. Without the optional serialport parameter, hc scans for all available serial ports and tries to connect to each in sequence until it finds a GRBL controller. This may be disruptive to serial devices in certain cases or may connect to the wrong GRBL controller if more than one is connected via serial port. If disruptive, impractical, incorrect, or if you prefer to avoid risks, favor providing the correct serial port directly as a parameter by first listing available serial ports via \"hc scan\"."
                 },
                 {
                     "name": "examples",
-                    "description": "hc connect /dev/tty.usbserial-AR0JI0GV"
+                    "description": "hc connect\\n\\nhc connect /dev/tty.usbserial-AR0JI0GV"
                 }
             ],
             "parameter": {

@@ -3,7 +3,6 @@ import io
 import os
 import inspect
 import sys
-import glob
 import serial
 import io
 import service
@@ -53,13 +52,21 @@ class CLI:
                 return None
 
         elif self.commands[1] == "scan":
-            scanned = json.dumps(self.scan(), indent=4) + "\n"
+            scanned = json.dumps(self.service.scan(), indent=4) + "\n"
 
             return io.BytesIO(scanned.encode("utf-8"))
 
         elif self.commands[1] == "connect":
-            if len(self.commands) > 2:
+            if len(self.commands) <= 2:
+                ports = self.service.scan()
+                if ports.items():
+                    for i, port in enumerate(ports, start=1):
+                        if self.service.connect(ports[str(i)]):
+                            break
+
+            elif len(self.commands) > 2:
                 self.service.connect(self.commands[2])
+
             return
 
         elif self.commands[1] == "disconnect":
@@ -106,33 +113,3 @@ class CLI:
 
             return io.BytesIO(jobs.encode("utf-8"))
         return None
-
-    def scan(self):
-        """ Lists serial port names
-
-            :raises EnvironmentError:
-                On unsupported or unknown platforms
-            :returns:
-                A list of the serial ports available on the system
-        """
-        if sys.platform.startswith('win'):
-            ports = ['COM%s' % (i + 1) for i in range(256)]
-        elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
-            # this excludes your current terminal "/dev/tty"
-            ports = glob.glob('/dev/tty[A-Za-z]*')
-        elif sys.platform.startswith('darwin'):
-            ports = glob.glob('/dev/tty.*')
-        else:
-            raise EnvironmentError('Unsupported platform')
-
-        result = {}
-        for i, port in enumerate(ports, start=1):
-
-            try:
-                s = serial.Serial(port)
-                s.close()
-                result[str(i)] = port
-            except (OSError, serial.SerialException):
-                pass
-
-        return result

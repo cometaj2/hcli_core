@@ -67,19 +67,19 @@ class Logger:
         return
 
     def info(self, msg, *args, **kwargs):
-        self.instance.info(msg, *args, **kwargs)
+        self.instance.info(msg, *args, stacklevel=2, **kwargs)
 
     def debug(self, msg, *args, **kwargs):
-        self.instance.debug(msg, *args, **kwargs)
+        self.instance.debug(msg, *args, stacklevel=2, **kwargs)
 
     def warning(self, msg, *args, **kwargs):
-        self.instance.warning(msg, *args, **kwargs)
+        self.instance.warning(msg, *args, stacklevel=2, **kwargs)
 
     def error(self, msg, *args, **kwargs):
-        self.instance.error(msg, *args, **kwargs)
+        self.instance.error(msg, *args, stacklevel=2, **kwargs)
 
     def critical(self, msg, *args, **kwargs):
-        self.instance.critical(msg, *args, **kwargs)
+        self.instance.critical(msg, *args, stacklevel=2, **kwargs)
 
     def tail(self):
         log_entries = self.clientHandler.read_and_clear()

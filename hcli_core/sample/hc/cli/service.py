@@ -6,6 +6,7 @@ import serial
 import re
 import time
 import inspect
+import glob
 import logger
 import streamer as s
 import jobqueue as j
@@ -45,6 +46,8 @@ class Service:
         return scheduler.add_job(function, 'date', run_date=datetime.now(), max_instances=1)
 
     def connect(self, device_path):
+        connected = False
+
         self.device.set(device_path)
         logging.info("[ hc ] wake up grbl...")
 
@@ -59,11 +62,15 @@ class Service:
             response = self.device.readline().strip() # wait for grbl response
             logging.info("[ " + line + " ] " + response.decode())
 
-        self.simple_command(io.BytesIO(b'$$'))
-        self.simple_command(io.BytesIO(b'$I'))
-        self.simple_command(io.BytesIO(b'$G'))
+            if response.find(b'Grbl') >= 0:
+                connected = True
 
-        return
+        if connected:
+            self.simple_command(io.BytesIO(b'$$'))
+            self.simple_command(io.BytesIO(b'$I'))
+            self.simple_command(io.BytesIO(b'$G'))
+
+        return connected
 
     # We cleanup the queues and disconnect by issuing an immediate shut down function execution.
     def disconnect(self):
@@ -150,11 +157,35 @@ class Service:
 
         return reversal
 
+    # list serial port names
+    def scan(self):
+        if sys.platform.startswith('win'):
+            ports = ['COM%s' % (i + 1) for i in range(256)]
+        elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+            # this excludes your current terminal "/dev/tty"
+            ports = glob.glob('/dev/tty[A-Za-z]*')
+        elif sys.platform.startswith('darwin'):
+            ports = glob.glob('/dev/tty.*')
+        else:
+            raise EnvironmentError('Unsupported platform')
+
+        result = {}
+        for i, port in enumerate(ports, start=1):
+            result[str(i)] = port
+
+        if result.items():
+            logging.info("[ hc ] ------------------------------------------")
+            for key, value in result.items():
+                logging.info("[ hc ] port " + key + ": " + value)
+
+        return result
+
     # real-time jogging by continuously reading the inputstream
     def jog(self, inputstream):
         self.jogger.parse(inputstream)
         return
 
+    # execution of simple commands (immediate commands (i.e. non-gcode))
     def simple_command(self, inputstream):
         self.immediate.put(io.BytesIO(inputstream.getvalue()))
         return
