@@ -77,7 +77,7 @@
             "section": [
                 {
                     "name": "name",
-                    "description": "hc - an HCLI for interacting with a CNC via GRBL Controller (e.g. an OpenBuilds BlackBox controller via input and output streams"
+                    "description": "hc - an HCLI for interacting with a CNC via GRBL Controller (e.g. an OpenBuilds BlackBox controller) via input and output streams"
                 },
                 {
                     "name": "synopsis",
@@ -85,11 +85,11 @@
                 },
                 {
                     "name": "description",
-                    "description": "The \"hc\" CNC HCLI allows you to control a CNC through the command line (e.g. OpenBuilds C-Beam Machine) via the GRBL protocol. You can send control commands and gcode commands as an input stream, and the hc service will respond accordingly.\\n\\nThis HCLI relies on the use of a serial port to a GRBL compliant controller. You can scan to find out which serial device you can send gcode streams to.\\n\\nNote that the hc CNC HCLI doesn't queue jobs properly for sequential streaming execution in a multiprocess context (e.g. multiple workers under gunicorn. Please configure the environment such that the HCLI runs in a single process (e.g. --workers=1 under a gunicorn configuration. See \"hcli_core help\" for a example configuration for hc).\\n\\nThis HCLI handles sequencing of queued jobs properly (i.e. hc -j 'jobname' by waiting for the GRBL to report being idle before picking up the next job in the queue. This allows for job sequences to be an admixture of gcode and commands such as feed hold '!' or status '?', which wouldn't normally be intermixed with gcode files. This feature, coupled with HCLI's native capabilities allows for complex scripted or coded automated job sequences."
+                    "description": "The \"hc\" HCLI allows you to control a CNC through the command line (e.g. OpenBuilds C-Beam Machine) via the GRBL protocol, and acts as an interface for your CNC (e.g. OpenBuilds Interface CNC Touch) to stream gcode, to home, or to jog your CNC. You can send control commands and gcode commands as an input stream, and the hc service will respond accordingly.\\n\\nThis HCLI relies on the use of a serial port to a GRBL compliant controller. You can scan to find out which serial device you can send gcode streams to.\\n\\nThis HCLI handles sequencing of queued jobs properly (i.e. hc -j 'jobname' by waiting for the GRBL to report being idle before picking up the next job in the queue. This allows for job sequences to be an admixture of gcode and commands such as feed hold '!' or status '?', which wouldn't normally be intermixed with gcode files. This feature, coupled with HCLI's native capabilities allows for complex scripted or coded automated job sequences.\\n\\nNote that the hc CNC HCLI doesn't queue jobs properly for sequential streaming execution in a multiprocess context (e.g. multiple workers under gunicorn). Please configure the environment such that the HCLI runs in a single process (e.g. --workers=1 under gunicorn). See \"hcli_core help\" for an example configuration for hc."
                 },
                 {
                     "name": "examples",
-                    "description": "hc scan\\n\\nhc connect /dev/tty.usbserial-AR0JI0GV\\n\\necho '$$' | hc\\n\\ncat test.gcode | hc\\n\\ncat test.gcode | hc -j 'test job'"
+                    "description": "hc scan\\n\\nhc connect\\n\\nhc connect /dev/tty.usbserial-AR0JI0GV\\n\\necho '$$' | hc\\n\\ncat test.gcode | hc\\n\\ncat test.gcode | hc -j 'test job'"
                 }
             ],
             "command": [

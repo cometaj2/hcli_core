@@ -117,6 +117,7 @@ class Jogger:
             while self.device.inWaiting() > 0:
                 response = self.device.readline().strip()
                 rs = response.decode()
+
                 if not self.nudger.logged("[ " + line + " ] " + rs):
                     logging.info("[ " + line + " ] " + rs)
 
