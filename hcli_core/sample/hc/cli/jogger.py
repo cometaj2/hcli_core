@@ -99,6 +99,7 @@ class Jogger:
 
             line = ""
 
+            # continuous jogging cycle (we actively try to terminate in short order)
             while self.is_running and self.heartbeat == True:
                 if not self.jogger_queue.empty():
                     heartbeat = self.jogger_queue.get()
@@ -138,7 +139,7 @@ class Jogger:
         self.device.write(bline)
         time.sleep(2)
 
-        line = re.sub('\s|\(.*?\)','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
+        line = re.sub('\n','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
         while self.device.inWaiting() > 0:
             response = self.device.readline().strip() # wait for grbl response
             logging.info("[ " + line + " ] " + response.decode())

@@ -46,7 +46,7 @@ class Streamer:
 
         try:
             for l in ins:
-                line = re.sub('\s|\(.*?\)','',l).upper() # Strip comments/spaces/new line and capitalize
+                line = re.sub('\n','',l).upper() # Strip comments/spaces/new line and capitalize
 
                 # we unwrap the defered job containing controls into an immediate command execution.
                 if line == '!' or line == '~' or line == '?' or line.startswith('$') or line.strip() == '':
@@ -98,7 +98,7 @@ class Streamer:
         self.device.write(bline)
         time.sleep(2)
 
-        line = re.sub('\s|\(.*?\)','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
+        line = re.sub('\n','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
         while self.device.inWaiting() > 0:
             response = self.device.readline().strip() # wait for grbl response
             logging.info("[ " + line + " ] " + response.decode())
@@ -138,7 +138,6 @@ class Streamer:
 
             self.immediate.process_immediate()
             if self.terminate == True:
-                #self.device.abort()
                 raise TerminationException("[ hc ] terminate ")
 
             time.sleep(0.2)
