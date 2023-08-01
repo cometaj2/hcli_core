@@ -139,7 +139,7 @@ class Jogger:
         self.device.write(bline)
         time.sleep(2)
 
-        line = re.sub('\n','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
+        line = re.sub('\n|\r','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
         while self.device.inWaiting() > 0:
             response = self.device.readline().strip() # wait for grbl response
             logging.info("[ " + line + " ] " + response.decode())

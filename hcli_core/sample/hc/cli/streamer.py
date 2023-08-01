@@ -46,35 +46,37 @@ class Streamer:
 
         try:
             for l in ins:
-                line = re.sub('\n','',l).upper() # Strip comments/spaces/new line and capitalize
+                l = l.split(';', 1)[0].rstrip()
+                if l.rstrip('\n\r').strip() != '':
+                    line = re.sub('\n|\r','',l).upper() # Strip new line carriage returns and capitalize
 
-                # we unwrap the defered job containing controls into an immediate command execution.
-                if line == '!' or line == '~' or line == '?' or line.startswith('$') or line.strip() == '':
-                    self.immediate.put(inputstream)
-                    break
+                    # we unwrap the defered job containing controls into an immediate command execution.
+                    if line == '!' or line == '~' or line == '?' or line.startswith('$') or line.strip() == '':
+                        self.immediate.put(inputstream)
+                        break
 
-                self.device.write(str.encode(line + '\n')) # Send g-code block to grbl
+                    self.device.write(str.encode(line + '\n')) # Send g-code block to grbl
 
-                self.nudger.wait()  # Get the current time at the start to evaluate stalling and nudging
+                    self.nudger.wait()  # Get the current time at the start to evaluate stalling and nudging
 
-                while self.device.inWaiting() > 0:
+                    while self.device.inWaiting() > 0:
+                        if self.terminate == True:
+                            raise TerminationException("[ hc ] terminate ")
+
+                        response = self.device.readline().strip()
+                        rs = response.decode()
+                        if not self.nudger.logged("[ " + line + " ] " + rs):
+                            logging.info("[ " + line + " ] " + rs)
+
+                        if response.find(b'error') >= 0 or response.find(b'MSG:Reset') >= 0:
+                            logging.info("[ hc ] " + rs + " " + error.messages[rs])
+                            raise Exception("[ hc ] " + rs + " " + error.messages[rs])
+
+                        time.sleep(0.01)
+
+                    self.immediate.process_immediate()
                     if self.terminate == True:
                         raise TerminationException("[ hc ] terminate ")
-
-                    response = self.device.readline().strip()
-                    rs = response.decode()
-                    if not self.nudger.logged("[ " + line + " ] " + rs):
-                        logging.info("[ " + line + " ] " + rs)
-
-                    if response.find(b'error') >= 0 or response.find(b'MSG:Reset') >= 0:
-                        logging.info("[ hc ] " + rs + " " + error.messages[rs])
-                        raise Exception("[ hc ] " + rs + " " + error.messages[rs])
-
-                    time.sleep(0.01)
-
-                self.immediate.process_immediate()
-                if self.terminate == True:
-                    raise TerminationException("[ hc ] terminate ")
 
             self.wait(line)
 
@@ -98,7 +100,7 @@ class Streamer:
         self.device.write(bline)
         time.sleep(2)
 
-        line = re.sub('\n','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
+        line = re.sub('\n|\r','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
         while self.device.inWaiting() > 0:
             response = self.device.readline().strip() # wait for grbl response
             logging.info("[ " + line + " ] " + response.decode())

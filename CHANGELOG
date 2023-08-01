@@ -4,11 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.17.1]
+- Fix to avoid streaming empty lines from gcode files to avoid unexpected streamer code repetition.
+- Fix to remove both line feeds and carriage returns correctly when processing gcode files.
+
 ## [0.17.0]
 - Add hc logs to poll a log tail when access to server log stdout isn't available (single client polling only).
 - Add hc jobs server log output and consolidate log reversal and log output into the jobs service.
 - Add hc connect (without parameter) to try and auto connect to scanned serial ports, and stops at the first GRBL controller found.
-- Modify log output to retain space between gcode commands for readability
+- Modify log output to retain space between gcode commands for readability.
 
 ## [0.16.0]
 - Fix missing pyserial dependency in package.
