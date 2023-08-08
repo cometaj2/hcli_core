@@ -13,6 +13,13 @@ logging = logger.Logger()
 # Singleton GRBL controller that handles all reads and writes to and from the serial device.
 class Controller:
     instance = None
+    rq = None
+    rrq = None
+    sq = None
+    srq = None
+    lock = None
+    realtime_thread = None
+    paused = None
 
     def __new__(self):
         if self.instance is None:
@@ -31,6 +38,7 @@ class Controller:
 
             self.connected = False
             self.trying = False
+            self.paused = False
 
             self.realtime_thread = threading.Thread(target=self.realtime)
 
@@ -51,13 +59,44 @@ class Controller:
         self.sq.put(serialbytes)
 
     def readline(self):
-        return self.sq.get()
+        return self.srq.get()
 
     def realtime_write(self, serialbytes):
         self.rq.put(serialbytes)
 
     def realtime_readline(self):
         return self.rrq.get()
+
+    def unlock(self):
+        self.realtime_write(b'$X\n')
+        self.realtime_message()
+
+    def stop(self):
+        self.realtime_write(b'!')
+        self.realtime_message()
+
+    def resume(self):
+        self.realtime_write(b'~')
+        self.realtime_message()
+
+    def status(self):
+        self.realtime_write(b'?')
+        self.realtime_message()
+
+    def realtime_message(self):
+        while self.rrq.empty():
+            time.sleep(0.01)
+
+        while not self.rrq.empty():
+            response = self.realtime_readline()
+            rs = response.decode()
+
+            logging.info(rs)
+
+            if response.find(b'error') >= 0:
+                logging.info("[ hc ] " + rs + " " + error.messages[rs])
+
+            time.sleep(0.01)
 
     def connect(self, device_path):
         self.connected = False
@@ -96,10 +135,27 @@ class Controller:
         self.trying = False
         return self.connected
 
+    def reset(self):
+        bline = b'\x18'
+        self.realtime_write(bline)
+        time.sleep(2)
+
+        while not self.rrq.empty():
+            response = self.realtime_readline()
+            logging.info(response.decode())
+
+        self.abort()
+
+        return
+
     def abort(self):
-        self.device.abort()
+        self.rq.queue.clear()
+        self.rrq.queue.clear()
         self.sq.queue.clear()
         self.srq.queue.clear()
+        self.device.abort()
+        self.paused = False
+        self.reset()
 
     # active process commands to the grbl read buffer. this is the only method that should read/write directly from/to serial grbl.
     def realtime(self):
@@ -109,38 +165,59 @@ class Controller:
 
                     # we give priority to realtime commands over streaming commands
                     while not self.rq.empty():
-                        command = self.rq.get()
+                        command = self.rq.get().strip()
+                        if not (command == b'!' or command == b'~' or command == b'?'):
+                            command = command + b'\n'
+
                         self.device.write(command)
-                        time.sleep(0.01)
 
-                        while self.device.in_waiting() == 0:
-                            time.sleep(0.01)
+                        if not (command == b'!' or command == b'~'):
+                            while self.device.in_waiting() == 0:
+                                time.sleep(0.01)
 
-                        while self.device.in_waiting() > 0:
-                            bline = self.device.readline().strip()
-                            self.rrq.put(b'[ ' + command.strip() + b' ] ' + bline)
+                            while self.device.in_waiting() > 0:
+                                bline = self.device.readline().strip()
+                                self.rrq.put(b'[ ' + command.strip() + b' ] ' + bline)
 
-                            time.sleep(0.01)
+                                time.sleep(0.01)
+                        else:
+                            if command == b'!':
+                                self.paused = True
+                            elif command == b'~':
+                                self.paused = False
+
+                            self.rrq.put(b'[ hc ] ' + command + b' ok')
 
                     # then we process the streaming queue or continue processing it.
-                    if not self.sq.empty():
-                        command = self.sq.get()
+                    if not self.sq.empty() and not self.paused:
+                        command = self.sq.get().strip()
+                        if not (command == b'!' or command == b'~' or command == b'?'):
+                            command = command + b'\n'
+
                         self.device.write(command)
 
-                        while self.device.in_waiting() == 0:
-                           time.sleep(0.01)
+                        if not (command == b'!' or command == b'~'):
+                            while self.device.in_waiting() == 0:
+                               time.sleep(0.01)
 
-                        while self.device.in_waiting() > 0:
-                            bline = self.device.readline().strip()
-                            self.srq.put(b'[ ' + command.strip() + b' ] ' + bline)
+                            while self.device.in_waiting() > 0:
+                                bline = self.device.readline().strip()
+                                self.srq.put(b'[ ' + command.strip() + b' ] ' + bline)
 
-                            time.sleep(0.01)
+                                time.sleep(0.01)
+                        else:
+                            if command == b'!':
+                                self.paused = True
+                            elif command == b'~':
+                                self.paused = False
+
+                            self.srq.put(b'[ hc ] ' + command + b' ok')
 
                 time.sleep(0.01)
         except TypeError:
-            logging.info("[ hc ] unable to connect.")
+            logging.info("[ hc ] unable to communicate over serial port.")
         except OSError as e:
-            logging.info("[ hc ] unable to connect.")
+            logging.info("[ hc ] unable to communicate over serial port.")
         finally:
             pass
 

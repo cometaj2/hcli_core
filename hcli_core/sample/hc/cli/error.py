@@ -1,3 +1,6 @@
+import re
+import logger
+
 messages = {
     "error:1" : "G-code words consist of a letter and a value. Letter was not found.",
     "error:2" : "Missing the expected G-code word value or numeric value format is not valid.",
@@ -36,3 +39,19 @@ messages = {
     "error:37" : "G43.1 dynamic tool length offset is not assigned to configured tool length axis.",
     "error:38" : "Tool number greater than max supported value."
 }
+
+logging = logger.Logger()
+
+
+class Error:
+
+    def __init__(self):
+        pass
+
+    def match(self, message):
+        error_msg = re.search(r'error:\d+', message)
+        if error_msg:
+            logging.info(message + " " + messages[error_msg.group()])
+            return True
+        else:
+            return False

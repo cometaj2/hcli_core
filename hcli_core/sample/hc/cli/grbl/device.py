@@ -34,33 +34,21 @@ class Device:
         with self.lock:
             return self.device.readline()
 
-    # should not be used. Legacy way to wait under older version of pyserial.
-    def inWaiting(self):
-        return self.device.inWaiting()
-
     # this is how we should read for buffer data to read per latest version of pyserial (e.g. 3.5).
     def in_waiting(self):
         return self.device.in_waiting
 
-    def read(self, bytecount):
-        with self.lock:
-            return self.device.read(bytecount)
-
     def reset_input_buffer(self):
-        with self.lock:
-            return self.device.reset_input_buffer()
+        return self.device.reset_input_buffer()
 
     def reset_output_buffer(self):
-        with self.lock:
-            return self.device.reset_output_buffer()
+        return self.device.reset_output_buffer()
 
     def close(self):
-        with self.lock:
-            result = self.device.close()
-            logging.info("[ hc ] disconnected from " + self.device_path)
-            return result
+        result = self.device.close()
+        logging.info("[ hc ] disconnected from " + self.device_path)
+        return result
 
     def abort(self):
-        with self.lock:
-            self.device.reset_input_buffer()
-            self.device.reset_output_buffer()
+        self.device.reset_input_buffer()
+        self.device.reset_output_buffer()

@@ -2,7 +2,6 @@ import io
 import json
 import sys
 import os
-import serial
 import re
 import time
 import inspect
@@ -10,8 +9,8 @@ import glob
 import logger
 import streamer as s
 import jobqueue as j
-import immediate as i
-import jogger as jog
+import error
+#import jogger as jog
 import threading
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -26,7 +25,7 @@ logging.setLevel(logger.DEBUG)
 class Service:
     controller = None
     scheduler = None
-    jogger = None
+    #jogger = None
     root = os.path.dirname(inspect.getfile(lambda: None))
 
     def __init__(self):
@@ -34,10 +33,9 @@ class Service:
 
         scheduler = BackgroundScheduler()
         self.streamer = s.Streamer()
-        self.immediate = i.Immediate()
         self.job_queue = j.JobQueue()
         self.controller = c.Controller()
-        self.jogger = jog.Jogger()
+        #self.jogger = jog.Jogger()
         process = self.add_job(self.interface)
         process = self.add_job(self.process_job_queue)
         scheduler.start()
@@ -53,7 +51,6 @@ class Service:
     # We cleanup the queues and disconnect by issuing an immediate shut down function execution.
     def disconnect(self):
         self.controller.abort()
-        self.immediate.abort()
         self.job_queue.clear()
 
         def shutdown():
@@ -66,23 +63,13 @@ class Service:
     def reset(self):
         self.job_queue.clear()
 
-        bline = b'\x18'
-        self.controller.write(bline)
-        time.sleep(2)
-
-        line = re.sub('\n|\r','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
-        while not self.controller.response_queue.empty():
-            response = self.controller.readline().strip() # wait for grbl response
-            logging.info("[ " + line + " ] " + response.decode())
+        self.controller.reset()
 
         self.streamer.terminate = True
-        self.immediate.terminate = True
-        self.controller.abort()
-
         return
 
     def status(self):
-        self.immediate.put(io.BytesIO(b'?'))
+        self.controller.status()
         return
 
     def home(self):
@@ -91,15 +78,15 @@ class Service:
         return
 
     def unlock(self):
-        self.immediate.put(io.BytesIO(b'$X'))
+        self.controller.unlock()
         return
 
     def stop(self):
-        self.immediate.put(io.BytesIO(b'!'))
+        self.controller.stop()
         return
 
     def resume(self):
-        self.immediate.put(io.BytesIO(b'~'))
+        self.controller.resume()
         return
 
     def zero(self):
@@ -160,13 +147,28 @@ class Service:
 
     # real-time jogging by continuously reading the inputstream
     def jog(self, inputstream):
-        self.jogger.parse(inputstream)
+        #self.jogger.parse(inputstream)
         return
 
     # execution of simple commands (immediate commands (i.e. non-gcode))
     def simple_command(self, inputstream):
-        #self.immediate.put(io.BytesIO(inputstream.getvalue()))
-        self.controller.realtime_write(inputstream.getvalue())
+        command = inputstream.getvalue().strip()
+
+        self.controller.realtime_write(command)
+
+        while self.controller.rrq.empty():
+            time.sleep(0.01)
+
+        while not self.controller.rrq.empty():
+            response = self.controller.realtime_readline()
+            rs = response.decode()
+
+            logging.info(rs)
+
+            error.Error().match(rs)
+
+            time.sleep(0.01)
+
         return
 
     # send a streaming job to the queue
@@ -181,14 +183,12 @@ class Service:
     def tail(self):
          yield logging.tail()
 
-    # we process immediate commands first and then queued jobs in sequence
+    # we process jogging commands and queued jobs
     def process_job_queue(self):
         with self.streamer.lock:
             while True:
-                while not self.streamer.is_running and not self.immediate.empty():
-                    self.immediate.process_immediate()
-                if not self.streamer.is_running and not self.jogger.empty():
-                    self.jogger.jog()
+                #if not self.streamer.is_running and not self.jogger.empty():
+                #    self.jogger.jog()
                 if not self.streamer.is_running and not self.job_queue.empty():
                     # we display all jobs in the queue for reference before streaming the next job.
                     jobs = self.jobs()
@@ -201,7 +201,7 @@ class Service:
 
                 time.sleep(0.1)
 
-    # we kickoff the realtime read/write thread and revive it if it dies.
+    # we kickoff the realtime read/write thread
     def interface(self):
         while True:
             self.controller.start()

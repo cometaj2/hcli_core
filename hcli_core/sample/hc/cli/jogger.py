@@ -21,7 +21,6 @@ class Jogger:
     expire_count = None
     jogger_queue = None
     jog_count = None
-    nudger = None
     feed = None
     mode = None
     scale = None
@@ -33,7 +32,6 @@ class Jogger:
             self.instance = super().__new__(self)
             self.heartbeat = False
             self.controller = c.Controller()
-            self.nudger = n.Nudger()
             self.feed = 2000
             self.scale = 3
             self.imperial = 25.4
