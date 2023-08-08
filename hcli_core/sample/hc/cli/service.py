@@ -46,6 +46,8 @@ class Service:
         return scheduler.add_job(function, 'date', run_date=datetime.now(), max_instances=1)
 
     def connect(self, device_path):
+        self.job_queue.clear()
+        self.streamer.terminate = True
         return self.controller.connect(device_path)
 
     # We cleanup the queues and disconnect by issuing an immediate shut down function execution.
@@ -62,9 +64,7 @@ class Service:
 
     def reset(self):
         self.job_queue.clear()
-
         self.controller.reset()
-
         self.streamer.terminate = True
         return
 
@@ -152,22 +152,24 @@ class Service:
 
     # execution of simple commands (immediate commands (i.e. non-gcode))
     def simple_command(self, inputstream):
-        command = inputstream.getvalue().strip()
+        def immediate_command():
+            command = inputstream.getvalue().strip()
 
-        self.controller.realtime_write(command)
+            self.controller.realtime_write(command)
 
-        while self.controller.rrq.empty():
-            time.sleep(0.01)
+            while self.controller.rrq.empty():
+                time.sleep(0.01)
 
-        while not self.controller.rrq.empty():
-            response = self.controller.realtime_readline()
-            rs = response.decode()
+            while not self.controller.rrq.empty():
+                response = self.controller.realtime_readline()
+                rs = response.decode()
 
-            logging.info(rs)
-            error.match(rs)
+                logging.info(rs)
+                error.match(rs)
 
-            time.sleep(0.01)
+                time.sleep(0.01)
 
+        job = self.add_job(lambda: immediate_command())
         return
 
     # send a streaming job to the queue

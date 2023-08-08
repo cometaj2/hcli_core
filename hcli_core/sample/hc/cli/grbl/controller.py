@@ -6,6 +6,7 @@ import queue as q
 import threading
 
 from grbl import device as d
+from grbl import nudger as n
 
 logging = logger.Logger()
 
@@ -20,12 +21,15 @@ class Controller:
     lock = None
     realtime_thread = None
     paused = None
+    device = None
+    nudger = None
 
     def __new__(self):
         if self.instance is None:
             self.instance = super().__new__(self)
 
             self.device = d.Device()
+            self.nudger = n.Nudger()
 
             self.rq = q.Queue()  # realtime queue (for realtime commands that need to execute immediately)
             self.rrq = q.Queue() # realtime response queue
@@ -145,7 +149,6 @@ class Controller:
             logging.info(response.decode())
 
         self.abort()
-
         return
 
     def abort(self):
@@ -155,7 +158,6 @@ class Controller:
         self.srq.queue.clear()
         self.device.abort()
         self.paused = False
-        self.reset()
 
     # active process commands to the grbl read buffer. this is the only method that should read/write directly from/to serial grbl.
     def realtime(self):
@@ -163,63 +165,40 @@ class Controller:
             while True:
                 if self.connected or self.trying:
 
-                    # we give priority to realtime commands over streaming commands
+                    # Process real-time commands in priority
                     while not self.rq.empty():
                         command = self.rq.get().strip()
-                        if not (command == b'!' or command == b'~' or command == b'?'):
-                            command = command + b'\n'
+                        self.handle_command(command, self.rrq)
 
-                        self.device.write(command)
-
-                        if not (command == b'!' or command == b'~'):
-                            while self.device.in_waiting() == 0:
-                                time.sleep(0.01)
-
-                            while self.device.in_waiting() > 0:
-                                bline = self.device.readline().strip()
-                                self.rrq.put(b'[ ' + command.strip() + b' ] ' + bline)
-
-                                time.sleep(0.01)
-                        else:
-                            if command == b'!':
-                                self.paused = True
-                            elif command == b'~':
-                                self.paused = False
-
-                            self.rrq.put(b'[ hc ] ' + command + b' ok')
-
-                    # then we process the streaming queue or continue processing it.
+                    # Process streaming commands if not paused
                     if not self.sq.empty() and not self.paused:
                         command = self.sq.get().strip()
-                        if not (command == b'!' or command == b'~' or command == b'?'):
-                            command = command + b'\n'
-
-                        self.device.write(command)
-
-                        if not (command == b'!' or command == b'~'):
-                            while self.device.in_waiting() == 0:
-                               time.sleep(0.01)
-
-                            while self.device.in_waiting() > 0:
-                                bline = self.device.readline().strip()
-                                self.srq.put(b'[ ' + command.strip() + b' ] ' + bline)
-
-                                time.sleep(0.01)
-                        else:
-                            if command == b'!':
-                                self.paused = True
-                            elif command == b'~':
-                                self.paused = False
-
-                            self.srq.put(b'[ hc ] ' + command + b' ok')
+                        self.handle_command(command, self.srq)
 
                 time.sleep(0.01)
         except TypeError:
             logging.info("[ hc ] unable to communicate over serial port.")
         except OSError as e:
-            logging.info("[ hc ] unable to communicate over serial port.")
-        finally:
-            pass
+            logging.info("[ hc ] unable to communicate over serial port: " + str(e))
+
+    def handle_command(self, command, response_queue):
+        if not (command in {b'!', b'~', b'?'}):
+            command += b'\n'
+        self.device.write(command)
+
+        if command not in {b'!', b'~'}:
+            self.nudger.wait()
+
+            while self.device.in_waiting() > 0:
+                bline = self.device.readline().strip()
+                response_queue.put(b'[ ' + command.strip() + b' ] ' + bline)
+                time.sleep(0.01)
+        else:
+            if command == b'!':
+                self.paused = True
+            elif command == b'~':
+                self.paused = False
+            response_queue.put(b'[ hc ] ' + command + b' ok')
 
 class TerminationException(Exception):
     pass

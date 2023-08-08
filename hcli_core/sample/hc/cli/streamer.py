@@ -48,6 +48,8 @@ class Streamer:
                     self.controller.write(str.encode(line + '\n')) # Send g-code block to grbl
 
                     while self.controller.srq.empty():
+                        if self.terminate == True:
+                            raise TerminationException("[ hc ] terminate ")
                         time.sleep(0.01)
 
                     while not self.controller.srq.empty():
@@ -58,13 +60,8 @@ class Streamer:
                         rs = response.decode()
                         logging.info(rs)
 
-                        if response.find(b'MSG:Reset') >= 0:
-                            logging.info(rs)
-                            raise Exception("[ hc ] " + rs)
-
-                        if response.find(b'error') >= 0:
-                            logging.info("[ hc ] " + rs + " " + error.messages[rs])
-                            raise Exception("[ hc ] " + rs + " " + error.messages[rs])
+                        if error.match(rs):
+                            raise Exception()
 
                         time.sleep(0.01)
 
@@ -72,9 +69,8 @@ class Streamer:
                         raise TerminationException("[ hc ] terminate ")
 
         except TerminationException as e:
-            self.controller.abort()
+            self.abort()
         except Exception as e:
-            self.controller.abort()
             self.abort()
         finally:
             self.terminate = False
