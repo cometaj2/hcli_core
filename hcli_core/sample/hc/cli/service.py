@@ -164,8 +164,7 @@ class Service:
             rs = response.decode()
 
             logging.info(rs)
-
-            error.Error().match(rs)
+            error.match(rs)
 
             time.sleep(0.01)
 

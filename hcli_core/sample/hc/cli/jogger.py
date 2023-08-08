@@ -120,9 +120,8 @@ class Jogger:
                 if not self.nudger.logged("[ " + line + " ] " + rs):
                     logging.info("[ " + line + " ] " + rs)
 
-                if response.find(b'error') >= 0 or response.find(b'MSG:Reset') >= 0:
-                    logging.info("[ hc ] " + rs + " " + error.messages[rs])
-                    raise Exception("[ hc ] " + rs + " " + error.messages[rs])
+                if error.match(rs):
+                    raise Exception()
 
                 time.sleep(0.2)
 
@@ -133,15 +132,7 @@ class Jogger:
             self.abort()
 
     def abort(self):
-        bline = b'\x18'
-        self.controller.write(bline)
-        time.sleep(2)
-
-        line = re.sub('\n|\r','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
-        while not self.controller.response_queue.empty():
-            response = self.controller.readline().strip() # wait for grbl response
-            logging.info("[ " + line + " ] " + response.decode())
-
+        self.controller.reset()
         self.clear()
         self.is_running = False
 

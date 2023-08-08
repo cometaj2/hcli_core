@@ -43,15 +43,10 @@ messages = {
 logging = logger.Logger()
 
 
-class Error:
-
-    def __init__(self):
-        pass
-
-    def match(self, message):
-        error_msg = re.search(r'error:\d+', message)
-        if error_msg:
-            logging.info(message + " " + messages[error_msg.group()])
-            return True
-        else:
-            return False
+def match(message):
+    error_msg = re.search(r'error:\d+', message)
+    if error_msg:
+        logging.info(message + " " + messages[error_msg.group()])
+        return True
+    else:
+        return False
