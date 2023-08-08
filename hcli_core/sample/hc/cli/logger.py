@@ -48,7 +48,7 @@ class Logger:
                 self.instance = logging.getLogger("crumbs")
 
                 date_format = "%Y-%m-%d %H:%M:%S %z"
-                message_format = "[%(asctime)s] [%(levelname)s] [%(filename)12s:%(lineno)-3s] %(message)s"
+                message_format = "[%(asctime)s] [%(levelname)-5s] [%(filename)13s:%(lineno)-3s] %(message)s"
 
                 formatter = logging.Formatter(fmt=message_format, datefmt=date_format)
 

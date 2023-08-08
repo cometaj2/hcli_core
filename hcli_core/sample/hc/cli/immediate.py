@@ -4,11 +4,12 @@ import serial
 import logger
 import queue as q
 import jobqueue as j
-import device as d
 import streamer as s
-import nudger as n
 import time
 import error
+
+from grbl import nudger as n
+from grbl import controller as c
 
 logging = logger.Logger()
 
@@ -18,7 +19,6 @@ class Immediate:
     instance = None
     immediate_queue = None
     paused = None
-    device = None
 
     def __new__(self):
         if self.instance is None:
@@ -28,7 +28,7 @@ class Immediate:
             self.job_queue = j.JobQueue()
             self.paused = False
             self.nudger = n.Nudger()
-            self.device = d.Device()
+            self.controller = c.Controller()
             self.terminate = False
 
         return self.instance
@@ -55,7 +55,7 @@ class Immediate:
 
                     line = bline.decode().strip()
                     if not (line.startswith('$') and self.paused):
-                        self.device.write(bline)
+                        self.controller.write(bline)
 
                     if line == '!':
                         logging.info("[ hc ] " + line + " " + "ok")
@@ -63,13 +63,13 @@ class Immediate:
                     elif (line.startswith('$') and self.paused):
                         logging.info("[ hc ] " + line + " " + "not on feed hold nor while streaming a job")
                     elif line == '?':
-                        response = self.device.readline().strip()
+                        response = self.controller.readline().strip()
                         logging.info("[ " + line + " ] " + response.decode())
                     else:
                         self.nudger.wait() # Get the current time at the start to evaluate stalling and nudging
 
-                        while self.device.inWaiting() > 0:
-                            response = self.device.readline().strip()
+                        while not self.controller.response_queue.empty():
+                            response = self.controller.readline().strip()
                             rs = response.decode()
                             if not self.nudger.logged("[ " + line + " ] " + rs):
                                 logging.info("[ " + line + " ] " + rs)
@@ -90,7 +90,7 @@ class Immediate:
         except Exception as exception:
             streamer = s.Streamer()
             self.abort()
-            self.device.abort()
+            self.controller.abort()
             streamer.abort()
 
         finally:

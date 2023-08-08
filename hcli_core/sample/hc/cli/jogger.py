@@ -1,12 +1,13 @@
 import re
 import queue as q
-import device as d
 import time
 import logger
 import queue as q
-import nudger as n
 import error
 from functools import partial
+
+from grbl import controller as c
+from grbl import nudger as n
 
 logging = logger.Logger()
 
@@ -15,7 +16,6 @@ logging = logger.Logger()
 class Jogger:
     instance = None
     heartbeat = None
-    device = None
     is_running = None
     start_time = None
     expire_count = None
@@ -32,7 +32,7 @@ class Jogger:
 
             self.instance = super().__new__(self)
             self.heartbeat = False
-            self.device = d.Device()
+            self.controller = c.Controller()
             self.nudger = n.Nudger()
             self.feed = 2000
             self.scale = 3
@@ -69,7 +69,7 @@ class Jogger:
         elif self.heartbeat == False:
             logging.debug("[ hc ] false heart ")
             bline = b'!'
-            self.device.write(bline)
+            self.controller.write(bline)
             self.clear()
             self.jog_count = 0;
 
@@ -106,7 +106,7 @@ class Jogger:
                     self.heart(heartbeat[0])
                     if self.heartbeat == True and self.jog_count == 0:
                         self.jog_count += 1
-                        self.device.write(heartbeat[1])
+                        self.controller.write(heartbeat[1])
                         line = heartbeat[1].decode().strip()
                         logging.info("[ hc ] " + line)
 
@@ -115,8 +115,8 @@ class Jogger:
 
             self.nudger.wait()  # Get the current time at the start to evaluate stalling and nudging
 
-            while self.device.inWaiting() > 0:
-                response = self.device.readline().strip()
+            while not self.controller.response_queue.empty():
+                response = self.controller.readline().strip()
                 rs = response.decode()
 
                 if not self.nudger.logged("[ " + line + " ] " + rs):
@@ -128,20 +128,20 @@ class Jogger:
 
                 time.sleep(0.2)
 
-            self.device.abort()
+            self.controller.abort()
 
         except Exception as e:
-            self.device.abort()
+            self.controller.abort()
             self.abort()
 
     def abort(self):
         bline = b'\x18'
-        self.device.write(bline)
+        self.controller.write(bline)
         time.sleep(2)
 
         line = re.sub('\n|\r','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
-        while self.device.inWaiting() > 0:
-            response = self.device.readline().strip() # wait for grbl response
+        while not self.controller.response_queue.empty():
+            response = self.controller.readline().strip() # wait for grbl response
             logging.info("[ " + line + " ] " + response.decode())
 
         self.clear()

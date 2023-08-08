@@ -11,20 +11,21 @@ import logger
 import streamer as s
 import jobqueue as j
 import immediate as i
-import device as d
 import jogger as jog
+import threading
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from collections import OrderedDict
 
+from grbl import controller as c
+
 logging = logger.Logger()
-logging.setLevel(logger.INFO)
+logging.setLevel(logger.DEBUG)
 
 
 class Service:
-    device = None
+    controller = None
     scheduler = None
-    device = None
     jogger = None
     root = os.path.dirname(inspect.getfile(lambda: None))
 
@@ -35,8 +36,9 @@ class Service:
         self.streamer = s.Streamer()
         self.immediate = i.Immediate()
         self.job_queue = j.JobQueue()
-        self.device = d.Device()
+        self.controller = c.Controller()
         self.jogger = jog.Jogger()
+        process = self.add_job(self.interface)
         process = self.add_job(self.process_job_queue)
         scheduler.start()
 
@@ -46,42 +48,16 @@ class Service:
         return scheduler.add_job(function, 'date', run_date=datetime.now(), max_instances=1)
 
     def connect(self, device_path):
-        connected = False
-
-        self.device.set(device_path)
-        logging.info("[ hc ] wake up grbl...")
-
-        self.immediate.clear()
-
-        bline = b'\r\n\r\n'
-        self.device.write(bline)
-        time.sleep(2)
-
-        line = re.sub('\n|\r','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
-        while self.device.inWaiting() > 0:
-            response = self.device.readline().strip() # wait for grbl response
-            logging.info("[ " + line + " ] " + response.decode())
-
-            if response.find(b'Grbl') >= 0:
-                connected = True
-
-        if connected:
-            self.simple_command(io.BytesIO(b'$$'))
-            self.simple_command(io.BytesIO(b'$I'))
-            self.simple_command(io.BytesIO(b'$G'))
-        else:
-            self.device.close()
-
-        return connected
+        return self.controller.connect(device_path)
 
     # We cleanup the queues and disconnect by issuing an immediate shut down function execution.
     def disconnect(self):
-        self.device.abort()
+        self.controller.abort()
         self.immediate.abort()
         self.job_queue.clear()
 
         def shutdown():
-            self.device.close()
+            self.controller.close()
             sys.exit(0)
 
         job = self.add_job(lambda: shutdown())
@@ -91,17 +67,17 @@ class Service:
         self.job_queue.clear()
 
         bline = b'\x18'
-        self.device.write(bline)
+        self.controller.write(bline)
         time.sleep(2)
 
         line = re.sub('\n|\r','',bline.decode()).upper() # Strip comments/spaces/new line and capitalize
-        while self.device.inWaiting() > 0:
-            response = self.device.readline().strip() # wait for grbl response
+        while not self.controller.response_queue.empty():
+            response = self.controller.readline().strip() # wait for grbl response
             logging.info("[ " + line + " ] " + response.decode())
 
         self.streamer.terminate = True
         self.immediate.terminate = True
-        self.device.abort()
+        self.controller.abort()
 
         return
 
@@ -189,7 +165,8 @@ class Service:
 
     # execution of simple commands (immediate commands (i.e. non-gcode))
     def simple_command(self, inputstream):
-        self.immediate.put(io.BytesIO(inputstream.getvalue()))
+        #self.immediate.put(io.BytesIO(inputstream.getvalue()))
+        self.controller.realtime_write(inputstream.getvalue())
         return
 
     # send a streaming job to the queue
@@ -223,3 +200,9 @@ class Service:
                     logging.info("[ hc ] streaming " + jobname)
 
                 time.sleep(0.1)
+
+    # we kickoff the realtime read/write thread and revive it if it dies.
+    def interface(self):
+        while True:
+            self.controller.start()
+            time.sleep(1)

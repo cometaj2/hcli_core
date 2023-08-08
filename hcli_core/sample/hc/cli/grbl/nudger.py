@@ -1,7 +1,8 @@
 import time
 import logger
-import device as d
 import immediate as i
+
+from grbl import device as d
 
 logging = logger.Logger()
 
