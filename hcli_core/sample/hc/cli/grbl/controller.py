@@ -189,7 +189,7 @@ class Controller:
 
             while self.device.in_waiting() > 0:
                 bline = self.device.readline().strip()
-                if not self.nudger.nudged_response():
+                if not self.nudger.nudged_response(bline):
                     response_queue.put(b'[ ' + command.strip() + b' ] ' + bline)
                 time.sleep(0.01)
         else:

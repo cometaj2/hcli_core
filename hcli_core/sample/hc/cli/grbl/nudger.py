@@ -46,10 +46,15 @@ class Nudger:
             logging.debug("[ hc ] nudge " + str(self.nudge_count))
             self.device.write(b'\n')
 
-    def nudged_response(self):
+    def nudged_response(self, response):
         if self.nudge_count > 0:
-            self.nudge_logged = True
-            self.nudge_count -= 1
+            if response == b'ok':
+                self.nudge_count -= 1
+                self.nudge_logged = True
+                return self.nudge_logged
+            else:
+                self.nudge_logged = False
+                return self.nudge_logged
         else:
             self.nudge_logged = False
 
