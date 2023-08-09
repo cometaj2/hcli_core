@@ -36,13 +36,14 @@ class Service:
         self.job_queue = j.JobQueue()
         self.controller = c.Controller()
         #self.jogger = jog.Jogger()
-        process = self.add_job(self.interface)
-        process = self.add_job(self.process_job_queue)
+        process = self.schedule(self.interface)
+        process = self.schedule(self.process_job_queue)
         scheduler.start()
 
         return
 
-    def add_job(self, function):
+    # we schedule immediate single instance job executions.
+    def schedule(self, function):
         return scheduler.add_job(function, 'date', run_date=datetime.now(), max_instances=1)
 
     def connect(self, device_path):
@@ -55,21 +56,25 @@ class Service:
         self.controller.abort()
         self.job_queue.clear()
 
-        def shutdown():
+        def disconnect_defer():
             self.controller.close()
             sys.exit(0)
 
-        job = self.add_job(lambda: shutdown())
+        job = self.schedule(lambda: disconnect_defer())
         return
 
     def reset(self):
-        self.job_queue.clear()
-        self.controller.reset()
-        self.streamer.terminate = True
+        def reset_defer():
+            self.job_queue.clear()
+            self.controller.reset()
+            self.streamer.terminate = True
+        job = self.schedule(lambda: reset_defer())
         return
 
     def status(self):
-        self.controller.status()
+        def status_defer():
+            self.controller.status()
+        job = self.schedule(lambda: status_defer())
         return
 
     def home(self):
@@ -78,15 +83,21 @@ class Service:
         return
 
     def unlock(self):
-        self.controller.unlock()
+        def unlock_defer():
+            self.controller.unlock()
+        job = self.schedule(lambda: unlock_defer())
         return
 
     def stop(self):
-        self.controller.stop()
+        def stop_defer():
+            self.controller.stop()
+        job = self.schedule(lambda: stop_defer())
         return
 
     def resume(self):
-        self.controller.resume()
+        def resume_defer():
+            self.controller.resume()
+        job = self.schedule(lambda: resume_defer())
         return
 
     def zero(self):
@@ -169,7 +180,7 @@ class Service:
 
                 time.sleep(0.01)
 
-        job = self.add_job(lambda: immediate_command())
+        job = self.schedule(lambda: immediate_command())
         return
 
     # send a streaming job to the queue
@@ -197,7 +208,7 @@ class Service:
                     queuedjob = self.job_queue.get()
                     jobname = queuedjob[0]
                     lambdajob = queuedjob[1]
-                    job = self.add_job(lambdajob)
+                    job = self.schedule(lambdajob)
                     logging.info("[ hc ] streaming " + jobname)
 
                 time.sleep(0.1)

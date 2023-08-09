@@ -74,7 +74,7 @@ class CLI:
             return
 
         elif self.commands[1] == "reset":
-            self.service.add_job(self.service.reset)
+            self.service.reset()
 
         elif self.commands[1] == "status":
             self.service.status()

@@ -62,11 +62,11 @@ class Controller:
     def write(self, serialbytes):
         self.sq.put(serialbytes)
 
-    def readline(self):
-        return self.srq.get()
-
     def realtime_write(self, serialbytes):
         self.rq.put(serialbytes)
+
+    def readline(self):
+        return self.srq.get()
 
     def realtime_readline(self):
         return self.rrq.get()
@@ -140,15 +140,16 @@ class Controller:
         return self.connected
 
     def reset(self):
+        self.abort()
+
         bline = b'\x18'
-        self.realtime_write(bline)
+        self.device.write(bline)
         time.sleep(2)
 
-        while not self.rrq.empty():
-            response = self.realtime_readline()
+        while self.device.in_waiting() > 0:
+            response = self.device.readline().strip()
             logging.info(response.decode())
 
-        self.abort()
         return
 
     def abort(self):
@@ -184,10 +185,13 @@ class Controller:
     def handle_command(self, command, response_queue):
         if not (command in {b'!', b'~', b'?'}):
             command += b'\n'
+
         self.device.write(command)
 
         if command not in {b'!', b'~'}:
             self.nudger.wait()
+            #if self.device.in_waiting() == 0:
+            #    time.sleep(0.01)
 
             while self.device.in_waiting() > 0:
                 bline = self.device.readline().strip()
