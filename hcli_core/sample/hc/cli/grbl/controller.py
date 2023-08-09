@@ -108,9 +108,7 @@ class Controller:
 
         self.set(device_path)
         logging.info("[ hc ] wake up grbl...")
-
-        self.device.reset_input_buffer()
-        self.device.reset_output_buffer()
+        self.abort()
         time.sleep(0.5)
 
         bline = b'\r\n\r\n'
@@ -152,14 +150,6 @@ class Controller:
 
         return
 
-    def abort(self):
-        self.rq.queue.clear()
-        self.rrq.queue.clear()
-        self.sq.queue.clear()
-        self.srq.queue.clear()
-        self.device.abort()
-        self.paused = False
-
     # active process commands to the grbl read buffer. this is the only method that should read/write directly from/to serial grbl.
     def realtime(self):
         try:
@@ -168,7 +158,7 @@ class Controller:
 
                     # Process real-time commands in priority
                     while not self.rq.empty():
-                        command = self.rq.get().strip()
+                        command = self.rq.get().upper().strip()
                         self.handle_command(command, self.rrq)
 
                     # Process streaming commands if not paused
@@ -190,12 +180,11 @@ class Controller:
 
         if command not in {b'!', b'~'}:
             self.nudger.wait()
-            #if self.device.in_waiting() == 0:
-            #    time.sleep(0.01)
 
             while self.device.in_waiting() > 0:
                 bline = self.device.readline().strip()
-                response_queue.put(b'[ ' + command.strip() + b' ] ' + bline)
+                if not self.nudger.nudged_response():
+                    response_queue.put(b'[ ' + command.strip() + b' ] ' + bline)
                 time.sleep(0.01)
         else:
             if command == b'!':
@@ -204,5 +193,13 @@ class Controller:
                 self.paused = False
             response_queue.put(b'[ hc ] ' + command + b' ok')
 
-class TerminationException(Exception):
+    def abort(self):
+        self.rq.queue.clear()
+        self.rrq.queue.clear()
+        self.sq.queue.clear()
+        self.srq.queue.clear()
+        self.device.abort()
+        self.paused = False
+
+class AbortException(Exception):
     pass
