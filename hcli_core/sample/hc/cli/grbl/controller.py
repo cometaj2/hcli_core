@@ -75,13 +75,19 @@ class Controller:
         self.realtime_write(b'$X\n')
         self.realtime_message()
 
+    # induces an immediate GRBL hold state
     def stop(self):
-        self.realtime_write(b'!')
-        self.realtime_message()
+        command = b'!'
+        self.device.write(command) # critially requires a direct write to effect the command immediately
+        self.paused = True
+        logging.info('[ hc ] ' + command.decode() + ' ok')
 
+    # resumes from GRBL hold state
     def resume(self):
-        self.realtime_write(b'~')
-        self.realtime_message()
+        command = b'~'
+        self.device.write(command) # critially requires a direct write to effect the command immediately
+        self.paused = False
+        logging.info('[ hc ] ' + command.decode() + ' ok')
 
     def status(self):
         self.realtime_write(b'?')
