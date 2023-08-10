@@ -61,13 +61,13 @@ class Jogger:
     def heart(self, heartbeat):
         self.heartbeat = heartbeat
         if self.heartbeat == True:
-            logging.debug("[ hc ] true heart ")
+            logging.debug("[ hc ] true heart")
             self.start_time = time.monotonic()  # Get the current time at the start to evaluate stalling and nudging
             self.expire_count = 0
         elif self.heartbeat == False:
-            logging.debug("[ hc ] false heart ")
+            logging.debug("[ hc ] false heart")
             bline = b'!'
-            self.controller.write(bline)
+            self.controller.realtime_write(bline)
             self.clear()
             self.jog_count = 0;
 
@@ -79,7 +79,7 @@ class Jogger:
             if elapsed_time >= 1/4:
                 self.start_time = time.monotonic()
                 self.expire_count += 1
-                logging.info("[ hc ] jogger expiration ")
+                logging.info("[ hc ] jogger expiration")
                 if self.mode == "continuous":
                     self.heart(False)
                 self.is_running = False
@@ -104,36 +104,36 @@ class Jogger:
                     self.heart(heartbeat[0])
                     if self.heartbeat == True and self.jog_count == 0:
                         self.jog_count += 1
-                        self.controller.write(heartbeat[1])
+                        self.controller.realtime_write(heartbeat[1])
                         line = heartbeat[1].decode().strip()
                         logging.info("[ hc ] " + line)
 
                 self.expire()
                 time.sleep(0.0001)
 
-            self.nudger.wait()  # Get the current time at the start to evaluate stalling and nudging
+            while self.controller.rrq.empty():
+                time.sleep(0.02)
 
-            while not self.controller.response_queue.empty():
-                response = self.controller.readline().strip()
+            while not self.controller.rrq.empty():
+                response = self.controller.realtime_readline().strip()
                 rs = response.decode()
 
-                if not self.nudger.logged("[ " + line + " ] " + rs):
-                    logging.info("[ " + line + " ] " + rs)
+                logging.info(rs)
+
+                if rs.find('MSG:Reset') >= 0:
+                    raise Exception()
 
                 if error.match(rs):
                     raise Exception()
 
                 time.sleep(0.2)
 
-            self.controller.abort()
-
         except Exception as e:
-            self.controller.abort()
             self.abort()
 
     def abort(self):
-        self.controller.reset()
         self.clear()
+        self.controller.reset()
         self.is_running = False
 
     # real-time jogging by continuously reading the inputstream

@@ -10,7 +10,7 @@ import logger
 import streamer as s
 import jobqueue as j
 import error
-#import jogger as jog
+import jogger as jog
 import threading
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -19,13 +19,13 @@ from collections import OrderedDict
 from grbl import controller as c
 
 logging = logger.Logger()
-logging.setLevel(logger.DEBUG)
+logging.setLevel(logger.INFO)
 
 
 class Service:
     controller = None
     scheduler = None
-    #jogger = None
+    jogger = None
     root = os.path.dirname(inspect.getfile(lambda: None))
 
     def __init__(self):
@@ -35,7 +35,7 @@ class Service:
         self.streamer = s.Streamer()
         self.job_queue = j.JobQueue()
         self.controller = c.Controller()
-        #self.jogger = jog.Jogger()
+        self.jogger = jog.Jogger()
         process = self.schedule(self.interface)
         process = self.schedule(self.process_job_queue)
         scheduler.start()
@@ -158,7 +158,7 @@ class Service:
 
     # real-time jogging by continuously reading the inputstream
     def jog(self, inputstream):
-        #self.jogger.parse(inputstream)
+        self.jogger.parse(inputstream)
         return
 
     # execution of simple commands (immediate commands (i.e. non-gcode))
@@ -199,8 +199,8 @@ class Service:
     def process_job_queue(self):
         with self.streamer.lock:
             while True:
-                #if not self.streamer.is_running and not self.jogger.empty():
-                #    self.jogger.jog()
+                if not self.streamer.is_running and not self.jogger.empty():
+                    self.jogger.jog()
                 if not self.streamer.is_running and not self.job_queue.empty():
                     # we display all jobs in the queue for reference before streaming the next job.
                     jobs = self.jobs()
