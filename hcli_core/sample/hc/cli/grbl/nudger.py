@@ -65,3 +65,4 @@ class Nudger:
         while self.device.in_waiting() == 0:
             self.nudge()
             time.sleep(0.01)
+        self.nudging = False

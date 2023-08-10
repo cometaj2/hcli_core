@@ -199,6 +199,10 @@ class Controller:
                 self.paused = False
             response_queue.put(b'[ hc ] ' + command + b' ok')
 
+    # reports on controller nudging for long-running commands (e.g. $H)
+    def nudging(self):
+        return self.nudger.nudging
+
     def abort(self):
         self.rq.queue.clear()
         self.rrq.queue.clear()

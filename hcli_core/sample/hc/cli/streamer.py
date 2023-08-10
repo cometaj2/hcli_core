@@ -68,6 +68,9 @@ class Streamer:
                     if self.terminate == True:
                         raise TerminationException("[ hc ] terminate ")
 
+            while self.controller.nudging():
+                time.sleep(0.01)
+
         except TerminationException as e:
             self.abort()
         except Exception as e:
