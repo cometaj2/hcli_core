@@ -47,7 +47,6 @@ class Service:
         return scheduler.add_job(function, 'date', run_date=datetime.now(), max_instances=1)
 
     def connect(self, device_path):
-        self.job_queue.clear()
         self.streamer.terminate = True
         return self.controller.connect(device_path)
 
@@ -199,17 +198,18 @@ class Service:
     def process_job_queue(self):
         with self.streamer.lock:
             while True:
-                if not self.streamer.is_running and not self.jogger.empty():
-                    self.jogger.jog()
-                if not self.streamer.is_running and not self.job_queue.empty():
-                    # we display all jobs in the queue for reference before streaming the next job.
-                    jobs = self.jobs()
+                if self.controller.connected:
+                    if not self.streamer.is_running and not self.jogger.empty():
+                        self.jogger.jog()
+                    if not self.streamer.is_running and not self.job_queue.empty():
+                        # we display all jobs in the queue for reference before streaming the next job.
+                        jobs = self.jobs()
 
-                    queuedjob = self.job_queue.get()
-                    jobname = queuedjob[0]
-                    lambdajob = queuedjob[1]
-                    job = self.schedule(lambdajob)
-                    logging.info("[ hc ] streaming " + jobname)
+                        queuedjob = self.job_queue.get()
+                        jobname = queuedjob[0]
+                        lambdajob = queuedjob[1]
+                        job = self.schedule(lambdajob)
+                        logging.info("[ hc ] streaming " + jobname)
 
                 time.sleep(0.1)
 
