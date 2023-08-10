@@ -57,16 +57,18 @@ class CLI:
             return io.BytesIO(scanned.encode("utf-8"))
 
         elif self.commands[1] == "connect":
-            if len(self.commands) <= 2:
-                ports = self.service.scan()
-                if ports.items():
-                    for i, port in enumerate(ports, start=1):
-                        if self.service.connect(ports[str(i)]):
-                            break
+            def connect_defer():
+                if len(self.commands) <= 2:
+                    ports = self.service.scan()
+                    if ports.items():
+                        for i, port in enumerate(ports, start=1):
+                            if self.service.connect(ports[str(i)]):
+                                break
 
-            elif len(self.commands) > 2:
-                self.service.connect(self.commands[2])
+                elif len(self.commands) > 2:
+                    self.service.connect(self.commands[2])
 
+            job = self.service.schedule(lambda: connect_defer())
             return
 
         elif self.commands[1] == "disconnect":
