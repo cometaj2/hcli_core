@@ -52,12 +52,14 @@ class Service:
 
     # We cleanup the queues and disconnect by issuing an immediate shut down function execution.
     def disconnect(self):
-        self.controller.abort()
         self.job_queue.clear()
 
         def disconnect_defer():
-            self.controller.close()
-            sys.exit(0)
+            self.controller.disconnect()
+            try:
+                sys.exit(0)
+            except:
+                pass
 
         job = self.schedule(lambda: disconnect_defer())
         return

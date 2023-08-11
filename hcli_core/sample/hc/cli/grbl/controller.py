@@ -56,9 +56,6 @@ class Controller:
     def set(self, device_path):
         self.device.set(device_path)
 
-    def close(self):
-        self.device.close()
-
     def write(self, serialbytes):
         self.sq.put(serialbytes)
 
@@ -138,7 +135,7 @@ class Controller:
                 response = self.rrq.get()
                 logging.info(response.decode())
         else:
-            self.close()
+            self.device.close()
 
         self.trying = False
         return self.connected
@@ -156,6 +153,12 @@ class Controller:
             logging.info(response.decode())
 
         return
+
+    def disconnect(self):
+        self.abort()
+        self.nudger.terminate = True
+        self.connected = False
+        self.device.close()
 
     # active process commands to the grbl read buffer. this is the only method that should read/write directly from/to serial grbl.
     def realtime(self):

@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.18.1]
+- Fix mishandling of a disconnect exception and direct service interaction with the serial device.
+
 ## [0.18.0]
 - Redesign to a controller model to improve the stability of GRBL flow control.
 
