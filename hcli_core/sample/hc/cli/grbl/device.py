@@ -1,3 +1,4 @@
+import time
 import serial
 import logger
 import threading

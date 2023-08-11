@@ -49,14 +49,18 @@ class Streamer:
 
                     while self.controller.srq.empty():
                         if self.terminate == True:
-                            raise TerminationException("[ hc ] terminate ")
+                            raise TerminationException("[ hc ] terminated")
                         time.sleep(0.01)
 
                     while not self.controller.srq.empty():
                         if self.terminate == True:
-                            raise TerminationException("[ hc ] terminate ")
+                            raise TerminationException("[ hc ] terminated")
 
                         response = self.controller.readline()
+
+                        if self.terminate == True:
+                            raise TerminationException("[ hc ] terminated")
+
                         rs = response.decode()
                         logging.info(rs)
 
@@ -66,7 +70,7 @@ class Streamer:
                         time.sleep(0.02)
 
                     if self.terminate == True:
-                        raise TerminationException("[ hc ] terminate ")
+                        raise TerminationException("[ hc ] terminated")
 
             while self.controller.nudging():
                 time.sleep(0.01)
@@ -82,8 +86,6 @@ class Streamer:
         return
 
     def abort(self):
-        self.job_queue.clear()
-        self.controller.reset()
         self.is_running = False
         self.terminate = False
 

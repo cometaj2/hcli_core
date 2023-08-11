@@ -14,13 +14,17 @@ class Nudger:
     nudge_start_time = None
     nudging = None
     device = None
+    once = None
+    terminate = None
 
     def __init__(self):
 
         self.nudge_count = 0
         self.nudge_logged = False
         self.nudging = False
+        self.once = False
         self.nudge_time = 0
+        self.terminate = False
 
         self.device = device.Device()
 
@@ -32,6 +36,7 @@ class Nudger:
         self.nudge_count = 0
         self.nudge_logged = False
         self.nudging = True
+        self.once = False
 
     # If we've been stalled for more than some amount of time, we nudge the GRBL controller with a carriage return byte array
     # We reset the timer after nudging to avoid excessive nudging for long operations.
@@ -44,6 +49,9 @@ class Nudger:
             self.nudge_start_time = time.monotonic()
             self.nudge_count += 1
             logging.debug("[ hc ] nudge " + str(self.nudge_count))
+            if self.once == False:
+                self.once = True
+                logging.info("[ hc ] waiting for grbl buffer to clear or long-running command...")
             self.device.write(b'\n')
 
     def nudged_response(self, response):
@@ -64,5 +72,12 @@ class Nudger:
         self.start()  # Get the current time at the start to evaluate stalling and nudging
         while self.device.in_waiting() == 0:
             self.nudge()
+            if self.terminate == True:
+                self.terminate = False
+                raise TerminationException("[ hc ] terminated")
             time.sleep(0.01)
         self.nudging = False
+        self.once = False
+
+class TerminationException(Exception):
+    pass

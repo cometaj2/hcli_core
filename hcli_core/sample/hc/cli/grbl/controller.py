@@ -145,6 +145,7 @@ class Controller:
 
     def reset(self):
         self.abort()
+        self.nudger.terminate = True
 
         bline = b'\x18'
         self.device.write(bline)
@@ -175,8 +176,11 @@ class Controller:
                 time.sleep(0.01)
         except TypeError:
             logging.info("[ hc ] unable to communicate over serial port.")
-        except OSError as e:
-            logging.info("[ hc ] unable to communicate over serial port: " + str(e))
+        except OSError as ose:
+            pass
+            #logging.info("[ hc ] unable to communicate over serial port: " + str(ose))
+        except Exception as e:
+            pass
 
     def handle_command(self, command, response_queue):
         if not (command in {b'!', b'~', b'?'}):
@@ -210,6 +214,3 @@ class Controller:
         self.srq.queue.clear()
         self.device.abort()
         self.paused = False
-
-class AbortException(Exception):
-    pass

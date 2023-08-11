@@ -63,10 +63,12 @@ class Service:
         return
 
     def reset(self):
+        self.job_queue.clear()
+        self.streamer.terminate = True
+
         def reset_defer():
-            self.job_queue.clear()
             self.controller.reset()
-            self.streamer.terminate = True
+
         job = self.schedule(lambda: reset_defer())
         return
 

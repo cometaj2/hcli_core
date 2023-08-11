@@ -1,7 +1,7 @@
 import queue as q
 
 
-# Singleton Job Queue for sequential streaming jobs in a single process environment
+# Singleton Job Queue for sequential streaming jobs in a single process multithread environment
 class JobQueue:
     instance = None
     queue = None
