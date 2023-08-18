@@ -48,18 +48,13 @@ class Streamer:
                     self.controller.write(str.encode(line + '\n')) # Send g-code block to grbl
 
                     while self.controller.srq.empty():
-                        if self.terminate == True:
-                            raise TerminationException("[ hc ] terminated")
+                        self.check_termination()
                         time.sleep(0.01)
 
                     while not self.controller.srq.empty():
-                        if self.terminate == True:
-                            raise TerminationException("[ hc ] terminated")
-
+                        self.check_termination()
                         response = self.controller.readline()
-
-                        if self.terminate == True:
-                            raise TerminationException("[ hc ] terminated")
+                        self.check_termination()
 
                         rs = response.decode()
                         logging.info(rs)
@@ -69,8 +64,7 @@ class Streamer:
 
                         time.sleep(0.02)
 
-                    if self.terminate == True:
-                        raise TerminationException("[ hc ] terminated")
+                    self.check_termination()
 
             while self.controller.nudging():
                 time.sleep(0.01)
@@ -84,6 +78,10 @@ class Streamer:
             self.is_running = False
 
         return
+
+    def check_termination(self):
+        if self.terminate:
+            raise TerminationException("[ hc ] terminated")
 
     def abort(self):
         self.is_running = False

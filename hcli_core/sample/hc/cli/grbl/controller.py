@@ -43,6 +43,7 @@ class Controller:
             self.connected = False
             self.trying = False
             self.paused = False
+            self.resetting = False
 
             self.realtime_thread = threading.Thread(target=self.realtime)
 
@@ -143,18 +144,20 @@ class Controller:
 
     # reset remains a direct write to the device to ensure there's no unexpected wait time for soft reset execution.
     def reset(self):
-        self.abort()
-        self.nudger.terminate = True
+        try:
+            self.resetting = True
+            self.abort()
+            self.nudger.terminate = True
 
-        bline = b'\x18'
-        self.device.write(bline)
-        time.sleep(2)
+            bline = b'\x18'
+            self.device.write(bline)
+            time.sleep(2)
 
-        while self.device.in_waiting() > 0:
-            response = self.device.readline().strip()
-            logging.info(response.decode())
-
-        return
+            while self.device.in_waiting() > 0:
+                response = self.device.readline().strip()
+                logging.info(response.decode())
+        finally:
+            self.resetting = False
 
     def disconnect(self):
         self.abort()
@@ -166,7 +169,7 @@ class Controller:
     def realtime(self):
         try:
             while True:
-                if self.connected or self.trying:
+                if (self.connected or self.trying) and not self.resetting:
 
                     # Process real-time commands in priority
                     while not self.rq.empty():
