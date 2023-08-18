@@ -74,10 +74,8 @@ class Nudger:
             self.nudge()
             if self.terminate == True:
                 self.terminate = False
-                raise TerminationException("[ hc ] terminated")
+                raise Exception("[ hc ] terminated")
             time.sleep(0.01)
         self.nudging = False
         self.once = False
 
-class TerminationException(Exception):
-    pass

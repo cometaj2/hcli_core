@@ -114,7 +114,8 @@ class Controller:
         self.abort()
         time.sleep(0.5)
 
-        bline = b'\r\n\r\n'
+        #bline = b'\r\n\r\n'
+        bline = b'\x18'
         self.realtime_write(bline)
         time.sleep(2)
 
@@ -140,6 +141,7 @@ class Controller:
         self.trying = False
         return self.connected
 
+    # reset remains a direct write to the device to ensure there's no unexpected wait time for soft reset execution.
     def reset(self):
         self.abort()
         self.nudger.terminate = True
@@ -184,6 +186,8 @@ class Controller:
             #logging.info("[ hc ] unable to communicate over serial port: " + str(ose))
         except Exception as e:
             pass
+        finally:
+            self.nudger.terminate = False
 
     def handle_command(self, command, response_queue):
         if not (command in {b'!', b'~', b'?'}):

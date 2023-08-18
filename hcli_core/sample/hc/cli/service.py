@@ -219,6 +219,7 @@ class Service:
 
     # we kickoff the realtime read/write thread
     def interface(self):
-        while True:
-            self.controller.start()
-            time.sleep(1)
+        with self.controller.lock:
+            while True:
+                self.controller.start()
+                time.sleep(1)
