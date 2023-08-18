@@ -186,8 +186,6 @@ class Controller:
             #logging.info("[ hc ] unable to communicate over serial port: " + str(ose))
         except Exception as e:
             pass
-        finally:
-            self.nudger.terminate = False
 
     def handle_command(self, command, response_queue):
         if not (command in {b'!', b'~', b'?'}):

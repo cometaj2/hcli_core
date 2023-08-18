@@ -32,6 +32,7 @@ class Nudger:
 
     # Sets the nudge to the current time to initiate the nudging reference
     def start(self):
+        self.terminate = False
         self.nudge_start_time = time.monotonic()  # Get the current time at the start to evaluate stalling and nudging
         self.nudge_count = 0
         self.nudge_logged = False
