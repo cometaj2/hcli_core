@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.18.1]
 - Fix mishandling of a disconnect exception and direct service interaction with the serial device.
+- Fix nudger termination edge case.
+- Fix to isolate the controler realtime loop to a single thread.
+- Fix streamer termination check and reset logic to avoid realtime queue pickup during reset.
 
 ## [0.18.0]
 - Redesign to a controller model to improve the stability of GRBL flow control.
