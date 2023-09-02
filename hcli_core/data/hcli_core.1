@@ -28,8 +28,6 @@ Provides the path of a sample HCLI CLI that can be used to stream upload, downlo
 Provides the path of a sample HCLI CLI that can be used to manage private network CIDR ranges.
 .IP "sample hptt"
 Provides the path of a sample HCLI CLI that can be used to manage PTT streaming channels to link disjointed radio networks.
-.IP "sample hc"
-Provides the path of a sample HCLI CLI that can be used to sent G-Code to control a CNC via a GRBL 1.1g compliant device.
 .IP help
 This help file.
 .SH OPTIONS
@@ -44,5 +42,3 @@ hcli_core --version
 gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:connector()"
 
 gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:connector(\\"`hcli_core sample hg`\\")"
-
-gunicorn --workers=1 --threads=1 --chdir `hcli_core path` "hcli_core:connector(\\"`hcli_core sample hc`\\")"

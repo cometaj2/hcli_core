@@ -38,8 +38,6 @@ def main():
                 print(config.sample + "/hptt/cli")
             elif sys.argv[2] == "hg":
                 print(config.sample + "/hg/cli")
-            elif sys.argv[2] == "hc":
-                print(config.sample + "/hc/cli")
 
             sys.exit(0)
 

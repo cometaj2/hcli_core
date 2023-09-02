@@ -10,7 +10,7 @@ class Template:
 
     """ We load the template.json and populate available commands, executables directives and the template version """
     def __init__(self):
-        
+
         try:
             with open(config.plugin_path + "/template.json", "r") as read_file:
                 data = json.load(read_file)	
@@ -41,7 +41,7 @@ class Template:
             arg = self.cli[index]
             if arg['id'] == uid:
                 return arg
- 
+
         return None
 
     def findRoot(self):
@@ -53,7 +53,7 @@ class Template:
             if arg['id'] == uid:
                 if 'command' in arg:
                     return arg['command']
-        
+
         return None
 
     def findOptionsForId(self, uid):

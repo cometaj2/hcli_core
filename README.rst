@@ -1,5 +1,5 @@
-HCLI Core |pyver|_ |build status|_ |pypi|_
-==========================================
+HCLI Core |pyver|_ |build status|_ |pypi|_ |huckle|_ |hc|_
+==========================================================
 
 An HCLI Connector that can be used to expose a REST API with a built-in CLI, via hypertext
 command line interface (HCLI) semantics.
@@ -31,6 +31,13 @@ Help shape HCLI and it's ecosystem by raising issues on github!
 [3] https://github.com/cometaj2/I-D/tree/master/hcli
 
 [4] http://alps.io
+
+Related HCLI Projects
+---------------------
+
+- hcli-hc, a pypi package that wraps an HCLI sample application (hc); hc can can act both as a gcode streamer (e.g. for OpenBuilds Blackbox controller v1.1g) and CNC interface. In other words, this HCLI acts in the same capacity as the OpenBuilds CONTROL software and OpenBuilds Interface CNC Touch hardware to help control a GRBL v1.1g controlled CNC. [5]
+
+[5] https://github.com/cometaj2/hcli_hc
 
 Installation
 ------------
@@ -139,8 +146,12 @@ Bugs
 - The hfm sample HCLI fails disgracefully when copying a remote file name that doesn't exist (server error).
 
 .. |build status| image:: https://circleci.com/gh/cometaj2/hcli_core.svg?style=shield
-.. _build status: https://circleci.com/gh/cometaj2/huckle
-.. |pypi| image:: https://badge.fury.io/py/hcli-core.svg
-.. _pypi: https://badge.fury.io/py/hcli-core
+.. _build status: https://circleci.com/gh/cometaj2/hcli_core
+.. |pypi| image:: https://img.shields.io/pypi/v/hcli-core
+.. _pypi: https://pypi.org/project/hcli-core
 .. |pyver| image:: https://img.shields.io/pypi/pyversions/hcli-core.svg
-.. _pyver: https://pypi.python.org/pypi/hcli-core
+.. _pyver: https://pypi.org/project/hcli-core
+.. |huckle| image:: https://img.shields.io/pypi/v/huckle?label=huckle
+.. _huckle: https://pypi.org/project/huckle
+.. |hc| image:: https://img.shields.io/pypi/v/hcli-hc?label=hcli-hc
+.. _hc: https://pypi.org/project/hcli-hc
