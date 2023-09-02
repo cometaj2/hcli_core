@@ -1,4 +1,4 @@
-HCLI Core |pyver|_ |build status|_ |pypi|_ |huckle|_ |hc|_
+HCLI Core |pypi|_ |build status|_ |pyver|_ |huckle|_ |hc|_
 ==========================================================
 
 An HCLI Connector that can be used to expose a REST API with a built-in CLI, via hypertext
@@ -50,7 +50,7 @@ HCLI client such as Huckle (https://github.com/cometaj2/huckle). The following r
 
 .. code-block:: console
 
-    pip install hcli_core
+    pip install hcli-core
     pip install gunicorn
     pip install huckle
     gunicorn --workers=5 --threads=2 -b 127.0.0.1:8000 --chdir `hcli_core path` "hcli_core:connector()"
@@ -82,7 +82,7 @@ CLI interface (cli.py) and HCLI template (template.json) requirements:
 
 .. code-block:: console
 
-    pip install hcli_core
+    pip install hcli-core
     pip install gunicorn
     pip install huckle
     gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:connector(\"`hcli_core sample hg`\")"
@@ -120,7 +120,6 @@ Supports
     - hptt  - a rudimentary HCLI Push To Talk (PTT) channel management service.
     - hub   - a rudimentary HCLI service discovery hub.
     - nw    - a flexible IP Address Management (IPAM) service.
-    - hc    - a gcode streamer for GRBL compliant controller and a CNC interface (e.g. OpenBuilds BlackBox controller v1.1g and Interface CNC Touch).
 - Support for use of any 3rd party HCLI code that meets CLI interface requirements and HCLI template requirements (i.e. see sample HCLIs).
 - Support large input and output streams as application/octet-stream.
 
@@ -147,7 +146,7 @@ Bugs
 
 .. |build status| image:: https://circleci.com/gh/cometaj2/hcli_core.svg?style=shield
 .. _build status: https://circleci.com/gh/cometaj2/hcli_core
-.. |pypi| image:: https://img.shields.io/pypi/v/hcli-core
+.. |pypi| image:: https://img.shields.io/pypi/v/hcli-core?label=hcli-core
 .. _pypi: https://pypi.org/project/hcli-core
 .. |pyver| image:: https://img.shields.io/pypi/pyversions/hcli-core.svg
 .. _pyver: https://pypi.org/project/hcli-core

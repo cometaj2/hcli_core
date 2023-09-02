@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Remove hc from the sample applications and into it's own independent repository to foster independent development.
 - Update hc related documentation.
 - Remove hc related dependencies to pyserial and background scheduler.
-- Fix badging URLs.
+- Fix badging URLs and reorder.
 
 ## [0.18.1]
 - Fix mishandling of a disconnect exception and direct service interaction with the serial device.
