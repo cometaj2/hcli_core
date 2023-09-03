@@ -18,16 +18,14 @@ Any HCLI module path can be provided to connector(), as a parameter, to expose o
 .SH COMMANDS
 .IP "path"
 Provides the installation path of hcli_core, which can be used to help locate the path of the WSGI app to use in a WSGI server.
-.IP "sample hg"
-Provides the path of a sample HCLI CLI that can be used to chat with GPT-3.
 .IP "sample hub"
-Provides the path of a sample HCLI CLI that can be used for service discovery.
+Provides the path of a sample HCLI that can be used for service discovery.
 .IP "sample hfm"
-Provides the path of a sample HCLI CLI that can be used to stream upload, download and otherwise remotely manage files.
+Provides the path of a sample HCLI that can be used to stream upload, download and otherwise remotely manage files.
 .IP "sample nw"
-Provides the path of a sample HCLI CLI that can be used to manage private network CIDR ranges.
+Provides the path of a sample HCLI that can be used as an IPAM to manage private network CIDR ranges.
 .IP "sample hptt"
-Provides the path of a sample HCLI CLI that can be used to manage PTT streaming channels to link disjointed radio networks.
+Provides the path of a sample HCLI that can be used to manage PTT streaming channels to link disjointed radio networks.
 .IP help
 This help file.
 .SH OPTIONS
@@ -41,4 +39,4 @@ hcli_core --version
 
 gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:connector()"
 
-gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:connector(\\"`hcli_core sample hg`\\")"
+gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:connector(\\"`hcli_core sample hfm`\\")"

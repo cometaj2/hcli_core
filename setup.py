@@ -16,8 +16,6 @@ if sys.argv[-1] == 'dry-run':
     os.system("rm -rf hcli_core.egg-info")
     os.system("rm -rf build")
     os.system("rm -rf dist")
-    os.system("touch hcli_core/sample/hg/cli/chat.output")
-    os.system("echo '[{ \"role\" : \"system\", \"content\" : \"\" }]' > hcli_core/sample/hg/cli/context.json")
     os.system("python setup.py sdist --dry-run")
     os.system("python setup.py bdist_wheel --dry-run")
     os.system("twine check dist/*")
@@ -30,8 +28,6 @@ if sys.argv[-1] == 'publish':
     os.system("rm -rf hcli_core.egg-info")
     os.system("rm -rf build")
     os.system("rm -rf dist")
-    os.system("touch hcli_core/sample/hg/cli/chat.output")
-    os.system("echo '[{ \"role\" : \"system\", \"content\" : \"\" }]' > hcli_core/sample/hg/cli/context.json")
     os.system("python setup.py sdist")
     os.system("python setup.py bdist_wheel")
     os.system("twine check dist/*")
@@ -76,9 +72,7 @@ setup(
     ],
     keywords='cli client server connector hypermedia rest generic development',
     packages=find_packages(exclude=['__pycache__', 'tests']),
-    install_requires=[package.dependencies[0],
-                      package.dependencies[1],
-                      package.dependencies[2]],
+    install_requires=[package.dependencies[0]],
     include_package_data=True,
     entry_points={
         'console_scripts': [

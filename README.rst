@@ -1,5 +1,5 @@
-HCLI Core |pypi|_ |build status|_ |pyver|_ |huckle|_ |hc|_
-==========================================================
+HCLI Core |pypi|_ |build status|_ |pyver|_ |huckle|_ |hc|_ |hg|_
+================================================================
 
 An HCLI Connector that can be used to expose a REST API with a built-in CLI, via hypertext
 command line interface (HCLI) semantics.
@@ -35,9 +35,13 @@ Help shape HCLI and it's ecosystem by raising issues on github!
 Related HCLI Projects
 ---------------------
 
-- hcli-hc, a pypi package that wraps an HCLI sample application (hc); hc can can act both as a gcode streamer (e.g. for OpenBuilds Blackbox controller v1.1g) and CNC interface. In other words, this HCLI acts in the same capacity as the OpenBuilds CONTROL software and OpenBuilds Interface CNC Touch hardware to help control a GRBL v1.1g controlled CNC. [5]
+- hcli-hc, a python package for an HCL (hc) that can act both as a gcode streamer (e.g. for OpenBuilds Blackbox controller v1.1g) and CNC interface. In other words, this HCLI acts in the same capacity as the OpenBuilds CONTROL software and OpenBuilds Interface CNC Touch hardware to help control a GRBL v1.1g controlled CNC. [5]
+
+- hcli-hg, a python package wrapper for an HCLI (hg) that can interact with GPT-3.5-Turbo via terminal input and output streams. [6]
 
 [5] https://github.com/cometaj2/hcli_hc
+
+[6] https://github.com/cometaj2/hcli_hg
 
 Installation
 ------------
@@ -75,7 +79,7 @@ Note that no CLI is actually installed by Huckle. Huckle reads the HCLI semantic
 ---------------------------
 
 If you want to load a sample HCLI other than the default sample application, you can try loading one of the other sample HCLIs
-included with HCLI Core. For example, the *hg* HCLI (hypertext GPT-3.5-Turbo chatbot).
+developped independently of HCLI Core. For example, the *hg* HCLI (hypertext GPT-3.5-Turbo chatbot).
 
 A folder path to any other 3rd party HCLI can be provided in the same way to the HCLI Connector, provided the 3rd party HCLI meets
 CLI interface (cli.py) and HCLI template (template.json) requirements:
@@ -85,7 +89,7 @@ CLI interface (cli.py) and HCLI template (template.json) requirements:
     pip install hcli-core
     pip install gunicorn
     pip install huckle
-    gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:connector(\"`hcli_core sample hg`\")"
+    gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:connector(\"`hcli_hg path`\")"
 
 3rd Party HCLI Usage
 --------------------
@@ -115,7 +119,6 @@ Supports
 - Web Server Gateway Interface (WSGI) through PEP 3333 and Falcon.
 - Bundled Sample HCLIs:
     - jsonf - a simple formatter for JSON.
-    - hg    - an HCLI for interacting with GPT-3.5-Turbo via terminal input and output streams.
     - hfm   - a file upload and download manager that works with \*nix terminal shell input and output streams.
     - hptt  - a rudimentary HCLI Push To Talk (PTT) channel management service.
     - hub   - a rudimentary HCLI service discovery hub.
@@ -127,12 +130,7 @@ To Do
 -----
 
 - Automated tests for all bundled HCLI samples.
-- A memory layer for the GPT-3.5-Turbo HCLI (hg).
-    - Automatic context switching per NLP on received input stream.
-    - Context blending to mary different contexts.
-    - Automatic context compression to yield a more substantial memory footprint per context window.
-- A shell mode for the GPT-3.5-Turbo HCLI (hg) to enable shell CLI execution per sought goal.
-- Separate out HCLI applications from HCLI Core to help avoid application dependencies bleeding onto HCLI Core (e.g. OpenAI, GRBL, pyserial, etc.).
+- Separate out HCLI applications from HCLI Core to help avoid application dependencies bleeding onto HCLI Core.
 
 Bugs
 ----
@@ -149,4 +147,6 @@ Bugs
 .. |huckle| image:: https://img.shields.io/pypi/v/huckle?label=huckle
 .. _huckle: https://pypi.org/project/huckle
 .. |hc| image:: https://img.shields.io/pypi/v/hcli-hc?label=hcli-hc
+.. _hg: https://pypi.org/project/hcli-hg
+.. |hg| image:: https://img.shields.io/pypi/v/hcli-hg?label=hcli-hg
 .. _hc: https://pypi.org/project/hcli-hc
