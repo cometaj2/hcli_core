@@ -86,6 +86,7 @@ CLI interface (cli.py) and HCLI template (template.json) requirements:
 
 .. code-block:: console
 
+    pip install hcli-hg
     pip install hcli-core
     pip install gunicorn
     pip install huckle
