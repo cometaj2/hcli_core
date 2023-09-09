@@ -1,5 +1,7 @@
-HCLI Core |pypi|_ |build status|_ |pyver|_ |huckle|_ |hc|_ |hg|_
-================================================================
+|pypi|_ |build status|_ |pyver|_ |huckle|_ |hc|_ |hg|_
+
+HCLI Core
+=========
 
 An HCLI Connector that can be used to expose a REST API with a built-in CLI, via hypertext
 command line interface (HCLI) semantics.
@@ -148,6 +150,6 @@ Bugs
 .. |huckle| image:: https://img.shields.io/pypi/v/huckle?label=huckle
 .. _huckle: https://pypi.org/project/huckle
 .. |hc| image:: https://img.shields.io/pypi/v/hcli-hc?label=hcli-hc
-.. _hg: https://pypi.org/project/hcli-hg
-.. |hg| image:: https://img.shields.io/pypi/v/hcli-hg?label=hcli-hg
 .. _hc: https://pypi.org/project/hcli-hc
+.. |hg| image:: https://img.shields.io/pypi/v/hcli-hg?label=hcli-hg
+.. _hg: https://pypi.org/project/hcli-hg
