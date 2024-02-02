@@ -56,14 +56,14 @@ class ExecutionApi:
         resp.text = execution.ExecutionController(uid, command).serialize()
 
 class FinalExecutionApi:
-    def on_get(self, req, resp):
+    def on_get(self, req, resp, uid):
         command = req.params['command']
 
         resp.content_type = "application/octet-stream"
-        resp.stream = finalexecution.FinalGetExecutionController(command).serialize()
+        resp.stream = finalexecution.FinalGetExecutionController(uid, command).serialize()
 
-    def on_post(self, req, resp):
+    def on_post(self, req, resp, uid):
         command = req.params['command']
 
         resp.content_type = "application/octet-stream"
-        resp.stream = finalexecution.FinalPostExecutionController(command, req.stream).serialize()        
+        resp.stream = finalexecution.FinalPostExecutionController(uid, command, req.stream).serialize()
