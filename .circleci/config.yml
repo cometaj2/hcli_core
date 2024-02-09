@@ -7,6 +7,9 @@ workflows:
   main:
     jobs:
       - test:
+          name: "Python 3.12"
+          v: "3.12"
+      - test:
           name: "Python 3.11"
           v: "3.11"
       - test:
@@ -33,7 +36,7 @@ jobs:
           pip install --upgrade pip
           pip install --upgrade pytest
           pip install --upgrade --force-reinstall setuptools
-          pip install gunicorn==20.1.0
+          pip install gunicorn==20.2.0
           pip install huckle
           pip install -e .
           python -m pytest -v

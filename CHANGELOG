@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.19.1]
+- Update to falcon 3.1.3 (python 3.12 support)
+- Update to test for python 3.12 in circleci
+- Update test to gunicorn 20.2.0
+
 ## [0.19.0]
 - Remove findById that does nothing in execution resource (speed improvement).
 - Add uid at the tailend of the path to help with path based routing upstream constraints (e.g. nginx config).
