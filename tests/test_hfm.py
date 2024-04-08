@@ -8,7 +8,7 @@ def test_function():
     #!/bin/bash
     set -x
 
-    gunicorn --workers=1 --threads=1 "hcli_core.hcli_core:connector(\\"`hcli_core sample hfm`\\")" --daemon
+    gunicorn --workers=1 --threads=1 "hcli_core:connector(\\"`hcli_core sample hfm`\\")" --daemon
     huckle cli install http://127.0.0.1:8000
     """
 

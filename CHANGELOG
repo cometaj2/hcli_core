@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Refactor to use absolute imports throughout to avoid relative import issues when using hcli_core use as a python library.
 - Move hcli_core.py to __init__.py to avoid double hcli_core call on connector
 - Move falcon import to the connector to avoid pip . install failure
+- Update tests to the module connector call
 
 ## [0.19.2]
 - Remove python 3.12 circleci test for now because of a compatibility problem
