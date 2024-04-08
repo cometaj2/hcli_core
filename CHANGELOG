@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.20.0]
+- Refactor to use absolute imports throughout to avoid relative import issues when using hcli_core use as a python library.
+- Move hcli_core.py to __init__.py to avoid double hcli_core call on connector
+
 ## [0.19.2]
 - Remove python 3.12 circleci test for now because of a compatibility problem
 

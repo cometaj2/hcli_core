@@ -1,7 +1,8 @@
 import json
 import urllib
-import config
 import re
+
+from hcli_core import config
 
 class Template:
     hcliTemplateVersion = "1.0"

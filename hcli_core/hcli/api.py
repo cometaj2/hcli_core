@@ -1,11 +1,11 @@
-from hcli import home
-from hcli import secondaryhome
-from hcli import document
-from hcli import command as hcommand
-from hcli import option
-from hcli import execution
-from hcli import finalexecution
-from hcli import parameter
+from hcli_core.hcli import home
+from hcli_core.hcli import secondaryhome
+from hcli_core.hcli import document
+from hcli_core.hcli import command as hcommand
+from hcli_core.hcli import option
+from hcli_core.hcli import execution
+from hcli_core.hcli import finalexecution
+from hcli_core.hcli import parameter
 
 class HomeApi:
     def on_get(self, req, resp):

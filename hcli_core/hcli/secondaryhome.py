@@ -1,6 +1,7 @@
-import config
-from haliot import hal
-from hcli import document
+from hcli_core import config
+
+from hcli_core.haliot import hal
+from hcli_core.hcli import document
 
 class SecondaryHome(object):
     None

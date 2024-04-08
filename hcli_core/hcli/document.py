@@ -1,15 +1,17 @@
-from haliot import hal
 import json
 import urllib
-import config
-from hcli import semantic
-from hcli import profile
-from hcli import command as hcommand
-from hcli import home
-from hcli import secondaryhome
-from hcli import option
-from hcli import execution
-from hcli import parameter
+
+from hcli_core.haliot import hal
+from hcli_core import config
+
+from hcli_core.hcli import semantic
+from hcli_core.hcli import profile
+from hcli_core.hcli import command as hcommand
+from hcli_core.hcli import home
+from hcli_core.hcli import secondaryhome
+from hcli_core.hcli import option
+from hcli_core.hcli import execution
+from hcli_core.hcli import parameter
 
 class Document:
     hcli_version = None

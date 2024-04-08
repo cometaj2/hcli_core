@@ -4,9 +4,9 @@ from subprocess import call
 
 import sys
 
-from . import package
-from . import config
-from . import hutils
+from hcli_core import package
+from hcli_core import config
+from hcli_core import hutils
 
 def main():
     if len(sys.argv) == 2:

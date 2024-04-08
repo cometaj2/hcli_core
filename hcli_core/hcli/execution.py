@@ -1,13 +1,15 @@
-import config
 import json
 import urllib
-from haliot import hal
-from hcli import semantic
-from hcli import profile
-from hcli import document
-from hcli import home
-from hcli import secondaryhome
-from hcli import finalexecution
+
+from hcli_core import config
+
+from hcli_core.haliot import hal
+from hcli_core.hcli import semantic
+from hcli_core.hcli import profile
+from hcli_core.hcli import document
+from hcli_core.hcli import home
+from hcli_core.hcli import secondaryhome
+from hcli_core.hcli import finalexecution
 
 class Execution:
     hcli_version = None

@@ -2,15 +2,17 @@ from __future__ import absolute_import, division, print_function
 
 import json
 import sys
-import config
 import urllib
 import shlex
-from haliot import hal
-from hcli import semantic
-from hcli import profile
-from hcli import document
-from hcli import home
-from hcli import secondaryhome
+
+from hcli_core import config
+
+from hcli_core.haliot import hal
+from hcli_core.hcli import semantic
+from hcli_core.hcli import profile
+from hcli_core.hcli import document
+from hcli_core.hcli import home
+from hcli_core.hcli import secondaryhome
 
 class FinalGetExecutionLink:
     href = secondaryhome.SecondaryHomeLink().href + "/exec/getexecute"

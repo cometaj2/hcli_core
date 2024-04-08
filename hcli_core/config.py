@@ -23,6 +23,6 @@ def set_plugin_path(p):
     global cli
     if p is not None:
         plugin_path = p
-  
+
     sys.path.insert(0, plugin_path)
     cli = importlib.import_module("cli", plugin_path)

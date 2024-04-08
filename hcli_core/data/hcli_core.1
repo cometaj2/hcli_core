@@ -37,6 +37,6 @@ hcli_core path
 
 hcli_core --version
 
-gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:connector()"
+gunicorn --workers=5 --threads=2 "hcli_core:connector()"
 
-gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:connector(\\"`hcli_core sample hfm`\\")"
+gunicorn --workers=5 --threads=2 "hcli_core:connector(\\"`hcli_core sample hfm`\\")"
