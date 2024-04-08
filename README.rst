@@ -1,4 +1,4 @@
-|pypi|_ |build status|_ |pyver|_ |huckle|_ |hc|_ |hg|_
+|pypi| |build status| |pyver| |huckle| |hc| |hg|
 
 HCLI Core
 =========
@@ -142,14 +142,14 @@ Bugs
 - The hfm sample HCLI fails disgracefully when copying a remote file name that doesn't exist (server error).
 
 .. |build status| image:: https://circleci.com/gh/cometaj2/hcli_core.svg?style=shield
-.. _build status: https://circleci.com/gh/cometaj2/hcli_core
+   :target: https://circleci.com/gh/cometaj2/hcli_core
 .. |pypi| image:: https://img.shields.io/pypi/v/hcli-core?label=hcli-core
-.. _pypi: https://pypi.org/project/hcli-core
+   :target: https://pypi.org/project/hcli-core
 .. |pyver| image:: https://img.shields.io/pypi/pyversions/hcli-core.svg
-.. _pyver: https://pypi.org/project/hcli-core
+   :target: https://pypi.org/project/hcli-core
 .. |huckle| image:: https://img.shields.io/pypi/v/huckle?label=huckle
-.. _huckle: https://pypi.org/project/huckle
+   :target: https://pypi.org/project/huckle
 .. |hc| image:: https://img.shields.io/pypi/v/hcli-hc?label=hcli-hc
-.. _hc: https://pypi.org/project/hcli-hc
+   :target: https://pypi.org/project/hcli-hc
 .. |hg| image:: https://img.shields.io/pypi/v/hcli-hg?label=hcli-hg
-.. _hg: https://pypi.org/project/hcli-hg
+   :target: https://pypi.org/project/hcli-hg
