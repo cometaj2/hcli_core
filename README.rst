@@ -81,7 +81,7 @@ Note that no CLI is actually installed by Huckle. Huckle reads the HCLI semantic
 ---------------------------
 
 If you want to load a sample HCLI other than the default sample application, you can try loading one of the other sample HCLIs
-developped independently of HCLI Core. For example, the *hg* HCLI (hypertext GPT-3.5-Turbo chatbot).
+developped independently of HCLI Core. For example, the *hc* HCLI (hypertext GPT-3.5-Turbo command line chat application).
 
 A folder path to any other 3rd party HCLI can be provided in the same way to the HCLI Connector, provided the 3rd party HCLI meets
 CLI interface (cli.py) and HCLI template (template.json) requirements:
@@ -92,7 +92,7 @@ CLI interface (cli.py) and HCLI template (template.json) requirements:
     pip install hcli-core
     pip install gunicorn
     pip install huckle
-    gunicorn --workers=5 --threads=2 --chdir `hcli_core path` "hcli_core:connector(\"`hcli_hg path`\")"
+    gunicorn --workers=5 --threads=2 "hcli_core:connector(\"`hcli_hg path`\")"
 
 3rd Party HCLI Usage
 --------------------
