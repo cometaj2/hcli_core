@@ -59,7 +59,7 @@ HCLI client such as Huckle (https://github.com/cometaj2/huckle). The following r
     pip install hcli-core
     pip install gunicorn
     pip install huckle
-    gunicorn --workers=5 --threads=2 -b 127.0.0.1:8000 --chdir `hcli_core path` "hcli_core:connector()"
+    gunicorn --workers=5 --threads=2 -b 127.0.0.1:8000 "hcli_core:connector()"
 
 Usage
 -----
