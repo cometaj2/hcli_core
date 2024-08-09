@@ -1,2 +1,2 @@
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 dependencies = ["falcon==3.1.3"]
