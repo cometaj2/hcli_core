@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hcli_core"
+dynamic = ["version", "dependencies"]
+description = "An HCLI connector that can be used to expose any CLI expressed through hypertext command line interface (HCLI) semantics."
+readme = "README.rst"
+authors = [{name = "Jeff Michaud", email = "cometaj2@comcast.net"}]
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11"
+]
+keywords = ["cli", "client", "server", "connector", "hypermedia", "rest", "generic", "development"]
+
+[project.urls]
+Homepage = "https://github.com/cometaj2/hcli_core"
+
+[project.scripts]
+hcli_core = "hcli_core.__main__:main"
+
+[tool.setuptools.dynamic]
+version = {attr = "hcli_core.package.__version__"}
+dependencies = {file = "requirements.txt"}
+
+[tool.setuptools]
+packages = ["hcli_core"]
+package-data = {"hcli_core" = ["data/*"]}

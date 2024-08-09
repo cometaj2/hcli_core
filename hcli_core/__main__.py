@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, print_function
-
 from subprocess import call
 
 import sys
@@ -13,6 +11,7 @@ def main():
 
         if sys.argv[1] == "--version":
             show_dependencies()
+            sys.exit(0)
 
         elif sys.argv[1] == "help":
             display_man_page(config.hcli_core_manpage_path)
