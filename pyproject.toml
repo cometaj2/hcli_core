@@ -39,4 +39,4 @@ include-package-data = true
 "hcli_core" = ["**/*"]
 
 [tool.setuptools.exclude-package-data]
-"*" = ["*.pyc", "*.pyo", "*.pyd", "__pycache__", ".DS_Store", "chroot/*", "networks.json"]
+"*" = ["*.pyc", "*.pyo", "*.pyd", "__pycache__"]
