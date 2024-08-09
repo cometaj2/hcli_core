@@ -4,8 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.20.4]
+- Update to pyproject.toml in prepration for pip deprecation of setup.py use
+
 ## [0.20.3]
-- Update to pyproject.toml in prepration for pip deprecation of setup.py
+- Documentation update
 
 ## [0.20.2]
 - Documentation update to get rid of chdir which is no longer needed per more recent updates
