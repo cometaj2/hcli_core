@@ -33,4 +33,10 @@ dependencies = {file = "requirements.txt"}
 
 [tool.setuptools]
 packages = ["hcli_core"]
-package-data = {"hcli_core" = ["*"]}
+include-package-data = true
+
+[tool.setuptools.package-data]
+"hcli_core" = ["**/*"]
+
+[tool.setuptools.exclude-package-data]
+"*" = ["*.pyc", "*.pyo", "*.pyd", "__pycache__"]
