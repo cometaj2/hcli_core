@@ -12,9 +12,30 @@ hcli_core \- An HCLI Connector that can be used to expose a REST API with a buil
 .B hcli_core
 is a Web Service Gateway Interface (WSGI; PEP 3333) application that provides a way for developers to expose a CLI via HCLI v1.0 semantics
 while providing dynamic and up to date in-band access to man page style API/CLI documentation.
-
-Any HCLI module path can be provided to connector(), as a parameter, to expose other HCLIs.
-
+.SH CONFIGURATION
+HCLI Core relies on the use of a configuration file. If none is provided as a file path, the default configuration included with hcli_core
+is used.
+.PP
+The configuration file is expected to be formatted in the configparser format which defines sections and assigned name = value pairs. See
+the EXAMPLE section for details on how to submit a custom configuration file path to hcli_core at launch.
+.PP
+The configuration supports:
+.PP
+- No authentication (auth = None)
+.br
+- HTTP Basic Authentication (auth = basic)
+.PP
+.I
+.SS CONFIGURATION FILE FORMAT
+[default]
+.br
+auth = None (auth = <None | basic>)
+.SS HTTP BASIC AUTHENTICATION
+If basic auth is configured, HCLI Core expects to use the HCLI_CORE_HTTPBASIC environment variable and it should contain a username:password
+where username is a custom user name and password a custom password. Note that the username and password can't contain a ":", as is also the
+case under HTTP Basic Authentication.
+.PP
+Password hashing for additional security is not currently supported.
 .SH COMMANDS
 .IP "path"
 Provides the installation path of hcli_core, which can be used to help locate the path of the WSGI app to use in a WSGI server.
@@ -34,9 +55,11 @@ This help file.
 version and the version of it's dependencies.
 .SH EXAMPLE
 hcli_core path
-
+.PP
 hcli_core --version
-
+.PP
 gunicorn --workers=5 --threads=2 "hcli_core:connector()"
-
+.PP
 gunicorn --workers=5 --threads=2 "hcli_core:connector(\\"`hcli_core sample hfm`\\")"
+.PP
+gunicorn --workers=5 --threads=2 "hcli_core:connector(\\"`hcli_core sample hfm`\\", \\"./custom.config\\")"

@@ -39,11 +39,11 @@ Related HCLI Projects
 
 - hcli-hc, a python package for an HCL (hc) that can act both as a gcode streamer (e.g. for OpenBuilds Blackbox controller v1.1g) and CNC interface. In other words, this HCLI acts in the same capacity as the OpenBuilds CONTROL software and OpenBuilds Interface CNC Touch hardware to help control a GRBL v1.1g controlled CNC. [5]
 
-- hcli-hg, a python package wrapper for an HCLI (hg) that can interact with GPT-3.5-Turbo via terminal input and output streams. [6]
+- hcli-hai, a python package wrapper for an HCLI (hai) that can interact with GPT-3.5-Turbo via terminal input and output streams. [6]
 
 [5] https://github.com/cometaj2/hcli_hc
 
-[6] https://github.com/cometaj2/hcli_hg
+[6] https://github.com/cometaj2/hcli_hai
 
 Installation
 ------------
@@ -81,18 +81,18 @@ Note that no CLI is actually installed by Huckle. Huckle reads the HCLI semantic
 ---------------------------
 
 If you want to load a sample HCLI other than the default sample application, you can try loading one of the other sample HCLIs
-developped independently of HCLI Core. For example, the *hc* HCLI (hypertext GPT-3.5-Turbo command line chat application).
+developped independently of HCLI Core. For example, the *hai* HCLI (hypertext GPT-3.5-Turbo command line chat application).
 
 A folder path to any other 3rd party HCLI can be provided in the same way to the HCLI Connector, provided the 3rd party HCLI meets
 CLI interface (cli.py) and HCLI template (template.json) requirements:
 
 .. code-block:: console
 
-    pip install hcli-hg
+    pip install hcli-hai
     pip install hcli-core
     pip install gunicorn
     pip install huckle
-    gunicorn --workers=5 --threads=2 "hcli_core:connector(\"`hcli_hg path`\")"
+    gunicorn --workers=5 --threads=2 "hcli_core:connector(\"`hcli_hai path`\")"
 
 3rd Party HCLI Usage
 --------------------
@@ -128,12 +128,15 @@ Supports
     - nw    - a flexible IP Address Management (IPAM) service.
 - Support for use of any 3rd party HCLI code that meets CLI interface requirements and HCLI template requirements (i.e. see sample HCLIs).
 - Support large input and output streams as application/octet-stream.
+- HTTP Basic Authentication (auth = basic) via HCLI_CORE_HTTPBASIC environment variable. See hcli_core help for details.
 
 To Do
 -----
 
 - Automated tests for all bundled HCLI samples.
 - Separate out HCLI applications from HCLI Core to help avoid application dependencies bleeding onto HCLI Core.
+- Support hashed password for additional security under HTTP Basic Authentication.
+- Support multiple usernames and passwords under HTTP Basic Authentication.
 
 Bugs
 ----
@@ -151,5 +154,5 @@ Bugs
    :target: https://pypi.org/project/huckle
 .. |hc| image:: https://img.shields.io/pypi/v/hcli-hc?label=hcli-hc
    :target: https://pypi.org/project/hcli-hc
-.. |hg| image:: https://img.shields.io/pypi/v/hcli-hg?label=hcli-hg
-   :target: https://pypi.org/project/hcli-hg
+.. |hg| image:: https://img.shields.io/pypi/v/hcli-hg?label=hcli-hai
+   :target: https://pypi.org/project/hcli-hai

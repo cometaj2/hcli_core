@@ -1,4 +1,5 @@
 import json
+
 from hcli_core.hcli import api
 from hcli_core.hcli import home
 from hcli_core.hcli import secondaryhome
@@ -11,16 +12,28 @@ from hcli_core.hcli import parameter
 
 from hcli_core import config
 from hcli_core import template
+from hcli_core import auth
+from hcli_core import logger
 
-def connector(plugin_path=None):
+log = logger.Logger("hcli_core")
+log.setLevel(logger.INFO)
+
+
+def connector(plugin_path=None, config_path=None):
     import falcon
+
+    config.parse_configuration(config_path)
 
     # We load the HCLI template in memory to reduce disk io
     config.set_plugin_path(plugin_path)
     config.parse_template(template.Template())
 
     # We setup the HCLI Connector
-    server = falcon.App()
+    if config.auth == "basic":
+        server = falcon.App(middleware=[auth.AuthMiddleware()])
+    else:
+        server = falcon.App()
+
     server.add_route(home.HomeController.route, api.HomeApi())
     server.add_route(secondaryhome.SecondaryHomeController.route, api.SecondaryHomeApi())
     server.add_route(document.DocumentController.route, api.DocumentApi())
