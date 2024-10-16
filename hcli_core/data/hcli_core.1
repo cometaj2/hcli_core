@@ -6,7 +6,7 @@ hcli_core \- An HCLI Connector that can be used to expose a REST API with a buil
 [
 .I option
 |
-.I <command>
+.I command
 ]
 .SH DESCRIPTION
 .B hcli_core
@@ -23,19 +23,50 @@ The configuration supports:
 .PP
 - No authentication (auth = None)
 .br
-- HTTP Basic Authentication (auth = basic)
+- HTTP Basic Authentication (auth = Basic)
 .PP
 .I
 .SS CONFIGURATION FILE FORMAT
 [default]
 .br
-auth = None (auth = <None | basic>)
-.SS HTTP BASIC AUTHENTICATION
-If basic auth is configured, HCLI Core expects to use the HCLI_CORE_HTTPBASIC environment variable and it should contain a username:password
-where username is a custom user name and password a custom password. Note that the username and password can't contain a ":", as is also the
+auth = None (auth = <None | Basic>)
+.SH HTTP BASIC AUTHENTICATION
+If Basic auth is configured, HCLI Core expects to use a credentials file, called "credentials", located in the same folder as the configuration file.
+The default included configuration file and credentials file provided with HCLI Core MUST NOT be used but provides an included example file format.
+.PP
+The default included admin's user password is: admin (sha512 hashed)
+.PP
+The provided custom credentials file MUST minimally contain a [default] section and admin user.
+.PP
+The default username should be admin and should have a password that's a hexdigest of a sha512 hashed password; without a trailing \\n. Note that usernames and passwords can't contain a ":", as is also the
 case under HTTP Basic Authentication.
 .PP
-Password hashing for additional security is not currently supported.
+The credentials file MAY contain as many additional users, one user per section, under as many additional sections as is desired.
+.PP
+HTTP Basic Authenthentication SHOULD NOT be used without HTTPS and SHOULD NOT generally be considered secure in any way. This is provided as a bare convenience if authentication capabilities are found useful, however,
+.I other authorization schemes should be preferred.
+.PP
+The service does not support stored cleartext passwords and instead expects to see stored passwords as sha512 hexdigests to help provide a minimum of password protection if the stored credentials file becomes compromised.
+.PP
+The CREDENTIALS FILE FORMAT section provides an example command line to use to generate a sha512 digest of a password without exposing it on the command line.
+.PP
+.SS CREDENTIALS FILE FORMAT
+[default]
+.br
+auth = Basic
+.br
+username = admin
+.br
+password = <echo -n $(cat somefile) | sha512sum>
+.PP
+[<someothersection>]
+.br
+auth = Basic
+.br
+username = <someotheruser>
+.br
+password = <echo -n $(cat someotherpassword) | sha512sum>
+.PP
 .SH COMMANDS
 .IP "path"
 Provides the installation path of hcli_core, which can be used to help locate the path of the WSGI app to use in a WSGI server.

@@ -29,10 +29,7 @@ def connector(plugin_path=None, config_path=None):
     config.parse_template(template.Template())
 
     # We setup the HCLI Connector
-    if config.auth == "basic":
-        server = falcon.App(middleware=[auth.AuthMiddleware()])
-    else:
-        server = falcon.App()
+    server = falcon.App(middleware=[auth.AuthMiddleware()])
 
     server.add_route(home.HomeController.route, api.HomeApi())
     server.add_route(secondaryhome.SecondaryHomeController.route, api.SecondaryHomeApi())

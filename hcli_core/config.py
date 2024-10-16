@@ -14,6 +14,7 @@ plugin_path = root + "/cli"
 default_config_file_path = root + "/hcli_core.config"
 config_file_path = None
 cli = None
+auth = None
 
 log = logger.Logger("hcli_core")
 
@@ -40,13 +41,19 @@ def parse_configuration(config_path):
                 log.debug("[" + section_name + "]")
                 for name, value in parser.items("default"):
                     if name == "auth":
-                        auth = value
-                        log.debug(name + " = " + auth)
+                        if value != "Basic" and value != "None":
+                            log.warning("Unsuported authentication mode: " + str(value))
+                            auth = None
+                            log.info("Authentication mode: " + str(auth))
+                        else:
+                            auth = value
+                            log.info("Authentication mode: " + str(auth))
         else:
-            sys.exit("No default configuration available for " + config_file_path) 
+            log.critical("No [default] configuration available for " + config_file_path)
+            assert isinstance(auth, str)
     except:
-        sys.exit("Unable to load configuration.") 
-
+        log.critical("Unable to load configuration.")
+        assert isinstance(auth, str)
 
 """ We parse the HCLI json template to load the HCLI navigation in memory """
 def parse_template(t):

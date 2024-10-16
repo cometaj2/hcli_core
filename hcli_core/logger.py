@@ -12,6 +12,7 @@ WARNING = logging.WARNING
 ERROR = logging.ERROR
 CRITICAL = logging.CRITICAL
 
+
 # custom deque implementation to have log line limits as a sliding window that behaves like a stream being consumed when read.
 class DequeHandler(logging.Handler):
     def __init__(self, *args, **kwargs):

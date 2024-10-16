@@ -128,15 +128,15 @@ Supports
     - nw    - a flexible IP Address Management (IPAM) service.
 - Support for use of any 3rd party HCLI code that meets CLI interface requirements and HCLI template requirements (i.e. see sample HCLIs).
 - Support large input and output streams as application/octet-stream.
-- HTTP Basic Authentication (auth = basic) via HCLI_CORE_HTTPBASIC environment variable. See hcli_core help for details.
+- HTTP Basic Authentication with sha512 hashed passwords. See hcli_core help for details.
 
 To Do
 -----
 
 - Automated tests for all bundled HCLI samples.
 - Separate out HCLI applications from HCLI Core to help avoid application dependencies bleeding onto HCLI Core.
-- Support hashed password for additional security under HTTP Basic Authentication.
-- Support multiple usernames and passwords under HTTP Basic Authentication.
+- Rate limiting.
+- Lockout on multiple failed authentications.
 
 Bugs
 ----

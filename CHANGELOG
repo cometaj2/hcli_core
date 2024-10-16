@@ -5,7 +5,7 @@ The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [1.1.0]
-- Add HTTP Basic Auth support
+- Add HTTP Basic Auth support (configuration and credentials file)
 - Improve logging
 - Enhance man page to be better aligned with the expected file format
 - Add support for python 3.12
