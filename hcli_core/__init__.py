@@ -1,4 +1,5 @@
 import json
+import falcon
 
 from hcli_core.hcli import api
 from hcli_core.hcli import home
@@ -20,8 +21,6 @@ log.setLevel(logger.INFO)
 
 
 def connector(plugin_path=None, config_path=None):
-    import falcon
-
     config.parse_configuration(config_path)
 
     # We load the HCLI template in memory to reduce disk io
