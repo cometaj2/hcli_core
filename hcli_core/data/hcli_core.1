@@ -65,7 +65,7 @@ auth = Basic
 .br
 username = <someotheruser>
 .br
-password = <echo -n $(cat someotherpassword) | sha512sum>
+password = <echo -n $(cat someotherpasswordfile) | sha512sum>
 .PP
 .SH COMMANDS
 .IP "path"

@@ -133,6 +133,7 @@ Supports
 To Do
 -----
 
+- Support HTTP API Problem Details [RFC9457] per spec to help with clien-side STDERR output.
 - Automated tests for all bundled HCLI samples.
 - Separate out HCLI applications from HCLI Core to help avoid application dependencies bleeding onto HCLI Core.
 - Rate limiting.
