@@ -39,7 +39,7 @@ Related HCLI Projects
 
 - hcli-hc, a python package for an HCL (hc) that can act both as a gcode streamer (e.g. for OpenBuilds Blackbox controller v1.1g) and CNC interface. In other words, this HCLI acts in the same capacity as the OpenBuilds CONTROL software and OpenBuilds Interface CNC Touch hardware to help control a GRBL v1.1g controlled CNC. [5]
 
-- hcli-hai, a python package wrapper for an HCLI (hai) that can interact with GPT-3.5-Turbo via terminal input and output streams. [6]
+- hcli-hai, a python package wrapper for an HCLI (hai) that can interact with LLMs via terminal input and output streams. [6]
 
 [5] https://github.com/cometaj2/hcli_hc
 
@@ -81,7 +81,7 @@ Note that no CLI is actually installed by Huckle. Huckle reads the HCLI semantic
 ---------------------------
 
 If you want to load a sample HCLI other than the default sample application, you can try loading one of the other sample HCLIs
-developped independently of HCLI Core. For example, the *hai* HCLI (hypertext GPT-3.5-Turbo command line chat application).
+developped independently of HCLI Core. For example, the *hai* HCLI (hypertext LLM command line chat application).
 
 A folder path to any other 3rd party HCLI can be provided in the same way to the HCLI Connector, provided the 3rd party HCLI meets
 CLI interface (cli.py) and HCLI template (template.json) requirements:
@@ -133,7 +133,7 @@ Supports
 To Do
 -----
 
-- Support HTTP API Problem Details [RFC9457] per spec to help with clien-side STDERR output.
+- Support HTTP API Problem Details [RFC9457] per spec to help with client-side STDERR output.
 - Automated tests for all bundled HCLI samples.
 - Separate out HCLI applications from HCLI Core to help avoid application dependencies bleeding onto HCLI Core.
 - Rate limiting.

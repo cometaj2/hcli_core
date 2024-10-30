@@ -1,2 +1,2 @@
-__version__ = "1.1.2"
-dependencies = ["falcon==3.1.3"]
+__version__ = "1.2.0"
+dependencies = ["falcon==4.0.1"]
