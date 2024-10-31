@@ -33,7 +33,23 @@ version = {attr = "hcli_core.package.__version__"}
 dependencies = {file = "requirements.txt"}
 
 [tool.setuptools]
-packages = ["hcli_core"]
+packages = ["hcli_core",
+            "hcli_core.cli",
+            "hcli_core.data",
+            "hcli_core.haliot",
+            "hcli_core.hcli",
+            "hcli_core.sample",
+            "hcli_core.sample",
+            "hcli_core.sample.hfm",
+            "hcli_core.sample.hfm.cli",
+            "hcli_core.sample.hptt",
+            "hcli_core.sample.hptt.cli",
+            "hcli_core.sample.hptt.cli.scripts",
+            "hcli_core.sample.hub",
+            "hcli_core.sample.hub.cli",
+            "hcli_core.sample.nw",
+            "hcli_core.sample.nw.cli",
+           ]
 include-package-data = true
 
 [tool.setuptools.package-data]

@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.2.1]
+- Update missing proper pyproject package configuration to dismiss build warnings
+- Update universal dist flag since Python 2.7 is not supported
+
 ## [1.2.0]
 - Update to falcon 4.0.1
 - Update to gunicorn 23.0.0 in circleci tests
