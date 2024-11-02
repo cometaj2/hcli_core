@@ -13,8 +13,8 @@ from hcli_core.hcli import parameter
 
 from hcli_core import config
 from hcli_core import template
-from hcli_core import auth
 from hcli_core import logger
+from hcli_core.auth import authenticator
 
 log = logger.Logger("hcli_core")
 log.setLevel(logger.INFO)
@@ -28,7 +28,7 @@ def connector(plugin_path=None, config_path=None):
     config.parse_template(template.Template())
 
     # We setup the HCLI Connector
-    server = falcon.App(middleware=[auth.AuthMiddleware()])
+    server = falcon.App(middleware=[authenticator.AuthMiddleware()])
 
     server.add_route(home.HomeController.route, api.HomeApi())
     server.add_route(secondaryhome.SecondaryHomeController.route, api.SecondaryHomeApi())

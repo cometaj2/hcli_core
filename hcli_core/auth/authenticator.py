@@ -3,8 +3,8 @@ import base64
 import os
 
 from hcli_core import logger
-from hcli_core import credential
 from hcli_core import config
+from hcli_core.auth import credential
 
 log = logger.Logger("hcli_core")
 

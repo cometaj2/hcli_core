@@ -1,2 +1,3 @@
-__version__ = "1.2.1"
-dependencies = ["falcon==4.0.1"]
+__version__ = "2.0.0"
+dependencies = ["falcon==4.0.1",
+                "authlib==1.3.2"]
