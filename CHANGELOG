@@ -5,10 +5,11 @@ The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [2.0.0]
-- Update to a single credentials config file for config and credentials authentication.
+- Update to a single file for credentials and credentials configuration.
 - Add default hcli_core HCLI (hco) to manage credentials.
-- Update digest instructions to help avoid password leaks (hco should be used however)
+- Update digest instructions to help avoid password leaks (hco should be used instead however)
 - Update hcli_core man page with parameter names for gunicorn example
+- Update to ensure unique usernames in credentials file
 
 ## [1.2.1]
 - Update missing proper pyproject package configuration to dismiss build warnings

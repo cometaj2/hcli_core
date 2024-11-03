@@ -6,54 +6,35 @@ import inspect
 from configparser import ConfigParser
 from hcli_core import logger
 
+# Common
 root = os.path.dirname(inspect.getfile(lambda: None))
 sample = root + "/sample"
 hcli_core_manpage_path = root + "/data/hcli_core.1"
+
+# Core CLI plugin handling
 template = None
 plugin_path = root + "/cli"
+cli = None
+
+# Configuration and credentials
 default_config_file_path = root + "/auth/credentials"
 config_file_path = None
-cli = None
-auth = None
+auth = False
 
 log = logger.Logger("hcli_core")
 
 
-# parses the configuration of a given cli to set configured execution
-def parse_configuration(config_path):
+def set_config_path(config_path):
     global default_config_file_path
     global config_file_path
-    global auth
 
     if config_path:
         config_file_path = config_path
-        log.info("Loading custom configuration")
+        log.info("Setting custom configuration")
     else:
         config_file_path = default_config_file_path
-        log.info("Loading default configuration")
+        log.info("Setting default configuration")
     log.info(config_file_path)
-
-    try:
-        parser = ConfigParser()
-        parser.read(config_file_path)
-        if parser.has_section("default"):
-            for section_name in parser.sections():
-                log.debug("[" + section_name + "]")
-                for name, value in parser.items("default"):
-                    if name == "auth":
-                        if value != "Basic" and value != "None":
-                            log.warning("Unsuported authentication mode: " + str(value))
-                            auth = None
-                            log.info("Authentication mode: " + str(auth))
-                        else:
-                            auth = value
-                            log.info("Authentication mode: " + str(auth))
-        else:
-            log.critical("No [default] configuration available for " + config_file_path)
-            assert isinstance(auth, str)
-    except:
-        log.critical("Unable to load configuration.")
-        assert isinstance(auth, str)
 
 """ We parse the HCLI json template to load the HCLI navigation in memory """
 def parse_template(t):

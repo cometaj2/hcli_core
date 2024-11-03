@@ -13,17 +13,17 @@ class AuthMiddleware:
     def __init__(self):
         self.cm = credential.CredentialManager()
 
-        if config.auth == "Basic":
+        if config.auth:
             self.cm.parse_credentials()
 
     def process_request(self, req: falcon.Request, resp: falcon.Response):
-        if config.auth == "Basic":
+        if config.auth:
             if not self.is_authenticated(req):
                 resp.append_header('WWW-Authenticate', 'Basic realm="default"')
                 raise falcon.HTTPUnauthorized()
 
     def is_authenticated(self, req: falcon.Request) -> bool:
-        if config.auth == "Basic":
+        if config.auth:
             authenticated = False
 
             auth_header = req.get_header('Authorization')

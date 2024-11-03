@@ -21,7 +21,8 @@ log.setLevel(logger.INFO)
 
 
 def connector(plugin_path=None, config_path=None):
-    config.parse_configuration(config_path)
+    # We set the configuration/credentials path for use the authentication middleware
+    config.set_config_path(config_path)
 
     # We load the HCLI template in memory to reduce disk io
     config.set_plugin_path(plugin_path)
