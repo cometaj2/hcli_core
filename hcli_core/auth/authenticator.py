@@ -11,8 +11,10 @@ log = logger.Logger("hcli_core")
 
 class AuthMiddleware:
     def __init__(self):
+        self.cm = credential.CredentialManager()
+
         if config.auth == "Basic":
-            credential.parse_credentials()
+            self.cm.parse_credentials()
 
     def process_request(self, req: falcon.Request, resp: falcon.Response):
         if config.auth == "Basic":
@@ -36,7 +38,7 @@ class AuthMiddleware:
 
             decoded = base64.b64decode(auth_string).decode('utf-8')
             username, password = decoded.split(':', 1)
-            authenticated = credential.validate(username, password)
+            authenticated = self.cm.validate(username, password)
 
             if not authenticated:
                 log.warning('Invalid credentials for username: ' + username + ".")
