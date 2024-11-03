@@ -1,0 +1,121 @@
+{
+    "hcliTemplateVersion": "1.0",
+    "executable": [
+        {
+            "command": "hco useradd {p}",
+            "http": "post"
+        },
+        {
+            "command": "hco userdel {p}",
+            "http": "post"
+        },
+        {
+            "command": "hco passwd {p}",
+            "http": "post"
+        }
+    ],
+    "cli": [
+        {
+            "id": "hco",
+            "name": "hco",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "hco - user account management utility"
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hco <command> [username]"
+                },
+                {
+                    "name": "description",
+                    "description": "The \"hco\" utility manages user accounts following standard Unix/Linux patterns. It provides basic operations for adding users, removing users, and managing passwords."
+                },
+                {
+                    "name": "examples",
+                    "description": "hco useradd johndoe\n\necho 'mySecurePassword' | hco passwd johndoe\n\nhco userdel johndoe"
+                }
+            ],
+            "command": [
+                {
+                    "href": "hcouseradd",
+                    "name": "useradd",
+                    "description": "Create a new user account"
+                },
+                {
+                    "href": "hcouserdel",
+                    "name": "userdel",
+                    "description": "Delete a user account"
+                },
+                {
+                    "href": "hcopasswd",
+                    "name": "passwd",
+                    "description": "Change user password"
+                }
+            ]
+        },
+        {
+            "id": "hcouseradd",
+            "name": "useradd",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "useradd - create a new user account"
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hco useradd <username>"
+                },
+                {
+                    "name": "description",
+                    "description": "Creates a new user account with the specified username. The account will be created with a locked password; use passwd to set the password."
+                }
+            ],
+            "parameter": {
+                "href": "hcouseraddparameter"
+            }
+        },
+        {
+            "id": "hcouserdel",
+            "name": "userdel",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "userdel - delete a user account"
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hco userdel <username>"
+                },
+                {
+                    "name": "description",
+                    "description": "Deletes a user account and all associated resources."
+                }
+            ],
+            "parameter": {
+                "href": "hcouserdelparameter"
+            }
+        },
+        {
+            "id": "hcopasswd",
+            "name": "passwd",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "passwd - change user password"
+                },
+                {
+                    "name": "synopsis",
+                    "description": "echo 'password' | hco passwd <username>"
+                },
+                {
+                    "name": "description",
+                    "description": "Changes the password of the specified user account. The password must be provided via stdin for security."
+                }
+            ],
+            "parameter": {
+                "href": "hcopasswdparameter"
+            }
+        }
+    ]
+}

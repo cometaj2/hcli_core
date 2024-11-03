@@ -31,19 +31,19 @@ The configuration supports:
 .br
 auth = None (auth = <None | Basic>)
 .SH HTTP BASIC AUTHENTICATION
-If Basic auth is configured, HCLI Core expects to use a credentials file, called "credentials", located in the same folder as the configuration file.
-The default included configuration file and credentials file provided with HCLI Core MUST NOT be used but provides an included example file format.
+If Basic auth is configured, HCLI Core expects to use a config and credentials file, called "credentials".
+The default included credentials file provided with HCLI Core SHOULD NOT be used but is included as an example file format.
 .PP
-The default included admin's user password is: admin (sha512 hashed)
+The default included admin's user password is: admin (sha512 hashed) and SHOULD be changed for additional security.
 .PP
-The provided custom credentials file MUST minimally contain a [default] section and admin user.
+If a custom provided credentials file is provided, it MUST minimally contain a [default] section, and auth mode, an admin user, and a password.
 .PP
 The default username should be admin and should have a password that's a hexdigest of a sha512 hashed password; without a trailing \\n. Note that usernames and passwords can't contain a ":", as is also the
 case under HTTP Basic Authentication.
 .PP
 The credentials file MAY contain as many additional users, one user per section, under as many additional sections as is desired.
 .PP
-HTTP Basic Authenthentication SHOULD NOT be used without HTTPS and SHOULD NOT generally be considered secure in any way. This is provided as a bare convenience if authentication capabilities are found useful. However,
+HTTP Basic Authenthentication SHOULD NOT be used without HTTPS and SHOULD NOT generally be considered secure. This is provided as a bare convenience if authentication capabilities are found useful. However,
 .I other authorization schemes should be preferred.
 .PP
 The service does not support stored cleartext passwords and instead expects to see stored passwords as sha512 hexdigests to help provide a minimum of password protection if the stored credentials file becomes compromised.
@@ -53,19 +53,17 @@ The CREDENTIALS FILE FORMAT section provides an example command line to use to g
 .SS CREDENTIALS FILE FORMAT
 [default]
 .br
-auth = Basic
+auth = None
 .br
 username = admin
 .br
-password = <echo -n $(cat somefile) | sha512sum>
+password = <tr -d '\\n' < somefile | sha512sum>
 .PP
 [<someothersection>]
 .br
-auth = Basic
-.br
 username = <someotheruser>
 .br
-password = <echo -n $(cat someotherpasswordfile) | sha512sum>
+password = <tr -d '\\n' < someotherpasswordfile | sha512sum>
 .PP
 .SH COMMANDS
 .IP "path"
@@ -93,4 +91,4 @@ gunicorn --workers=5 --threads=2 "hcli_core:connector()"
 .PP
 gunicorn --workers=5 --threads=2 "hcli_core:connector(\\"`hcli_core sample hfm`\\")"
 .PP
-gunicorn --workers=5 --threads=2 "hcli_core:connector(\\"`hcli_core sample hfm`\\", \\"./custom.config\\")"
+gunicorn --workers=5 --threads=2 "hcli_core:connector(plugin_path=\\"`hcli_core sample hfm`\\", config_path=\\"./custom.config\\")"

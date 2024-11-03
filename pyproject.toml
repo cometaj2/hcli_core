@@ -34,13 +34,13 @@ dependencies = {file = "requirements.txt"}
 
 [tool.setuptools]
 packages = ["hcli_core",
-            "hcli_core.auth",
             "hcli_core.cli",
             "hcli_core.data",
             "hcli_core.haliot",
             "hcli_core.hcli",
             "hcli_core.sample",
-            "hcli_core.sample",
+            "hcli_core.auth",
+            "hcli_core.auth.cli",
             "hcli_core.sample.hfm",
             "hcli_core.sample.hfm.cli",
             "hcli_core.sample.hptt",

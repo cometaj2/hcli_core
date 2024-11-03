@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [2.0.0]
 - Update to a single credentials config file for config and credentials authentication.
 - Add default hcli_core HCLI (hco) to manage credentials.
+- Update digest instructions to help avoid password leaks (hco should be used however)
+- Update hcli_core man page with parameter names for gunicorn example
 
 ## [1.2.1]
 - Update missing proper pyproject package configuration to dismiss build warnings
