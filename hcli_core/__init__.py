@@ -1,46 +1,50 @@
-import json
-import falcon
+import os
+import inspect
 
-from hcli_core.hcli import api
-from hcli_core.hcli import home
-from hcli_core.hcli import secondaryhome
-from hcli_core.hcli import document
-from hcli_core.hcli import command
-from hcli_core.hcli import option
-from hcli_core.hcli import execution
-from hcli_core.hcli import finalexecution
-from hcli_core.hcli import parameter
-
-from hcli_core import config
-from hcli_core import template
 from hcli_core import logger
-from hcli_core.auth import authenticator
+from hcli_core import hcliapp
 
 log = logger.Logger("hcli_core")
 log.setLevel(logger.INFO)
 
 
 def connector(plugin_path=None, config_path=None):
-    cfg = config.Config()
 
-    # We set the configuration/credentials path for use the authentication middleware
-    cfg.set_config_path(config_path)
+    # Initialize core application
+    log.info(f"Core application: {plugin_path}")
+    coreapp = hcliapp.HCLIApp("core", plugin_path, config_path)
+    core_server = coreapp.server()
 
-    # We load the HCLI template in memory to reduce disk io
-    cfg.set_plugin_path(plugin_path)
-    cfg.parse_template(template.Template())
+    # Initialize management application
+    root = os.path.dirname(inspect.getfile(lambda: None))
+    mgmt_plugin_path = os.path.join(root, 'auth', 'cli')
+    log.info(f"Management application: {mgmt_plugin_path}")
+    mgmtapp = hcliapp.HCLIApp("management", mgmt_plugin_path, config_path)
+    mgmt_server = mgmtapp.server()
 
-    # We setup the HCLI Connector
-    server = falcon.App(middleware=[authenticator.AuthMiddleware()])
+    # We select a response server based on port
+    def port_router(environ, start_response):
+        server_port = environ.get('SERVER_PORT', '8000')
 
-    server.add_route(home.HomeController.route, api.HomeApi())
-    server.add_route(secondaryhome.SecondaryHomeController.route, api.SecondaryHomeApi())
-    server.add_route(document.DocumentController.route, api.DocumentApi())
-    server.add_route(command.CommandController.route, api.CommandApi())
-    server.add_route(option.OptionController.route, api.OptionApi())
-    server.add_route(execution.ExecutionController.route, api.ExecutionApi())
-    server.add_route(finalexecution.FinalGetExecutionController.route, api.FinalExecutionApi())
-    server.add_route(finalexecution.FinalPostExecutionController.route, api.FinalExecutionApi())
-    server.add_route(parameter.ParameterController.route, api.ParameterApi())
+        # Debug logging
+        log.debug("Received request:")
+        log.debug(f"  Port: {server_port}")
+        log.debug(f"  Path: {environ.get('PATH_INFO', '/')}")
+        log.debug(f"  Method: {environ.get('REQUEST_METHOD', 'GET')}")
 
-    return server
+        # Set the server context based on port
+        server_type = 'management' if server_port == '9000' else 'core'
+        config.ServerContext.set_current_server(server_type)
+
+        response_server = None
+        if server_port == '9000':
+            log.info("Routing to management server with instance: {id(mgmt_server)}")
+            response_server = mgmt_server
+        else:
+            log.info("Routing to core server with instance: {id(core_server)}")
+            response_server = core_server
+
+        # Return the response from the selected server
+        return response_server(environ, start_response)
+
+    return port_router

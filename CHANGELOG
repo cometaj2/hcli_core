@@ -6,12 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.0.0]
 - Update to a single file for credentials and credentials configuration.
-- Add default hcli_core HCLI (hco) to manage credentials.
-- Update digest instructions to help avoid password leaks (hco should be used instead however)
+- Add hcli_core HCLI (hco) management application to help manage users and credentials programmatically.
+- Update hcli_core digest instructions to help avoid password leaks (hco should be used instead however)
 - Update hcli_core man page with parameter names for gunicorn example
 - Update to ensure unique usernames in credentials file
 - Refactor config to a threadsafe singleton object
 - Add process safety around the credentials file
+- Add HCLIApp abstraction
 
 ## [1.2.1]
 - Update missing proper pyproject package configuration to dismiss build warnings
