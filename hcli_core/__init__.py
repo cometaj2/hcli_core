@@ -24,7 +24,7 @@ def connector(plugin_path=None, config_path=None):
 
     # We select a response server based on port
     def port_router(environ, start_response):
-        server_port = environ.get('SERVER_PORT', '8000')
+        server_port = environ.get('SERVER_PORT')
 
         # Debug logging
         log.debug("Received request:")
@@ -38,10 +38,10 @@ def connector(plugin_path=None, config_path=None):
 
         response_server = None
         if server_port == '9000':
-            log.info("Routing to management server with instance: {id(mgmt_server)}")
+            log.debug("Routing to management server with instance: {id(mgmt_server)}")
             response_server = mgmt_server
         else:
-            log.info("Routing to core server with instance: {id(core_server)}")
+            log.debug("Routing to core server with instance: {id(core_server)}")
             response_server = core_server
 
         # Return the response from the selected server
