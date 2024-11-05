@@ -6,6 +6,9 @@ from hcli_core import package
 from hcli_core import config
 from hcli_core import hutils
 
+cfg = config.Config()
+
+
 def main():
     if len(sys.argv) == 2:
 
@@ -14,11 +17,11 @@ def main():
             sys.exit(0)
 
         elif sys.argv[1] == "help":
-            display_man_page(config.hcli_core_manpage_path)
+            display_man_page(cfg.hcli_core_manpage_path)
             sys.exit(0)
 
         elif sys.argv[1] == "path":
-            print(config.root)
+            print(cfg.root)
             sys.exit(0)
 
         else:
@@ -28,13 +31,13 @@ def main():
 
         if sys.argv[1] == "sample":
             if sys.argv[2] == "hub":
-                print(config.sample + "/hub/cli")
+                print(cfg.sample + "/hub/cli")
             elif sys.argv[2] == "hfm":
-                print(config.sample + "/hfm/cli")
+                print(cfg.sample + "/hfm/cli")
             elif sys.argv[2] == "nw":
-                print(config.sample + "/nw/cli")
+                print(cfg.sample + "/nw/cli")
             elif sys.argv[2] == "hptt":
-                print(config.sample + "/hptt/cli")
+                print(cfg.sample + "/hptt/cli")
 
             sys.exit(0)
 

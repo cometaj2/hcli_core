@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Update digest instructions to help avoid password leaks (hco should be used instead however)
 - Update hcli_core man page with parameter names for gunicorn example
 - Update to ensure unique usernames in credentials file
+- Refactor config to a threadsafe singleton object
+- Add process safety around the credentials file
 
 ## [1.2.1]
 - Update missing proper pyproject package configuration to dismiss build warnings

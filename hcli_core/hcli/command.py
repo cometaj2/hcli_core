@@ -24,7 +24,7 @@ class Command:
 class CommandLink:
     href = secondaryhome.SecondaryHomeLink().href + "/__cdef"
     profile = profile.ProfileLink().href + semantic.hcli_command_type
-    
+
     def __init__(self, uid=None, command=None, href=None):
         if uid != None and command != None and href != None:
             self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote(command) + "&href=" + href
@@ -35,10 +35,11 @@ class CommandController:
 
     def __init__(self, uid=None, command=None, href=None):
         if uid != None and command != None and href != None:
-            t = config.template
+            cfg = config.Config()
+            t = cfg.template
             com = t.findCommandForId(uid, href)
             name = com['name']
-           
+
             self.resource = hal.Resource(Command(com))
             selflink = hal.Link(href=CommandLink(uid, command, href).href)
             profilelink = hal.Link(href=CommandLink().profile)

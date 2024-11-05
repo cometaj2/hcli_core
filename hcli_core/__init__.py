@@ -21,12 +21,14 @@ log.setLevel(logger.INFO)
 
 
 def connector(plugin_path=None, config_path=None):
+    cfg = config.Config()
+
     # We set the configuration/credentials path for use the authentication middleware
-    config.set_config_path(config_path)
+    cfg.set_config_path(config_path)
 
     # We load the HCLI template in memory to reduce disk io
-    config.set_plugin_path(plugin_path)
-    config.parse_template(template.Template())
+    cfg.set_plugin_path(plugin_path)
+    cfg.parse_template(template.Template())
 
     # We setup the HCLI Connector
     server = falcon.App(middleware=[authenticator.AuthMiddleware()])

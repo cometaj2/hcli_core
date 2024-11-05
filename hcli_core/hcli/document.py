@@ -27,7 +27,7 @@ class Document:
 class DocumentLink:
     href = secondaryhome.SecondaryHomeLink().href
     profile = profile.ProfileLink().href + semantic.hcli_document_type
-    
+
     def __init__(self, uid=None, command=None, withparam=None):
         if uid != None and command != None and withparam == None:
             self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote(command)
@@ -42,7 +42,8 @@ class DocumentController:
 
     def __init__(self, uid=None, command=None):
         if uid != None and command != None:
-            t = config.template
+            cfg = config.Config()
+            t = cfg.template
             arg = t.findById(uid)
 
             self.resource = hal.Resource(Document(arg))
@@ -96,16 +97,16 @@ class DocumentController:
                 param = t.findParameterForId(uid)
                 if param != None:
                     href = param['href']
- 
+
                     clilink = hal.Link(href=parameter.ParameterLink(uid, command, href).href,
                                        profile=parameter.ParameterLink().profile)
- 
+
                     self.resource.addLink("cli", clilink)
- 
+
                     param = None
                     href = None
                     cli = None
- 
+
             executable = t.findExecutable(command);
             if executable != None:
                 clilink = hal.Link(href=execution.ExecutionLink(uid, command).href,

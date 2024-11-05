@@ -11,9 +11,10 @@ class Template:
 
     """ We load the template.json and populate available commands, executables directives and the template version """
     def __init__(self):
+        self.cfg = config.Config()
 
         try:
-            with open(config.plugin_path + "/template.json", "r") as read_file:
+            with open(self.cfg.plugin_path + "/template.json", "r") as read_file:
                 data = json.load(read_file)	
 
             self.hcliTemplateVersion = data['hcliTemplateVersion']

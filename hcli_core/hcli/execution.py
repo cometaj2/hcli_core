@@ -36,7 +36,8 @@ class ExecutionController:
 
     def __init__(self, uid=None, command=None):
         if uid != None and command != None:
-            t = config.template
+            cfg = config.Config()
+            t = cfg.template
             ex = t.findExecutable(command)
             http = ex['http']
 

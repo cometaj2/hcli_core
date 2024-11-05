@@ -30,7 +30,8 @@ class FinalGetExecutionController:
         if uid != None and command != None:
             unquoted = urllib.parse.unquote(command)
             commands = unquoted.split()
-            self.resource = config.cli.CLI(commands, None)
+            cfg = config.Config()
+            self.resource = cfg.cli.CLI(commands, None)
 
     def serialize(self):
         return self.resource.execute()
@@ -51,7 +52,8 @@ class FinalPostExecutionController:
         if uid != None and command != None:
             unquoted = urllib.parse.unquote(command)
             commands = shlex.split(unquoted)
-            self.resource = config.cli.CLI(commands, inputstream)
+            cfg = config.Config()
+            self.resource = cfg.cli.CLI(commands, inputstream)
 
     def serialize(self):
         return self.resource.execute()

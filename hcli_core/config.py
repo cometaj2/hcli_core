@@ -2,51 +2,55 @@ import sys
 import os
 import importlib
 import inspect
-
 from configparser import ConfigParser
+from threading import Lock
 from hcli_core import logger
 
-# Common
-root = os.path.dirname(inspect.getfile(lambda: None))
-sample = root + "/sample"
-hcli_core_manpage_path = root + "/data/hcli_core.1"
-
-# Core CLI plugin handling
-template = None
-plugin_path = root + "/cli"
-cli = None
-
-# Configuration and credentials
-default_config_file_path = root + "/auth/credentials"
-config_file_path = None
-auth = False
+import signal
+import atexit
 
 log = logger.Logger("hcli_core")
 
 
-def set_config_path(config_path):
-    global default_config_file_path
-    global config_file_path
+# we protect initialization but setting of the configuration, or the plugin and template parsing are run once
+# at connector creation
+class Config:
+    _instance = None
+    _instance_lock = Lock()  # Lock for singleton creation
 
-    if config_path:
-        config_file_path = config_path
-        log.info("Setting custom configuration")
-    else:
-        config_file_path = default_config_file_path
-        log.info("Setting default configuration")
-    log.info(config_file_path)
+    def __new__(cls):
+        if cls._instance is None:
+            with cls._instance_lock:  # Thread-safe singleton creation
+                if cls._instance is None:  # Double-checked locking
+                    cls._instance = super(Config, cls).__new__(cls)
 
-""" We parse the HCLI json template to load the HCLI navigation in memory """
-def parse_template(t):
-    global template
-    template = t
+                    instance = cls._instance
+                    instance.root = os.path.dirname(inspect.getfile(lambda: None))
+                    instance.sample = instance.root + "/sample"
+                    instance.hcli_core_manpage_path = instance.root + "/data/hcli_core.1"
+                    instance.template = None
+                    instance.plugin_path = instance.root + "/cli"
+                    instance.cli = None
+                    instance.default_config_file_path = instance.root + "/auth/credentials"
+                    instance.config_file_path = None
+                    instance.auth = False
+                    instance.log = logger.Logger("hcli_core")
+        return cls._instance
 
-""" we setup dynamic loading of the cli module to allow for independent development and loading, independent of hcli_core development """
-def set_plugin_path(p):
-    global plugin_path
-    global cli
-    if p is not None:
-        plugin_path = p
+    def set_config_path(self, config_path):
+        if config_path:
+            self.config_file_path = config_path
+            self.log.info("Setting custom configuration")
+        else:
+            self.config_file_path = self.default_config_file_path
+            self.log.info("Setting default configuration")
+        self.log.info(self.config_file_path)
 
-    sys.path.insert(0, plugin_path)
-    cli = importlib.import_module("cli", plugin_path)
+    def parse_template(self, t):
+        self.template = t
+
+    def set_plugin_path(self, p):
+        if p is not None:
+            self.plugin_path = p
+        sys.path.insert(0, self.plugin_path)
+        self.cli = importlib.import_module("cli", self.plugin_path)

@@ -24,7 +24,7 @@ class Option:
 class OptionLink:
     href = secondaryhome.SecondaryHomeLink().href + "/__odef"
     profile = profile.ProfileLink().href + semantic.hcli_option_type
-    
+
     def __init__(self, uid=None, option=None, href=None):
         if uid != None and option != None and href != None:
             self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote(option) + "&href=" + href
@@ -35,11 +35,12 @@ class OptionController:
 
     def __init__(self, uid=None, command=None, href=None):
         if uid != None and command != None and href != None:
-            t = config.template
+            cfg = config.Config()
+            t = cfg.template
             arg = t.findById(uid);
             opt = t.findOptionForId(uid, href)
             name = opt['name']
-           
+
             self.resource = hal.Resource(Option(opt))
             selflink = hal.Link(href=OptionLink(uid, command, href).href)
             profilelink = hal.Link(href=OptionLink().profile)

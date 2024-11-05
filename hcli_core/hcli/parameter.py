@@ -19,7 +19,7 @@ class Parameter:
 class ParameterLink:
     href = secondaryhome.SecondaryHomeLink().href + "/__pdef"
     profile = profile.ProfileLink().href + semantic.hcli_parameter_type
-    
+
     def __init__(self, uid=None, command=None, href=None):
         if uid != None and command != None and href != None:
             self.href = self.href + "/" + uid + "?command=" + urllib.parse.quote(command) + "&href=" + href
@@ -30,11 +30,12 @@ class ParameterController:
 
     def __init__(self, uid=None, command=None, href=None):
         if uid != None and command != None and href != None:
-            t = config.template
+            cfg = config.Config()
+            t = cfg.template
             arg = t.findById(uid);
             param = t.findParameterForId(uid)
             name = arg['name']
-           
+
             self.resource = hal.Resource(Parameter())
             selflink = hal.Link(href=ParameterLink(uid, command, href).href)
             profilelink = hal.Link(href=ParameterLink().profile)

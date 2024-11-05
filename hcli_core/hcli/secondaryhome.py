@@ -17,8 +17,8 @@ class SecondaryHomeController:
     resource = None
 
     def __init__(self):
-
-        t = config.template
+        cfg = config.Config()
+        t = cfg.template
 
         if t and t.cli and t.hcliTemplateVersion and t.hcliTemplateVersion == "1.0":
             root = t.findRoot()

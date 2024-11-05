@@ -1,7 +1,15 @@
 import os
 import sys
 import subprocess
-from hcli_core import package
+import importlib.util
+
+# Direct import of package.py to avoid triggering hcli_core __init__ during the build process
+spec = importlib.util.spec_from_file_location(
+    "package",
+    os.path.join(os.path.dirname(__file__), "hcli_core", "package.py")
+)
+package = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(package)
 
 version = package.__version__
 
