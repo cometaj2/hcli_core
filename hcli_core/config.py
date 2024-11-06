@@ -25,6 +25,16 @@ class ServerContext:
         with cls._lock:
             return cls._context.get('current_server', 'core')
 
+    @classmethod
+    def set_current_user(cls, username):
+        with cls._lock:
+            cls._context['current_user'] = username
+
+    @classmethod
+    def get_current_user(cls):
+        with cls._lock:
+            return cls._context.get('current_user', None)
+
 class Config:
     _instances = {}  # Dictionary to store named instances
     _instance_locks = {}  # Dictionary to store locks for each named instance

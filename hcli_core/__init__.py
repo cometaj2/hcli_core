@@ -28,6 +28,21 @@ def connector(plugin_path=None, config_path=None):
     def port_router(environ, start_response):
         server_port = environ.get('SERVER_PORT')
 
+        # Get authentication info from WSGI environ
+        auth_info = environ.get('HTTP_AUTHORIZATION', '')
+
+        # If using Basic auth, it will be in format "Basic base64(username:password)"
+        if auth_info.startswith('Basic '):
+            import base64
+            # Extract and decode the base64 credentials
+            encoded_credentials = auth_info.split(' ')[1]
+            decoded = base64.b64decode(encoded_credentials).decode('utf-8')
+            username = decoded.split(':')[0]
+
+            # Store username in environ for downstream handlers
+            environ['REMOTE_USER'] = username
+            config.ServerContext.set_current_user(username)
+
         # Debug logging
         log.debug("Received request:")
         log.debug(f"  Port: {server_port}")
@@ -35,15 +50,17 @@ def connector(plugin_path=None, config_path=None):
         log.debug(f"  Method: {environ.get('REQUEST_METHOD', 'GET')}")
 
         # Set the server context based on port
-        server_type = 'management' if server_port == '9000' else 'core'
+        if server_port == '9000':
+            server_type = 'management'
+        else:
+            server_type = 'core'
+
         config.ServerContext.set_current_server(server_type)
 
         response_server = None
         if server_port == '9000':
-            log.debug("Routing to management server with instance: {id(mgmt_server)}")
             response_server = mgmt_server
         else:
-            log.debug("Routing to core server with instance: {id(core_server)}")
             response_server = core_server
 
         # Return the response from the selected server

@@ -5,6 +5,7 @@ from functools import partial
 from hcli_core import logger
 from hcli_core.auth import credential
 from hcli_core.auth.cli import service as s
+from hcli_core import config
 
 log = logger.Logger("hcli_core")
 
@@ -20,6 +21,8 @@ class CLI:
         self.service = s.Service()
 
     def execute(self):
+        log.info(self.commands)
+
         if len(self.commands) < 2:
             return None
 
