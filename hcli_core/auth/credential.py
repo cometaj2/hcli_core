@@ -3,23 +3,34 @@ import os
 import json
 import hashlib
 import threading
-import portalocker
 from configparser import ConfigParser
+from contextlib import suppress
 
 from hcli_core import logger
 from hcli_core import config
 
-from contextlib import suppress
-
 log = logger.Logger("hcli_core")
 
-
 class CredentialManager:
+    _instance = None
+    _initialized = False
+    _lock = threading.RLock()
+
+    def __new__(cls):
+        with cls._lock:
+            if cls._instance is None:
+                cls._instance = super().__new__(cls)
+            return cls._instance
+
     def __init__(self):
-        self._lock = threading.RLock()  # For thread safety within process
-        self._credentials = None
-        self.cfg = config.Config()
-        self.parse_configuration()
+        # Only initialize once
+        if not CredentialManager._initialized:
+            with self._lock:
+                if not CredentialManager._initialized:
+                    self._credentials = None
+                    self.cfg = config.Config()
+                    self.parse_configuration()
+                    CredentialManager._initialized = True
 
     @property
     def credentials(self):
@@ -36,8 +47,7 @@ class CredentialManager:
             auth = self.cfg.auth
 
             try:
-                # Use portalocker for file access
-                with portalocker.Lock(self.cfg.config_file_path, 'r', timeout=10) as config_file:
+                with open(self.cfg.config_file_path, 'r') as config_file:
                     parser = ConfigParser()
                     parser.read_file(config_file)
 
@@ -59,9 +69,6 @@ class CredentialManager:
                     else:
                         log.critical("No [config] configuration available for " + self.cfg.config_file_path + ".")
                         assert isinstance(auth, str)
-            except portalocker.LockTimeout:
-                log.critical("Timeout waiting for config file lock.")
-                assert isinstance(auth, str)
             except Exception as e:
                 log.critical(f"Unable to load configuration: {str(e)}")
                 assert isinstance(auth, str)
@@ -69,8 +76,7 @@ class CredentialManager:
     def parse_credentials(self):
         with self._lock:
             try:
-                # Use portalocker for file access
-                with portalocker.Lock(self.cfg.config_file_path, 'r', timeout=10) as cred_file:
+                with open(self.cfg.config_file_path, 'r') as cred_file:
                     parser = ConfigParser()
                     log.info("Loading credentials")
                     log.info(self.cfg.config_file_path)
@@ -111,22 +117,42 @@ class CredentialManager:
                     self._credentials = new_credentials
                     return True
 
-            except portalocker.LockTimeout:
-                log.critical("Timeout waiting for credentials file lock.")
-                self._credentials = None
-                assert isinstance(self._credentials, dict)
-                return False
             except Exception as e:
                 log.critical(f"Unable to load credentials: {str(e)}.")
                 self._credentials = None
                 assert isinstance(self._credentials, dict)
                 return False
 
-    def update_credentials(self, username, password_hash):
+    def useradd(self, username):
         with self._lock:
             try:
-                # Use portalocker with write lock
-                with portalocker.Lock(self.cfg.config_file_path, 'r+', timeout=10) as cred_file:
+                with open(self.cfg.config_file_path, 'r') as cred_file:
+                    parser = ConfigParser()
+                    parser.read_file(cred_file)
+
+                    # Update or add user
+                    found = False
+                    for section in parser.sections():
+                        if parser.has_option(section, "username") and parser.get(section, "username") == username:
+                            parser.set(section, "password", "*")
+                            found = True
+                            break
+
+                # Write back to file
+                with open(self.cfg.config_file_path, 'w') as cred_file:
+                    parser.write(cred_file)
+
+                # Reload credentials in memory
+                return self.parse_credentials()
+
+            except Exception as e:
+                log.error(f"Error updating credentials: {str(e)}")
+                return False
+
+    def passwd(self, username, password_hash):
+        with self._lock:
+            try:
+                with open(self.cfg.config_file_path, 'r') as cred_file:
                     parser = ConfigParser()
                     parser.read_file(cred_file)
 
@@ -144,19 +170,53 @@ class CredentialManager:
                         parser.set(section_name, "username", username)
                         parser.set(section_name, "password", password_hash)
 
-                    # Write back to file
-                    cred_file.seek(0)
-                    cred_file.truncate()
+                # Write back to file
+                with open(self.cfg.config_file_path, 'w') as cred_file:
                     parser.write(cred_file)
+
+                # Reload credentials in memory
+                return self.parse_credentials()
+
+            except Exception as e:
+                log.error(f"Error updating credentials: {str(e)}")
+                return False
+
+    def userdel(self, username):
+        with self._lock:
+            try:
+                # Don't allow deleting the admin user
+                if username == "admin":
+                    log.error("Cannot delete admin user")
+                    return False
+
+                # Read current configuration
+                with open(self.cfg.config_file_path, 'r') as cred_file:
+                    parser = ConfigParser()
+                    parser.read_file(cred_file)
+
+                    # Find and remove user section
+                    user_section = None
+                    for section in parser.sections():
+                        if parser.has_option(section, "username") and parser.get(section, "username") == username:
+                            user_section = section
+                            break
+
+                    if user_section is None:
+                        log.error(f"User {username} not found")
+                        return False
+
+                    # Remove the section
+                    parser.remove_section(user_section)
+
+                    # Write back to file
+                    with open(self.cfg.config_file_path, 'w') as cred_file:
+                        parser.write(cred_file)
 
                     # Reload credentials in memory
                     return self.parse_credentials()
 
-            except portalocker.LockTimeout:
-                log.error("Timeout waiting for credentials file lock during update.")
-                return False
             except Exception as e:
-                log.error(f"Error updating credentials: {str(e)}")
+                log.error(f"Error deleting user {username}: {str(e)}")
                 return False
 
     def validate(self, username, password):
@@ -189,7 +249,6 @@ class CredentialManager:
         with self._lock:
             return self._credentials is not None
 
-    # We try to clean up owned locks on exit to avoid deadlocks on WSGI server exit or interruptions
     def __exit__(self, exc_type, exc_val, exc_tb):
         with suppress(Exception):
             if self._lock._is_owned():

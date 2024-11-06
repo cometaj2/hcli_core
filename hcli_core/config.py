@@ -74,10 +74,10 @@ class Config:
     def set_config_path(self, config_path):
         if config_path:
             self.config_file_path = config_path
-            self.log.info(f"Setting custom configuration for instance '{self.name}'")
+            self.log.info(f"Setting custom configuration for instance '{self.name}':")
         else:
             self.config_file_path = self.default_config_file_path
-            self.log.warning(f"Setting default configuration for instance '{self.name}'")
+            self.log.warning(f"Setting default configuration for instance '{self.name}':")
         self.log.info(self.config_file_path)
 
     def parse_template(self, t):
@@ -86,8 +86,29 @@ class Config:
     def set_plugin_path(self, p):
         if p is not None:
             self.plugin_path = p
-        sys.path.insert(0, self.plugin_path)
-        self.cli = importlib.import_module("cli", self.plugin_path)
+
+        # Load the CLI module directly from file
+        cli_path = os.path.join(self.plugin_path, 'cli.py')
+        try:
+            # Create a unique module name based on the server type
+            module_name = f"cli_{self.name}"
+            spec = importlib.util.spec_from_file_location(module_name, cli_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            self._cli_module = module
+            self.log.info(f"CLI plugin for instance '{self.name}':")
+            self.log.info(f"{cli_path}")
+        except Exception as e:
+            self.log.error(f"Failed to load CLI plugin from {cli_path}: {str(e)}")
+            raise
+
+    @property
+    def cli(self):
+        return self._cli_module
+
+    @cli.setter
+    def cli(self, value):
+        self._cli_module = value
 
     def __str__(self):
-        return f"Config(name='{self.name}')"
+        return f"{self.name}"
