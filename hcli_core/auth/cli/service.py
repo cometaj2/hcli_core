@@ -1,6 +1,5 @@
 import json
 import io
-import hashlib
 
 from hcli_core import logger
 
@@ -15,58 +14,46 @@ class Service:
 
     def useradd(self, username):
         try:
-            if self.cm.useradd(username):
-                log.info(f"Created user account: {username}")
-                return True
-            return False
+            return self.cm.useradd(username)
         except Exception as e:
             log.error(e)
-            return False
+            return e
 
     def userdel(self, username):
         try:
             if username == "admin":
-                log.warning("Cannot delete admin user")
-                return False
+                msg = "cannot delete admin user."
+                log.warning(msg)
+                return msg
 
-            if self.cm.userdel(username):
-                log.info(f"Deleted user account: {username}")
-                return True
-            return False
+            return self.cm.userdel(username)
         except Exception as e:
-            log.error(e)
-            return False
-
-        except Exception as e:
-            log.error(f"Error deleting user: {str(e)}")
-            return False
+            msg = f"error deleting user: {username}."
+            log.error(msg)
+            return msg
 
     def passwd(self, username, password_stream):
         try:
             if not password_stream:
-                log.error("No password provided")
-                return False
+                msg = "no password provided."
+                log.error(msg)
+                return msg
 
             # Read password from stream
             password = password_stream.getvalue().decode().strip()
             if not password:
-                log.error("Empty password")
-                return False
+                msg = "empty password."
+                log.error(msg)
+                return msg
 
-            # Hash and update
-            password_hash = hashlib.sha512(password.encode('utf-8')).hexdigest()
-            if self.cm.passwd(username, password_hash):
-                log.info(f"Updated password for user: {username}")
-                return True
-
-            return False
+            return self.cm.passwd(username, password)
 
         except Exception as e:
-            log.error(f"Error changing password: {str(e)}")
-            return False
+            msg = f"error changing password: {str(e)}."
+            log.error(msg)
+            return msg
 
     def ls(self):
-        """List all users"""
         users = []
         if self.cm.credentials:
             for section, creds in self.cm.credentials.items():
@@ -74,6 +61,5 @@ class Service:
                     if "username" in cred:
                         users.append({
                             "username": cred["username"],
-                            "section": section
                         })
         return users

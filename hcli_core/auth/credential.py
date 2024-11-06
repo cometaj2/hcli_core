@@ -84,17 +84,19 @@ class CredentialManager:
 
                     # Check if we have a default section for the admin user
                     if not parser.has_section("default"):
-                        log.critical(f"No [default] credential available for {self.cfg.config_file_path}.")
+                        msg = f"No [default] credential available for {self.cfg.config_file_path}."
+                        log.critical(msg)
                         self._credentials = None
-                        assert isinstance(self._credentials, dict)
-                        return False
+                        #assert isinstance(self._credentials, dict)
+                        return msg
 
                     # Check if we have a default admin username and password
                     if not parser.has_option("default", "username") or parser.get("default", "username") != "admin" or not parser.has_option("default", "password"):
-                        log.critical(f"Invalid or missing admin username or password in [default] section of {self.cfg.config_file_path}.")
+                        msg = f"Invalid or missing admin username or password in [default] section of {self.cfg.config_file_path}."
+                        log.critical(msg)
                         self._credentials = None
-                        assert isinstance(self._credentials, dict)
-                        return False
+                        #assert isinstance(self._credentials, dict)
+                        return msg
 
                     # Check for unique usernames across all sections
                     usernames = set()
@@ -102,10 +104,11 @@ class CredentialManager:
                         if parser.has_option(section, "username"):
                             username = parser.get(section, "username")
                             if username in usernames:
-                                log.critical(f"Duplicate username '{username}' found in {self.cfg.config_file_path}.")
+                                msg = f"duplicate username '{username}' found in {self.cfg.config_file_path}."
+                                log.critical(msg)
                                 self._credentials = None
-                                assert isinstance(self._credentials, dict)
-                                return False
+                                #assert isinstance(self._credentials, dict)
+                                return msg
                             usernames.add(username)
 
                     new_credentials = {}
@@ -115,13 +118,14 @@ class CredentialManager:
                             new_credentials[str(section_name)].append({str(name): str(value)})
 
                     self._credentials = new_credentials
-                    return True
+                    return
 
             except Exception as e:
-                log.critical(f"Unable to load credentials: {str(e)}.")
+                msg = f"unable to load credentials: {str(e)}."
+                log.critical(msg)
                 self._credentials = None
-                assert isinstance(self._credentials, dict)
-                return False
+                #assert isinstance(self._credentials, dict)
+                return msg
 
     def useradd(self, username):
         with self._lock:
@@ -134,22 +138,33 @@ class CredentialManager:
                     found = False
                     for section in parser.sections():
                         if parser.has_option(section, "username") and parser.get(section, "username") == username:
-                            parser.set(section, "password", "*")
                             found = True
-                            break
+                            msg = f"user {username} already exists."
+                            log.warning(msg)
+                            return msg
+
+                    if not found:
+                        section_name = f"user_{username}"
+                        parser.add_section(section_name)
+                        parser.set(section_name, "username", username)
+                        parser.set(section_name, "password", "*")
 
                 # Write back to file
                 with open(self.cfg.config_file_path, 'w') as cred_file:
                     parser.write(cred_file)
 
                 # Reload credentials in memory
-                return self.parse_credentials()
+                self.parse_credentials()
+                msg = f"user {username} added."
+                log.info(msg)
+                return msg
 
             except Exception as e:
-                log.error(f"Error updating credentials: {str(e)}")
-                return False
+                msg = f"error updating credentials: {str(e)}."
+                log.error(msg)
+                return msg
 
-    def passwd(self, username, password_hash):
+    def passwd(self, username, password):
         with self._lock:
             try:
                 with open(self.cfg.config_file_path, 'r') as cred_file:
@@ -160,35 +175,34 @@ class CredentialManager:
                     found = False
                     for section in parser.sections():
                         if parser.has_option(section, "username") and parser.get(section, "username") == username:
+                            password_hash = hashlib.sha512(password.encode('utf-8')).hexdigest()
                             parser.set(section, "password", password_hash)
                             found = True
                             break
 
                     if not found:
-                        section_name = f"user_{username}"
-                        parser.add_section(section_name)
-                        parser.set(section_name, "username", username)
-                        parser.set(section_name, "password", password_hash)
+                        msg = f"user {username} not found."
+                        log.error(msg)
+                        return msg
 
                 # Write back to file
                 with open(self.cfg.config_file_path, 'w') as cred_file:
                     parser.write(cred_file)
 
                 # Reload credentials in memory
-                return self.parse_credentials()
+                self.parse_credentials()
+                msg = f"credentials updated for user {username}."
+                log.info(msg)
+                return msg
 
             except Exception as e:
-                log.error(f"Error updating credentials: {str(e)}")
-                return False
+                msg = f"error updating credentials: {str(e)}."
+                log.error(msg)
+                return msg
 
     def userdel(self, username):
         with self._lock:
             try:
-                # Don't allow deleting the admin user
-                if username == "admin":
-                    log.error("Cannot delete admin user")
-                    return False
-
                 # Read current configuration
                 with open(self.cfg.config_file_path, 'r') as cred_file:
                     parser = ConfigParser()
@@ -202,22 +216,27 @@ class CredentialManager:
                             break
 
                     if user_section is None:
-                        log.error(f"User {username} not found")
-                        return False
+                        msg = f"user {username} not found."
+                        log.error(msg)
+                        return msg
 
                     # Remove the section
                     parser.remove_section(user_section)
 
-                    # Write back to file
-                    with open(self.cfg.config_file_path, 'w') as cred_file:
-                        parser.write(cred_file)
+                # Write back to file
+                with open(self.cfg.config_file_path, 'w') as cred_file:
+                    parser.write(cred_file)
 
-                    # Reload credentials in memory
-                    return self.parse_credentials()
+                # Reload credentials in memory
+                self.parse_credentials()
+                msg = f"user {username} deleted."
+                log.info(msg)
+                return msg
 
             except Exception as e:
-                log.error(f"Error deleting user {username}: {str(e)}")
-                return False
+                msg = f"error deleting {username}: {str(e)}"
+                log.error(msg)
+                return msg
 
     def validate(self, username, password):
         with self._lock:
@@ -241,7 +260,8 @@ class CredentialManager:
                 return False
 
             except Exception as e:
-                log.error(f"Error validating credentials: {str(e)}.")
+                msg = f"error validating credentials: {str(e)}."
+                log.error(msg)
                 return False
 
     @property
