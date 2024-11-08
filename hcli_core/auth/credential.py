@@ -182,7 +182,7 @@ class CredentialManager:
 
                     if not found:
                         msg = f"user {username} not found."
-                        log.error(msg)
+                        log.warning(msg)
                         return msg
 
                 # Write back to file
@@ -217,7 +217,7 @@ class CredentialManager:
 
                     if user_section is None:
                         msg = f"user {username} not found."
-                        log.error(msg)
+                        log.warning(msg)
                         return msg
 
                     # Remove the section

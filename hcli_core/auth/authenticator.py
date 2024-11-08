@@ -1,6 +1,7 @@
 import falcon
 import base64
 import os
+from datetime import datetime
 
 from hcli_core import logger
 from hcli_core import config
@@ -13,27 +14,61 @@ class AuthMiddleware:
     def __init__(self):
         self.cm = credential.CredentialManager()
         self.cfg = config.Config()
+        self.failed_attempts = {}  # Dict to track failed attempts by IP
 
         if self.cfg.auth:
             self.cm.parse_credentials()
 
     def process_request(self, req: falcon.Request, resp: falcon.Response):
         if self.cfg.auth:
-            if not self.is_authenticated(req):
+            client_ip = self.get_client_ip(req)
+            if not self.is_authenticated(req, client_ip):
                 resp.append_header('WWW-Authenticate', 'Basic realm="default"')
                 raise falcon.HTTPUnauthorized()
 
-    def is_authenticated(self, req: falcon.Request) -> bool:
+    # Extract client IP from request, handling proxy forwarding.
+    def get_client_ip(self, req: falcon.Request):
+        # Try X-Forwarded-For header first (for proxy situations)
+        forwarded_for = req.get_header('X-FORWARDED-FOR')
+        if forwarded_for:
+            # Get the first IP in the chain
+            return forwarded_for.split(',')[0].strip()
+
+        # Fall back to direct client IP
+        return req.remote_addr or '0.0.0.0'
+
+    # Log failed authentication attempt with timestamp and details.
+    def log_failed_attempt(self, ip, username=None):
+        timestamp = datetime.now().astimezone().strftime('%Y-%m-%d %H:%M:%S %z')
+
+        if ip not in self.failed_attempts:
+            self.failed_attempts[ip] = []
+
+        attempt = {
+            'timestamp': timestamp,
+            'username': username
+        }
+        self.failed_attempts[ip].append(attempt)
+
+        # Log the failed attempt
+        log_message = f'Failed authentication attempt from IP: {ip}'
+        if username:
+            log_message += f' (username: {username})'
+        log.warning(log_message)
+
+    def is_authenticated(self, req: falcon.Request, client_ip) -> bool:
         if self.cfg.auth:
             authenticated = False
 
             auth_header = req.get_header('Authorization')
             if not auth_header:
+                self.log_failed_attempt(client_ip)
                 log.warning('No authorization header.')
                 return False
 
             auth_type, auth_string = auth_header.split(' ', 1)
             if auth_type.lower() != 'basic':
+                self.log_failed_attempt(client_ip)
                 log.warning('Not http basic authentication.')
                 return False
 
@@ -42,6 +77,7 @@ class AuthMiddleware:
             authenticated = self.cm.validate(username, password)
 
             if not authenticated:
+                self.log_failed_attempt(client_ip)
                 log.warning('Invalid credentials for username: ' + username + ".")
                 return False
 
