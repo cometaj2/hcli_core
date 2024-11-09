@@ -65,7 +65,7 @@ class Config:
                     instance.cli = None
                     instance.default_config_file_path = instance.root + "/auth/credentials"
                     instance.config_file_path = None
-                    instance.auth = False
+                    instance.auth = True
                     instance.log = logger.Logger(f"hcli_core.{name}")
                     cls._instances[name] = instance
 
@@ -80,6 +80,45 @@ class Config:
     def list_instances(cls):
         """List all created configuration instances."""
         return list(cls._instances.keys())
+
+    def parse_configuration(self):
+        try:
+            with open(self.config_file_path, 'r') as config_file:
+                parser = ConfigParser()
+                parser.read_file(config_file)
+
+                if parser.has_section("config"):
+                    for section_name in parser.sections():
+                        if section_name == "config":
+                            log.info("[" + section_name + "]")
+                            for name, value in parser.items("config"):
+                                if name == "core.auth":
+                                    if self.name == 'core':
+                                        if value != "False" and value != "True":
+                                            log.warning("Unsupported core auth value: " + str(value) + ". Enabling authentication.")
+                                            self.auth = True
+                                        else:
+                                            if value.lower() == 'true':
+                                                self.auth = True
+                                            elif value.lower() == 'false':
+                                                self.auth = False
+                                        log.info("Core Auth: " + str(self.auth))
+                                if name == "mgmt.auth":
+                                    if self.name == 'management':
+                                        if value != "False" and value != "True":
+                                            log.warning("Unsupported management auth value: " + str(value) + ". Enabling authentication.")
+                                            self.auth = True
+                                        else:
+                                            if value.lower() == 'true':
+                                                self.auth = True
+                                            elif value.lower() == 'false':
+                                                self.auth = False
+                                        log.info("Management Auth: " + str(self.auth))
+                else:
+                    log.critical("No [config] configuration available for " + self.config_file_path + ".")
+        except Exception as e:
+            log.critical(f"Unable to load configuration: {str(e)}")
+            assert False
 
     def set_config_path(self, config_path):
         if config_path:

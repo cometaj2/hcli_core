@@ -12,6 +12,10 @@
         {
             "command": "hco passwd {p}",
             "http": "post"
+        },
+        {
+            "command": "hco ls",
+            "http": "get"
         }
     ],
     "cli": [
@@ -51,6 +55,11 @@
                     "href": "hcopasswd",
                     "name": "passwd",
                     "description": "Change user password"
+                },
+                {
+                    "href": "hcols",
+                    "name": "ls",
+                    "description": "List all users"
                 }
             ]
         },
@@ -116,6 +125,24 @@
             "parameter": {
                 "href": "hcopasswdparameter"
             }
+        },
+        {
+            "id": "hcols",
+            "name": "ls",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "ls - list users"
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hco ls"
+                },
+                {
+                    "name": "description",
+                    "description": "List all users in the credentials file."
+                }
+            ]
         }
     ]
 }

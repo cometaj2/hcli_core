@@ -27,6 +27,7 @@ class HCLIApp:
 
         # We set the configuration/credentials path for use the authentication middleware
         self.cfg.set_config_path(config_path)
+        self.cfg.parse_configuration()
 
         # We load the HCLI template in memory to reduce disk io
         self.cfg.set_plugin_path(plugin_path)
@@ -34,8 +35,8 @@ class HCLIApp:
 
     def server(self):
 
-        # We setup the HCLI Connector
-        server = falcon.App(middleware=[authenticator.AuthMiddleware()])
+        # We setup the HCLI Connector with the correct auth middleware configuration
+        server = falcon.App(middleware=[authenticator.AuthMiddleware(self.name)])
 
         server.add_route(home.HomeController.route, api.HomeApi())
         server.add_route(secondaryhome.SecondaryHomeController.route, api.SecondaryHomeApi())

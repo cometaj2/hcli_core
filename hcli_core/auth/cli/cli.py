@@ -32,13 +32,13 @@ class CLI:
         if command == "useradd":
             username = self.commands[2]
             status = self.service.useradd(username)
-            return io.BytesIO(("hco: " + status+"\n").encode())
+            return io.BytesIO((status+"\n").encode())
 
         # Handle userdel command
         elif command == "userdel":
             username = self.commands[2]
             status = self.service.userdel(username)
-            return io.BytesIO(("hco: " + status+"\n").encode())
+            return io.BytesIO((status+"\n").encode())
 
         # Handle passwd command
         elif command == "passwd":
@@ -54,11 +54,11 @@ class CLI:
                 f.write(chunk)
 
             status = self.service.passwd(username, f)
-            return io.BytesIO(("hco: " + status+"\n").encode())
+            return io.BytesIO((status+"\n").encode())
 
         # Handle list command (optional, not in template but useful)
-        elif command == "list":
-            users = self.service.list_users()
-            return io.BytesIO(json.dumps(users, indent=4).encode("utf-8"))
+        elif command == "ls":
+            users = self.service.ls()
+            return io.BytesIO((users+"\n").encode())
 
         return None

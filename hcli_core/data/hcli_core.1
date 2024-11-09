@@ -10,8 +10,15 @@ hcli_core \- An HCLI Connector that can be used to expose a REST API with a buil
 ]
 .SH DESCRIPTION
 .B hcli_core
-is a Web Service Gateway Interface (WSGI; PEP 3333) application that provides a way for developers to expose a CLI via HCLI v1.0 semantics
-while providing dynamic and up to date in-band access to man page style API/CLI documentation.
+is a Web Service Gateway Interface (WSGI; PEP 3333) application that provides a way for developers to expose a REST API as a CLI via HCLI v1.0 semantics.
+This enables immediate, dynamic and up to date in-band access to man page style API/CLI documentation.
+.PP
+HCLI Core deploys with support for two distinct HCLI:
+.PP
+- The user defined Core HCLI application provided as a plugin path.
+.br
+- The Management HCLI application used to manage local credentials (hco, which can be interacted with using an HCLI client).
+.PP
 .SH CONFIGURATION
 HCLI Core relies on the use of a configuration file. If none is provided as a file path, the default configuration included with hcli_core
 is used.
@@ -19,51 +26,54 @@ is used.
 The configuration file is expected to be formatted in the configparser format which defines sections and assigned name = value pairs. See
 the EXAMPLE section for details on how to submit a custom configuration file path to hcli_core at launch.
 .PP
-The configuration supports:
+The configuration supports enabling or disable authentication for:
 .PP
-- No authentication (auth = None)
+- The Core HCLI application provided as a plugin path.
 .br
-- HTTP Basic Authentication (auth = Basic)
+- The Management HCLI application used to manage local credentials (hco).
 .PP
 .I
 .SS CONFIGURATION FILE FORMAT
 [default]
 .br
-auth = None (auth = <None | Basic>)
-.SH HTTP BASIC AUTHENTICATION
-If Basic auth is configured, HCLI Core expects to use a config and credentials file, called "credentials".
+core.auth = False
+.br
+mgmt.auth = True
+.br
+.SH AUTHENTICATION
+If authentication is configured for an HCLI application, HCLI Core expects to be able to use a config and credentials file, called "credentials".
 The default included credentials file provided with HCLI Core SHOULD NOT be used but is included as an example file format.
 .PP
-The default included admin's user password is: admin (sha512 hashed) and SHOULD be changed for additional security.
+The default expected user is an admin user with '*' defaults for both the hashed password and its salt. On first startup, HCLI Core generates a random password and assigns it to the admin user. The password is displayed once in the log output and SHOULD be changed immediately for additional security.
 .PP
-If a custom provided credentials file is provided, it MUST minimally contain a [default] section, and auth mode, an admin user, and a password.
+HCLI Core can function without credentials listed in the credentials file but will complain on startup.
 .PP
-The default username should be admin and should have a password that's a hexdigest of a sha512 hashed password; without a trailing \\n. Note that usernames and passwords can't contain a ":", as is also the
-case under HTTP Basic Authentication.
+When the HCLI Management application's authentication is disabled, no changes are allowed via hco (the HCLI Management application)
 .PP
-The credentials file MAY contain as many additional users, one user per section, under as many additional sections as is desired.
+.SS HTTP BASIC AUTHENTICATION
+By default, usernames and passwords stored in the credentials file are expected to be used with HTTP Basic Authentication. Note that usernames and passwords can't contain a ":".
 .PP
-HTTP Basic Authenthentication SHOULD NOT be used without HTTPS and SHOULD NOT generally be considered secure. This is provided as a bare convenience if authentication capabilities are found useful. However,
-.I other authorization schemes should be preferred.
+The credentials file MAY contain as many additional users as is desired; one user per uniquely named section.
 .PP
-The service does not support stored cleartext passwords and instead expects to see stored passwords as sha512 hexdigests to help provide a minimum of password protection if the stored credentials file becomes compromised.
-.PP
-The CREDENTIALS FILE FORMAT section provides an example command line to use to generate a sha512 digest of a password without exposing it on the command line.
+HTTP Basic Authenthentication SHOULD NOT be used without HTTPS and SHOULD NOT generally be considered secure. This is provided as a bare convenience if authentication capabilities are found useful.
+.I However, its use SHOULD remain limited and other authorization schemes should be preferred.
 .PP
 .SS CREDENTIALS FILE FORMAT
 [default]
 .br
-auth = None
-.br
 username = admin
 .br
-password = <tr -d '\\n' < somefile | sha512sum>
+password = *
+.br
+salt = *
 .PP
 [<someothersection>]
 .br
 username = <someotheruser>
 .br
-password = <tr -d '\\n' < someotherpasswordfile | sha512sum>
+password = <hashed password>
+.br
+salt = <salt>
 .PP
 .SH COMMANDS
 .IP "path"
@@ -92,3 +102,11 @@ gunicorn --workers=5 --threads=2 "hcli_core:connector()"
 gunicorn --workers=5 --threads=2 "hcli_core:connector(\\"`hcli_core sample hfm`\\")"
 .PP
 gunicorn --workers=5 --threads=2 "hcli_core:connector(plugin_path=\\"`hcli_core sample hfm`\\", config_path=\\"./custom.config\\")"
+.PP
+gunicorn --workers=1 --threads=10 -b 0.0.0.0:8000 -b 0.0.0.0:9000 "hcli_core:connector()"
+.PP
+pip install huckle
+.PP
+huckle cli install localhost:9000
+.PP
+hco help

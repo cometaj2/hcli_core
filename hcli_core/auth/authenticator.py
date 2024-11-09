@@ -11,13 +11,15 @@ log = logger.Logger("hcli_core")
 
 
 class AuthMiddleware:
-    def __init__(self):
-        self.cm = credential.CredentialManager()
-        self.cfg = config.Config()
-        self.failed_attempts = {}  # Dict to track failed attempts by IP
+    def __init__(self, name):
+        self.cfg = config.Config(name)
 
-        if self.cfg.auth:
-            self.cm.parse_credentials()
+        # This is contrived since the CredentialManager is initialized only once.
+        # Note that this only works if the config_file_path is shared with the credentials file path
+        # and if both are common to both the core HCLIApp and the management HCLIApp.
+        self.cm = credential.CredentialManager(self.cfg.config_file_path)
+
+        self.failed_attempts = {}
 
     def process_request(self, req: falcon.Request, resp: falcon.Response):
         if self.cfg.auth:
