@@ -10,11 +10,11 @@ from hcli_core.hcli import execution
 from hcli_core.hcli import finalexecution
 from hcli_core.hcli import parameter
 
-from hcli_core.auth import authenticator
-
 from hcli_core import logger
 from hcli_core import config
 from hcli_core import template
+
+from hcli_core.auth import authenticator
 
 log = logger.Logger("hcli_core")
 
@@ -35,8 +35,8 @@ class HCLIApp:
 
     def server(self):
 
-        # We setup the HCLI Connector with the correct auth middleware configuration
-        server = falcon.App(middleware=[authenticator.AuthMiddleware(self.name)])
+        # We setup the HCLI Connector with the selective authentication for final execution only
+        server = falcon.App(middleware=[authenticator.SelectiveAuthMiddleware(self.name)])
 
         server.add_route(home.HomeController.route, api.HomeApi())
         server.add_route(secondaryhome.SecondaryHomeController.route, api.SecondaryHomeApi())

@@ -69,14 +69,15 @@ class AuthMiddleware:
                 return False
 
             auth_type, auth_string = auth_header.split(' ', 1)
-            if auth_type.lower() != 'basic':
-                self.log_failed_attempt(client_ip)
-                log.warning('Not http basic authentication.')
-                return False
+            if auth_type.lower() == 'basic':
+                decoded = base64.b64decode(auth_string).decode('utf-8')
+                username, password = decoded.split(':', 1)
+                authenticated = self.cm.validate(username, password)
 
-            decoded = base64.b64decode(auth_string).decode('utf-8')
-            username, password = decoded.split(':', 1)
-            authenticated = self.cm.validate(username, password)
+            else:
+                log.warning('Unknown authentication scheme.')
+                self.log_failed_attempt(client_ip)
+                return False
 
             if not authenticated:
                 self.log_failed_attempt(client_ip)
@@ -84,3 +85,20 @@ class AuthMiddleware:
                 return False
 
             return authenticated
+
+class SelectiveAuthMiddleware(AuthMiddleware):
+    def __init__(self, name):
+        super().__init__(name)
+
+    # Called after Falcon routes the request to a resource
+    def process_resource(self, req, resp, resource, params):
+        log.debug(f"Process resource called with: {type(resource)}")
+        if getattr(resource, 'requires_auth', False):
+            log.debug("Resource requires auth, authenticating...")
+            super().process_request(req, resp)
+        else:
+            log.debug("Resource does not require auth, skipping...")
+            self.process_request(req, resp)
+
+    def process_request(self, req: falcon.Request, resp: falcon.Response):
+        pass
