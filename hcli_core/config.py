@@ -123,10 +123,10 @@ class Config:
     def set_config_path(self, config_path):
         if config_path:
             self.config_file_path = config_path
-            self.log.info(f"Setting custom configuration for instance '{self.name}':")
+            self.log.info(f"Custom configuration for '{self.name}':")
         else:
             self.config_file_path = self.default_config_file_path
-            self.log.warning(f"Setting default configuration for instance '{self.name}':")
+            self.log.warning(f"Default configuration for '{self.name}':")
         self.log.info(self.config_file_path)
 
         if not self.is_600(self.config_file_path):
@@ -148,7 +148,7 @@ class Config:
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             self._cli_module = module
-            self.log.info(f"CLI plugin for instance '{self.name}':")
+            self.log.info(f"CLI plugin for '{self.name}':")
             self.log.info(f"{cli_path}")
         except Exception as e:
             self.log.error(f"Failed to load CLI plugin from {cli_path}: {str(e)}")

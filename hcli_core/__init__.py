@@ -12,7 +12,7 @@ def connector(plugin_path=None, config_path=None):
 
     # Initialize core application
     log.info("================================================")
-    log.info(f"Core application:")
+    log.info(f"Core HCLI application:")
     log.info(f"{plugin_path}")
     coreapp = hcliapp.HCLIApp("core", plugin_path, config_path)
     core_server = coreapp.server()
@@ -21,7 +21,7 @@ def connector(plugin_path=None, config_path=None):
     root = os.path.dirname(inspect.getfile(lambda: None))
     mgmt_plugin_path = os.path.join(root, 'auth', 'cli')
     log.info("================================================")
-    log.info(f"Management application:")
+    log.info(f"Management HCLI application:")
     log.info(f"{mgmt_plugin_path}")
     mgmtapp = hcliapp.HCLIApp("management", mgmt_plugin_path, config_path)
     mgmt_server = mgmtapp.server()

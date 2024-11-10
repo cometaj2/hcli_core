@@ -41,11 +41,6 @@ class Service:
 
         if cfg.auth:
             try:
-                if username == "admin":
-                    msg = "cannot delete admin user."
-                    log.warning(msg)
-                    return msg
-
                 if requesting_username != "admin":
                     msg = f"cannot delete user as {requesting_username}."
                     log.warning(msg)
