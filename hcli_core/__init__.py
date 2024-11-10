@@ -11,6 +11,7 @@ log.setLevel(logger.INFO)
 def connector(plugin_path=None, config_path=None):
 
     # Initialize core application
+    log.info("================================================")
     log.info(f"Core application:")
     log.info(f"{plugin_path}")
     coreapp = hcliapp.HCLIApp("core", plugin_path, config_path)
@@ -19,6 +20,7 @@ def connector(plugin_path=None, config_path=None):
     # Initialize management application
     root = os.path.dirname(inspect.getfile(lambda: None))
     mgmt_plugin_path = os.path.join(root, 'auth', 'cli')
+    log.info("================================================")
     log.info(f"Management application:")
     log.info(f"{mgmt_plugin_path}")
     mgmtapp = hcliapp.HCLIApp("management", mgmt_plugin_path, config_path)

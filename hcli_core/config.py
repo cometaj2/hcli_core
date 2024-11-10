@@ -1,5 +1,6 @@
 import sys
 import os
+import stat
 import importlib
 import inspect
 from configparser import ConfigParser
@@ -90,7 +91,6 @@ class Config:
                 if parser.has_section("config"):
                     for section_name in parser.sections():
                         if section_name == "config":
-                            log.info("[" + section_name + "]")
                             for name, value in parser.items("config"):
                                 if name == "core.auth":
                                     if self.name == 'core':
@@ -129,6 +129,9 @@ class Config:
             self.log.warning(f"Setting default configuration for instance '{self.name}':")
         self.log.info(self.config_file_path)
 
+        if not self.is_600(self.config_file_path):
+            self.log.critical("The credentials file's permissions should be set to 600 (e.g. chmod 600 credentials).")
+
     def parse_template(self, t):
         self.template = t
 
@@ -158,6 +161,19 @@ class Config:
     @cli.setter
     def cli(self, value):
         self._cli_module = value
+
+    def is_600(self, filepath):
+        mode = os.stat(filepath).st_mode & 0o777
+
+        # Print actual permissions and platform for debugging
+        log.debug(f"Platform: {sys.platform}")
+        log.info(f"Credentials file permissions (octal): {oct(mode)}")
+
+        # 0o600 = rw------- (read/write for owner only)
+        is_user_rw = bool(mode & 0o600)  # User has read and write
+        is_other_none = (mode & 0o177) == 0  # No permissions for group/others
+
+        return is_user_rw and is_other_none
 
     def __str__(self):
         return f"{self.name}"

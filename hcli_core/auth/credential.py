@@ -315,12 +315,12 @@ class CredentialManager:
                     reset_state = (stored_hash == '*' and stored_salt == '*')
                     if reset_state:
                         self._bootstrap_password = self.generate_bootstrap_password()
-                        log.critical("=====================================")
+                        log.critical("================================================")
                         log.critical("HCLI INITIAL ADMIN PASSWORD (CHANGE IMMEDIATELY)")
                         log.critical("Username: admin")
                         log.critical(f"Password: {self._bootstrap_password}")
                         log.critical("This password will only be shown once in logs")
-                        log.critical("=====================================")
+                        log.critical("================================================")
                         self.passwd('admin', self._bootstrap_password)
                         self._bootstrap_password = None
                         return
