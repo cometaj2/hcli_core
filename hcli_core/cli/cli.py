@@ -10,8 +10,6 @@ class CLI:
         self.inputstream = inputstream
 
     def execute(self):
-        print(self.commands)
-
         if self.commands[1] == "--version":
             return io.BytesIO(b"1.0.1\n")
 

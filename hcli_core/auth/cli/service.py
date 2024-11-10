@@ -117,7 +117,7 @@ class Service:
             log.warning(msg)
             return msg
 
-        return users
+        return users.rstrip()
 
     def _cfg(self):
         context = config.ServerContext.get_current_server()

@@ -37,7 +37,7 @@
                 },
                 {
                     "name": "examples",
-                    "description": "hco useradd johndoe\n\necho 'mySecurePassword' | hco passwd johndoe\n\nhco userdel johndoe"
+                    "description": "hco useradd johndoe\n\ntr -d '\\(rsn' < somepasswordfile | hco passwd username\n\nhco userdel johndoe\n\nhco ls"
                 }
             ],
             "command": [
@@ -119,7 +119,11 @@
                 },
                 {
                     "name": "description",
-                    "description": "Changes the password of the specified user account. The password must be provided via stdin for security."
+                    "description": "Changes the password of the specified user account. The password must be provided via stdin for security. Note that the HCLI client used to interact with hco (e.g. huckle) must have credentials set for a valid user. A user can manage their own credentials but the admin user can manage all users."
+                },
+                {
+                    "name": "example",
+                    "description": "tr -d '\\(rsn' < someotherpasswordfile | hco passwd username"
                 }
             ],
             "parameter": {
@@ -141,6 +145,10 @@
                 {
                     "name": "description",
                     "description": "List all users in the credentials file."
+                },
+                {
+                    "name": "example",
+                    "description": "hco ls | column"
                 }
             ]
         }
