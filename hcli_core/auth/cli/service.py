@@ -117,7 +117,31 @@ class Service:
             log.warning(msg)
             return msg
 
+
         return users.rstrip()
+
+    def key(self, username):
+        requesting_username = config.ServerContext.get_current_user()
+        cfg = self._cfg()
+
+        if cfg.auth:
+            try:
+                # The admin can update any user
+                if requesting_username != username and not requesting_username == "admin":
+                    msg = f"an api key can only be created for {requesting_username}."
+                    log.warning(msg)
+                    return msg
+
+                return self.cm.key(username)
+
+            except Exception as e:
+                msg = f"error changing password: {str(e)}"
+                log.error(msg)
+                return msg
+        else:
+            msg = f"cannot update password as {requesting_username} when authentication is disabled."
+            log.warning(msg)
+            return msg
 
     def _cfg(self):
         context = config.ServerContext.get_current_server()

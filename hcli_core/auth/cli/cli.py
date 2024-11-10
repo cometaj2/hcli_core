@@ -28,19 +28,16 @@ class CLI:
 
         command = self.commands[1]
 
-        # Handle useradd command
         if command == "useradd":
             username = self.commands[2]
             status = self.service.useradd(username)
             return io.BytesIO((status+"\n").encode())
 
-        # Handle userdel command
         elif command == "userdel":
             username = self.commands[2]
             status = self.service.userdel(username)
             return io.BytesIO((status+"\n").encode())
 
-        # Handle passwd command
         elif command == "passwd":
             username = self.commands[2]
 
@@ -56,9 +53,13 @@ class CLI:
             status = self.service.passwd(username, f)
             return io.BytesIO((status+"\n").encode())
 
-        # Handle list command (optional, not in template but useful)
         elif command == "ls":
             users = self.service.ls()
             return io.BytesIO((users+"\n").encode())
+
+        elif command == "key":
+            username = self.commands[2]
+            status = self.service.key(username)
+            return io.BytesIO((status+"\n").encode())
 
         return None

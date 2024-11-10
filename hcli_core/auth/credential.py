@@ -4,6 +4,8 @@ import json
 import hashlib
 import base64
 import threading
+import time
+from datetime import datetime, timezone, timedelta
 from configparser import ConfigParser
 from contextlib import suppress
 
@@ -52,7 +54,7 @@ class CredentialManager:
         with self._lock:
             try:
                 with open(self.config_file_path, 'r') as cred_file:
-                    parser = ConfigParser()
+                    parser = ConfigParser(interpolation=None)
                     log.info("Loading credentials")
                     log.info(self.config_file_path)
                     parser.read_file(cred_file)
@@ -60,21 +62,21 @@ class CredentialManager:
                     # Check if we have a default section for the admin user
                     if not parser.has_section("default"):
                         msg = f"No [default] credential available for {self.config_file_path}."
-                        log.critical(msg)
+                        log.warning(msg)
                         self._credentials = None
                         return msg
 
                     # Check if we have a default admin username and password
                     if not parser.has_option("default", "username") or parser.get("default", "username") != "admin" or not parser.has_option("default", "password"):
                         msg = f"Invalid or missing admin username or password in [default] section of {self.config_file_path}."
-                        log.critical(msg)
+                        log.warning(msg)
                         self._credentials = None
                         return msg
 
                     # Check if we have a salt
                     if not parser.has_option("default", "salt"):
                         msg = f"Invalid or missing salt in [default] section of {self.config_file_path}."
-                        log.critical(msg)
+                        log.warning(msg)
                         self._credentials = None
                         return msg
 
@@ -105,7 +107,7 @@ class CredentialManager:
 
             except Exception as e:
                 msg = f"unable to load credentials: {str(e)}."
-                log.critical(msg)
+                log.error(msg)
                 self._credentials = None
                 #assert isinstance(self._credentials, dict)
                 return msg
@@ -114,7 +116,7 @@ class CredentialManager:
         with self._lock:
             try:
                 with open(self.config_file_path, 'r') as cred_file:
-                    parser = ConfigParser()
+                    parser = ConfigParser(interpolation=None)
                     parser.read_file(cred_file)
 
                     # Update or add user
@@ -152,7 +154,7 @@ class CredentialManager:
         with self._lock:
             try:
                 with open(self.config_file_path, 'r') as cred_file:
-                    parser = ConfigParser()
+                    parser = ConfigParser(interpolation=None)
                     parser.read_file(cred_file)
 
                     # Update or add user
@@ -195,7 +197,7 @@ class CredentialManager:
             try:
                 # Read current configuration
                 with open(self.config_file_path, 'r') as cred_file:
-                    parser = ConfigParser()
+                    parser = ConfigParser(interpolation=None)
                     parser.read_file(cred_file)
 
                     # Find and remove user section
@@ -326,6 +328,78 @@ class CredentialManager:
                         return
                 break
         return
+
+    def key(self, username):
+        with self._lock:
+            try:
+                with open(self.config_file_path, 'r') as cred_file:
+                    parser = ConfigParser(interpolation=None)
+                    parser.read_file(cred_file)
+
+                    found = False
+                    highest_key_num = 0
+                    base_section = f"{username}_apikey"
+
+                    for section in parser.sections():
+                        if parser.has_option(section, "username") and parser.get(section, "username") == username:
+                            found = True
+                        # Look for existing apikey sections and find highest number
+                        if section.startswith(base_section):
+                            try:
+                                key_num = int(section[len(base_section):] or 0)
+                                highest_key_num = max(highest_key_num, key_num)
+                            except ValueError:
+                                continue
+
+                    if not found:
+                        msg = f"user {username} doesn't exist."
+                        log.warning(msg)
+                        return msg
+
+                    # Create new section with next number
+                    section_name = f"{username}_apikey{highest_key_num + 1}"
+                    parser.add_section(section_name)
+                    (apikey, created) = self.generate_apikey()
+                    keyid = self.generate_keyid()
+                    parser.set(section_name, "keyid", keyid)
+                    parser.set(section_name, "parent", username)
+                    parser.set(section_name, "apikey", str(apikey))
+                    parser.set(section_name, "created", str(created))
+                    parser.set(section_name, "status", "valid")
+
+                # Write back to file
+                with open(self.config_file_path, 'w') as cred_file:
+                    parser.write(cred_file)
+
+                # Reload credentials in memory
+                self._parse_credentials()
+                msg = f"api key {keyid} created for user {username}."
+                log.info(msg)
+                return keyid + "    " + apikey + "    " + created
+
+            except Exception as e:
+                msg = f"error updating credentials: {str(e)}."
+                log.error(msg)
+                return msg
+
+    # Or base32 approach (10 chars) to help avoid 1/I 0/O visual discrepancies.
+    def generate_keyid(self):
+        random_bytes = os.urandom(6)  # 6 bytes = 10 chars in base32
+        keyid = base64.b32encode(random_bytes).decode('utf-8').rstrip('=')
+        return keyid
+
+    # Generate a secure random api key. Example: hco_apikey_gCUipvHmFDPw82x-MZ9djsOPGq_kxD4gks...
+    # hcoak for hco hcli api key
+    def generate_apikey(self, prefix='hcoak'):
+        random_bytes = os.urandom(64)
+        key_part = base64.urlsafe_b64encode(random_bytes).decode('utf-8').rstrip('=')
+        key = f"{prefix}_{key_part}"
+
+        offset = time.timezone if (time.localtime().tm_isdst == 0) else time.altzone
+        dt = datetime.now().replace(tzinfo=timezone(timedelta(seconds=-offset)))
+        formatted = dt.isoformat()
+
+        return key, formatted
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         with suppress(Exception):

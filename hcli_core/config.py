@@ -85,7 +85,7 @@ class Config:
     def parse_configuration(self):
         try:
             with open(self.config_file_path, 'r') as config_file:
-                parser = ConfigParser()
+                parser = ConfigParser(interpolation=None)
                 parser.read_file(config_file)
 
                 if parser.has_section("config"):

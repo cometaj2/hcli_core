@@ -16,6 +16,10 @@
         {
             "command": "hco ls",
             "http": "get"
+        },
+        {
+            "command": "hco key {p}",
+            "http": "post"
         }
     ],
     "cli": [
@@ -60,6 +64,11 @@
                     "href": "hcols",
                     "name": "ls",
                     "description": "List all users"
+                },
+                {
+                    "href": "hcokey",
+                    "name": "key",
+                    "description": "API key management"
                 }
             ]
         },
@@ -119,7 +128,7 @@
                 },
                 {
                     "name": "description",
-                    "description": "Changes the password of the specified user account. The password must be provided via stdin for security. Note that the HCLI client used to interact with hco (e.g. huckle) must have credentials set for a valid user. A user can manage their own credentials but the admin user can manage all users."
+                    "description": "Changes the password of the specified user account. The password must be provided via stdin for security. Note that the HCLI client used to interact with hco (e.g. huckle) must have credentials set for a valid user. A user can manage their own credentials but the admin user can manage any users."
                 },
                 {
                     "name": "example",
@@ -151,6 +160,31 @@
                     "description": "hco ls | column"
                 }
             ]
+        },
+        {
+            "id": "hcokey",
+            "name": "key",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "key - API key management"
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hco key <username>"
+                },
+                {
+                    "name": "description",
+                    "description": "Creates a new API key for the specified username. A user can create their own API keys but the admin can create API keys for any user. The command returns a unique keyid followed by the API key itself when successful."
+                },
+                {
+                    "name": "example",
+                    "description": "hco key username\n\nGJSLKO5Z5M    hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ"
+                }
+            ],
+            "parameter": {
+                "href": "hcokeyparameter"
+            }
         }
     ]
 }
