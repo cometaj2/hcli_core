@@ -69,19 +69,29 @@ class AuthMiddleware:
                 return False
 
             auth_type, auth_string = auth_header.split(' ', 1)
+
             if auth_type.lower() == 'basic':
                 decoded = base64.b64decode(auth_string).decode('utf-8')
                 username, password = decoded.split(':', 1)
                 authenticated = self.cm.validate(username, password)
 
+                if not authenticated:
+                    self.log_failed_attempt(client_ip)
+                    log.warning('Invalid credentials for username: ' + username + ".")
+                    return False
+
+            elif auth_type.lower() == 'bearer':
+                prefix, apikey = auth_string.split('_', 1)
+                if prefix == 'hcoak':
+                    authenticated = self.cm.validate_hcoak(auth_string)
+                else:
+                    log.warning('Unknown authentication scheme.')
+                    self.log_failed_attempt(client_ip)
+                    return False
+
             else:
                 log.warning('Unknown authentication scheme.')
                 self.log_failed_attempt(client_ip)
-                return False
-
-            if not authenticated:
-                self.log_failed_attempt(client_ip)
-                log.warning('Invalid credentials for username: ' + username + ".")
                 return False
 
             return authenticated

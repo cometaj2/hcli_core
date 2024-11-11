@@ -123,7 +123,7 @@ class Service:
             try:
                 # The admin can update any user
                 if requesting_username != username and not requesting_username == "admin":
-                    msg = f"an api key can only be created for {requesting_username}."
+                    msg = f"an api key cannot be created for {username} by {requesting_username}."
                     log.warning(msg)
                     return msg
 

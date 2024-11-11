@@ -261,6 +261,26 @@ class CredentialManager:
                     log.error(msg)
                     return False
 
+    def validate_hcoak(self, apikey):
+        with self._lock:
+            try:
+                if not self._credentials:
+                    return False
+
+                # Find the right section by username
+                for section, cred_list in self._credentials.items():
+                    cred_dict = {k: v for cred in cred_list for k, v in cred.items()}
+
+                    if cred_dict.get('apikey') == apikey:
+                        return True
+
+                return False
+
+            except Exception as e:
+                msg = f"error validating credentials: {str(e)}."
+                log.error(msg)
+                return False
+
     # Hash password using 600000 (1Password/LastPass) iterations of PBKDF2-SHA256 with 32 bit salt.
     # dklen of 32 for sha256, 64 for sha512
     def hash_password(self, password):

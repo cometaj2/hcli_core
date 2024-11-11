@@ -45,6 +45,12 @@ def connector(plugin_path=None, config_path=None):
             environ['REMOTE_USER'] = username
             config.ServerContext.set_current_user(username)
 
+        # If using Bearer auth, it will be in format "Bearer hcoak_base64(random)"
+        if auth_info.startswith('Bearer '):
+            # Store username in environ for downstream handlers
+            environ['REMOTE_USER'] = "api key bearer"
+            config.ServerContext.set_current_user("api key bearer")
+
         # Debug logging
         log.debug("Received request:")
         log.debug(f"  Port: {server_port}")
