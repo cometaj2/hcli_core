@@ -7,7 +7,7 @@ from hcli_core.auth import credential
 from hcli_core.auth.cli import service as s
 from hcli_core import config
 
-log = logger.Logger("hcli_core")
+log = logger.Logger("hco")
 
 
 class CLI:

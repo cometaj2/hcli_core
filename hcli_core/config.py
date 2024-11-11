@@ -67,7 +67,7 @@ class Config:
                     instance.default_config_file_path = instance.root + "/auth/credentials"
                     instance.config_file_path = None
                     instance.auth = True
-                    instance.log = logger.Logger(f"hcli_core.{name}")
+                    instance.log = logger.Logger(f"hcli_core")
                     cls._instances[name] = instance
 
         return cls._instances[name]

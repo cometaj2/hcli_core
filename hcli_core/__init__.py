@@ -36,6 +36,7 @@ def connector(plugin_path=None, config_path=None):
         # If using Basic auth, it will be in format "Basic base64(username:password)"
         if auth_info.startswith('Basic '):
             import base64
+
             # Extract and decode the base64 credentials
             encoded_credentials = auth_info.split(' ')[1]
             decoded = base64.b64decode(encoded_credentials).decode('utf-8')
@@ -45,11 +46,18 @@ def connector(plugin_path=None, config_path=None):
             environ['REMOTE_USER'] = username
             config.ServerContext.set_current_user(username)
 
-        # If using Bearer auth, it will be in format "Bearer hcoak_base64(random)"
+        # If using HCOAK Bearer auth, it will be in format "Bearer base64(keyid:hcoak(apikey))"
         if auth_info.startswith('Bearer '):
+            import base64
+
+            # Extract and decode the base64 credentials
+            encoded_credentials = auth_info.split(' ')[1]
+            decoded = base64.b64decode(encoded_credentials).decode('utf-8')
+            keyid = decoded.split(':')[0]
+
             # Store username in environ for downstream handlers
-            environ['REMOTE_USER'] = "api key bearer"
-            config.ServerContext.set_current_user("api key bearer")
+            environ['REMOTE_USER'] = keyid
+            config.ServerContext.set_current_user(keyid)
 
         # Debug logging
         log.debug("Received request:")

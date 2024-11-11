@@ -12,8 +12,6 @@ WARNING = logging.WARNING
 ERROR = logging.ERROR
 CRITICAL = logging.CRITICAL
 
-
-# custom deque implementation to have log line limits as a sliding window that behaves like a stream being consumed when read.
 class DequeHandler(logging.Handler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -28,38 +26,41 @@ class DequeHandler(logging.Handler):
         self.deque.clear()
         return logs
 
-# custom logger implementation that allows for streaming to stdout and tailing of logs per a deque sliding window.
 class Logger:
-    instance = None
-    streamHandler = None
-    clientHandler = None
-    lock = None
-    name = None
+    _instances = {}
+    _lock = threading.Lock()
 
     def __new__(cls, name=None, *args, **kwargs):
-        cls.lock = threading.Lock()
-        with cls.lock:
-            if cls.instance is None:
-                cls.instance = super().__new__(cls, *args, **kwargs)
-                cls.instance.init(name, *args, **kwargs)
-            return cls.instance
+        with cls._lock:
+            if name not in cls._instances:
+                instance = super().__new__(cls)
+                instance.init(name, *args, **kwargs)
+                cls._instances[name] = instance
+            return cls._instances[name]
 
     def init(self, name=None, *args, **kwargs):
-        self.name = name
+        self.name = name or __name__
         self.instance = logging.getLogger(self.name)
 
-        date_format = "%Y-%m-%d %H:%M:%S %z"
-        message_format = "[%(asctime)s] [%(levelname)-8s] [%(name)s] [%(filename)13s:%(lineno)-3s] %(message)s"
+        # Only add handlers if they haven't been added yet
+        if not self.instance.handlers:
+            date_format = "%Y-%m-%d %H:%M:%S %z"
+            message_format = "[%(asctime)s] [%(levelname)-8s] [%(name)s] [%(filename)13s:%(lineno)-3s] %(message)s"
+            formatter = logging.Formatter(fmt=message_format, datefmt=date_format)
 
-        formatter = logging.Formatter(fmt=message_format, datefmt=date_format)
+            self.streamHandler = logging.StreamHandler()
+            self.streamHandler.setFormatter(formatter)
+            self.instance.addHandler(self.streamHandler)
 
-        self.streamHandler = logging.StreamHandler()
-        self.streamHandler.setFormatter(formatter)
-        self.instance.addHandler(self.streamHandler)
-
-        self.clientHandler = DequeHandler()
-        self.clientHandler.setFormatter(formatter)
-        self.instance.addHandler(self.clientHandler)
+            self.clientHandler = DequeHandler()
+            self.clientHandler.setFormatter(formatter)
+            self.instance.addHandler(self.clientHandler)
+        else:
+            # If handlers exist, get the existing ones
+            self.streamHandler = next((h for h in self.instance.handlers 
+                                    if isinstance(h, logging.StreamHandler)), None)
+            self.clientHandler = next((h for h in self.instance.handlers 
+                                    if isinstance(h, DequeHandler)), None)
 
     def setLevel(self, level):
         self.instance.setLevel(level)
@@ -82,8 +83,6 @@ class Logger:
     def tail(self):
         log_entries = self.clientHandler.read_and_clear()
         log_text = '\n'.join(log_entries)
-
         if log_text:
             log_text += '\n'  # Adds newline character at the end if there is some log_text
-
         return log_text.encode('utf-8')

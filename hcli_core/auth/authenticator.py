@@ -81,9 +81,11 @@ class AuthMiddleware:
                     return False
 
             elif auth_type.lower() == 'bearer':
-                prefix, apikey = auth_string.split('_', 1)
+                decoded = base64.b64decode(auth_string).decode('utf-8')
+                keyid, apikey = decoded.split(':', 1)
+                prefix, leftover = apikey.split('_', 1)
                 if prefix == 'hcoak':
-                    authenticated = self.cm.validate_hcoak(auth_string)
+                    authenticated = self.cm.validate_hcoak(keyid, apikey)
                 else:
                     log.warning('Unknown authentication scheme.')
                     self.log_failed_attempt(client_ip)

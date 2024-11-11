@@ -261,7 +261,7 @@ class CredentialManager:
                     log.error(msg)
                     return False
 
-    def validate_hcoak(self, apikey):
+    def validate_hcoak(self, keyid, apikey):
         with self._lock:
             try:
                 if not self._credentials:
@@ -271,7 +271,9 @@ class CredentialManager:
                 for section, cred_list in self._credentials.items():
                     cred_dict = {k: v for cred in cred_list for k, v in cred.items()}
 
-                    if cred_dict.get('apikey') == apikey:
+                    if (cred_dict.get('keyid') == keyid and
+                        cred_dict.get('apikey') == apikey and
+                        cred_dict.get('status') == 'valid'):
                         return True
 
                 return False
