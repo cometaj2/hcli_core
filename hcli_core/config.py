@@ -139,24 +139,75 @@ class Config:
         if p is not None:
             self.plugin_path = p
 
-        # Load the CLI module directly from file
-        cli_path = os.path.join(self.plugin_path, 'cli.py')
         try:
-            # Create a unique module name based on the server type
+            # Always ensure both paths are available
+            plugin_dir = os.path.dirname(self.plugin_path)
+            if plugin_dir not in sys.path:
+                sys.path.insert(0, plugin_dir)
+            if self.plugin_path not in sys.path:
+                sys.path.insert(0, self.plugin_path)
+
+            log.info(f"Loading CLI module for {self.name} from path: {self.plugin_path}")
+
+            # Load the module
+            self._cli_module = importlib.import_module("cli", self.plugin_path)
+
+            # Verify CLI class exists
+            if not hasattr(self._cli_module, 'CLI'):
+                raise ImportError(f"No CLI class found in module for {self.name}")
+
+            log.info(f"Successfully loaded CLI plugin for {self.name}")
+
+            # Test instantiation
+            test_cli = self._cli_module.CLI(['test'], None)
+            log.info(f"Successfully verified CLI class instantiation for {self.name}")
+
+        except Exception as e:
+            self.log.error(f"Failed to load CLI plugin from {self.plugin_path}: {str(e)}")
+            raise
+
+    def set_plugin_path(self, p):
+        if p is not None:
+            self.plugin_path = p
+
+        try:
+            # Clear any existing 'cli' module from cache
+            if 'cli' in sys.modules:
+                del sys.modules['cli']
+
+            plugin_dir = os.path.dirname(self.plugin_path)
+            if plugin_dir not in sys.path:
+                sys.path.insert(0, plugin_dir)
+            if self.plugin_path not in sys.path:
+                sys.path.insert(0, self.plugin_path)
+
+            log.debug(f"Loading CLI for {self.name}")
+            log.debug(f"Plugin path: {self.plugin_path}")
+            log.debug(f"sys.path: {sys.path}")
+
+            # Use a unique module name for each CLI
             module_name = f"cli_{self.name}"
+            cli_path = os.path.join(self.plugin_path, 'cli.py')
+
+            log.debug(f"Loading from: {cli_path}")
             spec = importlib.util.spec_from_file_location(module_name, cli_path)
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             self._cli_module = module
-            self.log.info(f"CLI plugin for '{self.name}':")
-            self.log.info(f"{cli_path}")
+            log.debug(f"Loaded module from: {module.__file__}")
+
+            log.info(f"Successfully loaded CLI plugin for {self.name}")
         except Exception as e:
-            self.log.error(f"Failed to load CLI plugin from {cli_path}: {str(e)}")
+            log.error(f"Failed to load CLI plugin from {self.plugin_path}: {str(e)}")
             raise
 
+    # Return the CLI class itself, not the module
     @property
     def cli(self):
-        return self._cli_module
+        if hasattr(self, '_cli_module'):
+            if hasattr(self._cli_module, 'CLI'):
+                return getattr(self._cli_module, 'CLI')
+        return None
 
     @cli.setter
     def cli(self, value):
