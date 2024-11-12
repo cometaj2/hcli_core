@@ -55,7 +55,7 @@ class CredentialManager:
             try:
                 with open(self.config_file_path, 'r') as cred_file:
                     parser = ConfigParser(interpolation=None)
-                    log.info("Loading credentials")
+                    log.info("Loading credentials:")
                     log.info(self.config_file_path)
                     parser.read_file(cred_file)
 

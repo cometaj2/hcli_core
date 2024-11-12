@@ -37,9 +37,35 @@ class ServerContext:
             return cls._context.get('current_user', None)
 
 class Config:
-    _instances = {}  # Dictionary to store named instances
+    _instances = {}       # Dictionary to store named instances
     _instance_locks = {}  # Dictionary to store locks for each named instance
-    _global_lock = Lock()  # Lock for managing instance creation
+    _global_lock = Lock() # Lock for managing instance creation
+
+    # Get management port from config file if explicitly configured, else None.
+    @classmethod
+    def get_management_port(cls, config_path=None):
+        with cls._global_lock:
+            if not config_path:
+                config_path = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "auth/credentials")
+
+            try:
+                parser = ConfigParser(interpolation=None)
+                with open(config_path, 'r') as config_file:
+                    parser.read_file(config_file)
+
+                    if parser.has_section("config") and parser.has_option("config", "mgmt.port"):
+                        try:
+                            port = int(parser.get("config", "mgmt.port"))
+                            if 1 <= port <= 65536:
+                                return port
+                            log.warning(f"Invalid management port value: {port}")
+                        except ValueError:
+                            log.warning("Invalid management port configuration")
+
+                return None
+            except Exception as e:
+                log.warning(f"Error reading management port configuration: {e}")
+                return None
 
     def __new__(cls, name=None):
         # If no name provided, get it from context
@@ -105,17 +131,6 @@ class Config:
                                             elif value.lower() == 'false':
                                                 self.auth = False
                                         log.info("Core Auth: " + str(self.auth))
-                                elif name == "mgmt.auth":
-                                    if self.name == 'management':
-                                        if value != "False" and value != "True":
-                                            log.warning("Unsupported management auth value: " + str(value) + ". Enabling authentication.")
-                                            self.auth = True
-                                        else:
-                                            if value.lower() == 'true':
-                                                self.auth = True
-                                            elif value.lower() == 'false':
-                                                self.auth = False
-                                        log.info("Management Auth: " + str(self.auth))
                                 elif name == "mgmt.port":
                                     if self.name == 'management':
                                         port = int(value)
@@ -126,8 +141,10 @@ class Config:
                                         else:
                                             self.mgmt_port = port
                                             log.info("Management Port: " + str(self.mgmt_port))
+                            if self.name == 'management':
+                                log.info("Management Auth: " + str(self.auth))
                             if self.name == 'management' and not parser.has_option("config", "mgmt.port"):
-                                log.info(f"Default Management Port: {self.mgmt_port}.")
+                                log.info(f"Default Management Port: {self.mgmt_port}")
                 else:
                     log.critical("No [config] configuration available for " + self.config_file_path + ".")
         except Exception as e:
@@ -161,20 +178,20 @@ class Config:
             if self.plugin_path not in sys.path:
                 sys.path.insert(0, self.plugin_path)
 
-            log.info(f"Loading CLI module for {self.name} from path: {self.plugin_path}")
+            log.info(f"Loading CLI module for {self.name} from path: {self.plugin_path}.")
 
             # Load the module
             self._cli_module = importlib.import_module("cli", self.plugin_path)
 
             # Verify CLI class exists
             if not hasattr(self._cli_module, 'CLI'):
-                raise ImportError(f"No CLI class found in module for {self.name}")
+                raise ImportError(f"No CLI class found in module for {self.name}.")
 
-            log.info(f"Successfully loaded CLI plugin for {self.name}")
+            log.info(f"Successfully loaded CLI plugin for {self.name}.")
 
             # Test instantiation
             test_cli = self._cli_module.CLI(['test'], None)
-            log.info(f"Successfully verified CLI class instantiation for {self.name}")
+            log.info(f"Successfully verified CLI class instantiation for {self.name}.")
 
         except Exception as e:
             self.log.error(f"Failed to load CLI plugin from {self.plugin_path}: {str(e)}")
@@ -195,9 +212,9 @@ class Config:
             if self.plugin_path not in sys.path:
                 sys.path.insert(0, self.plugin_path)
 
-            log.debug(f"Loading CLI for {self.name}")
-            log.debug(f"Plugin path: {self.plugin_path}")
-            log.debug(f"sys.path: {sys.path}")
+            log.debug(f"Loading CLI for {self.name}.")
+            log.debug(f"Plugin path: {self.plugin_path}.")
+            log.debug(f"sys.path: {sys.path}.")
 
             # Use a unique module name for each CLI
             module_name = f"cli_{self.name}"
@@ -208,9 +225,9 @@ class Config:
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             self._cli_module = module
-            log.debug(f"Loaded module from: {module.__file__}")
+            log.debug(f"Loaded module from: {module.__file__}.")
 
-            log.info(f"Successfully loaded CLI plugin for {self.name}")
+            log.info(f"Successfully loaded CLI plugin for {self.name}.")
         except Exception as e:
             log.error(f"Failed to load CLI plugin from {self.plugin_path}: {str(e)}")
             raise
