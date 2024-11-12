@@ -38,22 +38,20 @@ The configuration supports enabling or disable authentication for:
 .br
 core.auth = False
 .br
-mgmt.auth = True
+mgmt.port = 9000
 .br
 .SH AUTHENTICATION
-If authentication is configured for an HCLI application, HCLI Core expects to be able to use a config and credentials file, called "credentials".
-The default included credentials file provided with HCLI Core SHOULD NOT be used but is included as an example file format.
+If authentication is configured for an HCLI application, HCLI Core expects to be able to use a config and credentials file, called 'credentials'.
+The default included credentials file provided with HCLI Core SHOULD NOT be used but is included as an example and to enable bootstrapping with a default configuration. A user managed configuration/credentials file path should be provided at startup instead.
 .PP
-The HCLI application (hco) is made available on the management port 9000 to help manage user credentials and api keys.
+The HCLI Management application (hco) is made available on the configured management port 'mgmt.port' to help manage user credentials and api keys for both the HCLI Management application and the Core HCLI application. The HCLI Management app will not be made available unless the port is set in the configuration file.
 .PP
-The default expected administrator user is an admin user set with '*' defaults for both the hashed password and its salt. On first startup, HCLI Core generates a random password and assigns it to the admin user. The password is immediately set and is displayed only once in the log output. It SHOULD be changed immediately to maintain security.
+The default expected administrator is an 'admin' user set with '*' defaults for both the password and salt. On first startup, HCLI Core generates a random password and assigns it to the admin user. The password is immediately set in the credentials file and is displayed only once in the log output. It SHOULD be changed immediately to maintain security.
 .PP
-HCLI Core can function without any credentials listed in the credentials file.
-.PP
-When the HCLI Management application's authentication is disabled, no changes are allowed via hco (the HCLI Management application)
+HCLI Core can function without any credentials listed in the credentials file but the HCLI Management application will not allow interaction without credentials.
 .PP
 .SS HTTP BASIC AUTHENTICATION
-By default, usernames and passwords stored in the credentials file are expected to be used with HTTP Basic Authentication. Note that usernames and passwords can't contain a ":".
+By default, usernames and passwords stored in the credentials file are expected to be used with HTTP Basic Authentication. Note that usernames and passwords can't contain a ':'.
 .PP
 The credentials file MAY contain as many additional users as is desired; one user per uniquely named section.
 .PP
@@ -61,13 +59,13 @@ HTTP Basic Authenthentication SHOULD NOT be used without HTTPS and SHOULD NOT ge
 .I However, authentication using HTTP Basic Authentication is slower by design to help improve security. Its use SHOULD remain limited, and other authentication schemes should be preferred.
 .PP
 .SS HCOAK (HCLI CORE API KEY) AUTHENTICATION
-API keyids and API keys stored in the credentials file are expected to be used with the HCLI Core bundled "hco" HCLI application generated API keys. Those API keys SHOULD make use of the HTTP Bearer authentication scheme.
+API keyids and API keys stored in the credentials file are expected to be used with the HCLI Core bundled 'hco' HCLI application generated API keys. Those API keys SHOULD make use of the HTTP Bearer authentication scheme.
 .PP
-The expected HCOAK Bearer format is a base64 encoded and colon separated "keyid:hcoak" ("Bearer base64(keyid:hcoak)"). For example:
+The expected HCOAK Bearer format is a base64 encoded and colon separated 'keyid:hcoak' (Bearer base64(keyid:hcoak)). For example:
 .PP
 keyid = GJSLKO5Z5M
 .br
-hcoak = hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ"
+hcoak = hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ
 .PP
 The credentials file MAY contain as many additional keyids and apikeys as is desired; one such keyid and apikey per uniquely named section.
 .PP
