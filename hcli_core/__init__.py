@@ -24,6 +24,7 @@ def connector(plugin_path=None, config_path=None):
     log.info(f"Management HCLI application:")
     log.info(f"{mgmt_plugin_path}")
     mgmtapp = hcliapp.HCLIApp("management", mgmt_plugin_path, config_path)
+    mgmt_port = mgmtapp.port()
     mgmt_server = mgmtapp.server()
 
     # We select a response server based on port
@@ -66,7 +67,7 @@ def connector(plugin_path=None, config_path=None):
         log.debug(f"  Method: {environ.get('REQUEST_METHOD', 'GET')}")
 
         # Set the server context based on port
-        if server_port == '9000':
+        if int(server_port) == int(mgmt_port):
             server_type = 'management'
         else:
             server_type = 'core'
@@ -74,7 +75,7 @@ def connector(plugin_path=None, config_path=None):
         config.ServerContext.set_current_server(server_type)
 
         response_server = None
-        if server_port == '9000':
+        if int(server_port) == int(mgmt_port):
             response_server = mgmt_server
         else:
             response_server = core_server

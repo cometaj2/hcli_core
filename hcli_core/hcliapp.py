@@ -49,3 +49,6 @@ class HCLIApp:
         server.add_route(parameter.ParameterController.route, api.ParameterApi())
 
         return server
+
+    def port(self):
+        return self.cfg.mgmt_port

@@ -68,6 +68,8 @@ class Config:
                     instance.config_file_path = None
                     instance.auth = True
                     instance.log = logger.Logger(f"hcli_core")
+                    if name == 'management':
+                        instance.mgmt_port = 9000
                     cls._instances[name] = instance
 
         return cls._instances[name]
@@ -103,7 +105,7 @@ class Config:
                                             elif value.lower() == 'false':
                                                 self.auth = False
                                         log.info("Core Auth: " + str(self.auth))
-                                if name == "mgmt.auth":
+                                elif name == "mgmt.auth":
                                     if self.name == 'management':
                                         if value != "False" and value != "True":
                                             log.warning("Unsupported management auth value: " + str(value) + ". Enabling authentication.")
@@ -114,6 +116,18 @@ class Config:
                                             elif value.lower() == 'false':
                                                 self.auth = False
                                         log.info("Management Auth: " + str(self.auth))
+                                elif name == "mgmt.port":
+                                    if self.name == 'management':
+                                        port = int(value)
+                                        valid = (1 <= port <= 65536)
+                                        if not valid:
+                                            log.warning("Unsupported management port value: " + str(value) + ". Defaulting to 9000.")
+                                            self.mgmt_port = 9000
+                                        else:
+                                            self.mgmt_port = port
+                                            log.info("Management Port: " + str(self.mgmt_port))
+                            if self.name == 'management' and not parser.has_option("config", "mgmt.port"):
+                                log.info(f"Default Management Port: {self.mgmt_port}.")
                 else:
                     log.critical("No [config] configuration available for " + self.config_file_path + ".")
         except Exception as e:
