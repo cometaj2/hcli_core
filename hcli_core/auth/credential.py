@@ -272,9 +272,10 @@ class CredentialManager:
                     cred_dict = {k: v for cred in cred_list for k, v in cred.items()}
 
                     if (cred_dict.get('keyid') == keyid and
-                        cred_dict.get('apikey') == apikey and
                         cred_dict.get('status') == 'valid'):
-                        return True
+                        stored_hash = cred_dict.get('apikey')
+                        if stored_hash:
+                            return self.hash_apikey(apikey) == stored_hash
 
                 return False
 
@@ -289,6 +290,9 @@ class CredentialManager:
         salt = os.urandom(32)
         key = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, iterations=600000, dklen=32)
         return key.hex(), salt.hex()
+
+    def hash_apikey(self, apikey):
+        return hashlib.sha256(apikey.encode()).hexdigest()
 
     # Verify password against stored hash and salt (both in hex format).
     # dklen of 32 for sha256, 64 for sha512
@@ -381,11 +385,14 @@ class CredentialManager:
                     # Create new section with next number
                     section_name = f"{username}_apikey{highest_key_num + 1}"
                     parser.add_section(section_name)
+
                     (apikey, created) = self.generate_apikey()
+                    hashed_apikey = self.hash_apikey(apikey)
                     keyid = self.generate_keyid()
+
                     parser.set(section_name, "keyid", keyid)
                     parser.set(section_name, "parent", username)
-                    parser.set(section_name, "apikey", str(apikey))
+                    parser.set(section_name, "apikey", str(hashed_apikey))
                     parser.set(section_name, "created", str(created))
                     parser.set(section_name, "status", "valid")
 
@@ -410,7 +417,7 @@ class CredentialManager:
         keyid = base64.b32encode(random_bytes).decode('utf-8').rstrip('=')
         return keyid
 
-    # Generate a secure random api key. Example: hco_apikey_gCUipvHmFDPw82x-MZ9djsOPGq_kxD4gks...
+    # Generate a secure random api key. Example: hcoak_gCUipvHmFDPw82x-MZ9djsOPGq_kxD4gks...
     # hcoak for hco hcli api key
     def generate_apikey(self, prefix='hcoak'):
         random_bytes = os.urandom(64)
