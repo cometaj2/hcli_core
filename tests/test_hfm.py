@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, print_function
-
 import subprocess
 import os
 
@@ -28,7 +26,7 @@ def test_function():
     rm hello.json
     rm hello1.json
     """
-    
+
     p2 = subprocess.Popen(['bash', '-c', hello], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     out, err = p2.communicate()
     result = out.decode('utf-8')
