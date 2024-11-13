@@ -12,7 +12,7 @@ log = logger.Logger("hco")
 
 
 def requires_auth(func):
-    @wraps(func) 
+    @wraps(func)
     def wrapper(self, *args, **kwargs):
         requesting_username = config.ServerContext.get_current_user()
         cfg = self._cfg()
@@ -125,6 +125,18 @@ class Service:
 
         except Exception as e:
             msg = f"error changing password: {str(e)}"
+            log.error(msg)
+            return msg
+
+    @requires_auth
+    def key_rm(self, keyid):
+        requesting_username = config.ServerContext.get_current_user()
+
+        try:
+            return self.cm.delete_key(requesting_username, keyid)
+
+        except Exception as e:
+            msg = f"error removing api key: {str(e)}"
             log.error(msg)
             return msg
 

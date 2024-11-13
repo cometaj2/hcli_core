@@ -20,6 +20,10 @@
         {
             "command": "hco key {p}",
             "http": "post"
+        },
+        {
+            "command": "hco key rm {p}",
+            "http": "post"
         }
     ],
     "cli": [
@@ -182,8 +186,40 @@
                     "description": "hco key username\n\nGJSLKO5Z5M    hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ"
                 }
             ],
+            "command": [
+                {
+                    "href": "hcokeyrm",
+                    "name": "rm",
+                    "description": "Remove an API key by keyid."
+                }
+            ],
             "parameter": {
                 "href": "hcokeyparameter"
+            }
+        },
+        {
+            "id": "hcokeyrm",
+            "name": "rm",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "rm - remove an API key by keyid"
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hco key rm <keyid>"
+                },
+                {
+                    "name": "description",
+                    "description": "Removes a API key by keyid if the requester owns the API key or if the requestor is the administrator."
+                },
+                {
+                    "name": "example",
+                    "description": "hco key rm GJSLKO5Z5M"
+                }
+            ],
+            "parameter": {
+                "href": "hcokeyrmparameter"
             }
         }
     ]

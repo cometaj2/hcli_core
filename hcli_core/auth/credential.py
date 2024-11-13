@@ -301,7 +301,7 @@ class CredentialManager:
         key = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, iterations=600000, dklen=32)
         return key.hex() == stored_hash
 
-    # Generate one-time setup password for the administrator that needs to be changed immediately
+    # Generate one-time setup password for the administrator
     def generate_bootstrap_password(self):
         raw_password = os.urandom(32)
         password = base64.b64encode(os.urandom(32)).decode('utf-8')
@@ -391,7 +391,7 @@ class CredentialManager:
                     keyid = self.generate_keyid()
 
                     parser.set(section_name, "keyid", keyid)
-                    parser.set(section_name, "parent", username)
+                    parser.set(section_name, "owner", username)
                     parser.set(section_name, "apikey", str(hashed_apikey))
                     parser.set(section_name, "created", str(created))
                     parser.set(section_name, "status", "valid")
@@ -408,6 +408,53 @@ class CredentialManager:
 
             except Exception as e:
                 msg = f"error updating credentials: {str(e)}."
+                log.error(msg)
+                return msg
+
+    def delete_key(self, username, keyid):
+        with self._lock:
+            try:
+                with open(self.config_file_path, 'r') as cred_file:
+                    parser = ConfigParser(interpolation=None)
+                    parser.read_file(cred_file)
+
+                    # Find the section with matching keyid
+                    target_section = None
+                    owner = None
+                    for section in parser.sections():
+                        if parser.has_option(section, "keyid") and parser.get(section, "keyid") == keyid:
+                            owner = parser.get(section, "owner")
+                            target_section = section
+                            break
+
+                    if target_section is None:
+                        msg = f"api key {keyid} not found."
+                        log.warning(msg)
+                        return msg
+
+                    # Check permissions - allow if user is owner or is admin
+                    is_admin = username == "admin"  # You might want to adjust this check based on your admin detection logic
+                    if not is_admin and owner != username:
+                        msg = f"user {username} not authorized to delete key {keyid} owned by {owner}."
+                        log.warning(msg)
+                        return msg
+
+                    # Remove the section
+                    parser.remove_section(target_section)
+
+                    # Write back to file
+                    with open(self.config_file_path, 'w') as cred_file:
+                        parser.write(cred_file)
+
+                    # Reload credentials in memory
+                    self._parse_credentials()
+
+                    msg = f"api key {keyid} deleted successfully for owner {owner}."
+                    log.info(msg)
+                    return msg
+
+            except Exception as e:
+                msg = f"error deleting api key: {str(e)}."
                 log.error(msg)
                 return msg
 
