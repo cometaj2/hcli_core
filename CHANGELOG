@@ -5,14 +5,15 @@ The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [2.0.0]
-- Update to a single file for credentials and credentials configuration.
-- Add hcli_core HCLI (hco) management application to help manage users and credentials programmatically.
-- Add 600000 iterations of PBKDF2 SHA-256 derived key support for hashed password storage on file.
-- Update hcli_core to reflect updates
-- Update to ensure unique usernames in credentials file
-- Refactor config to a more threadsafe singleton
+- Add HTTP Basic Authentication support
+- Add HCLI Core API Key Authentication (HCOAK) support
+- Add authentication support via credentials file and high iteration count hashing (PBKDF2-SHA256)
+- Add HCLI management application (hco) to help manage users and api key credentials
+- Add hco management application support as a separate and additional configurable port
 - Add thread safety around the credentials file
 - Add inceptive log failure attempts capture
+- Update config to a more threadsafe singleton
+- Update hcli_core documentation to reflect updates
 
 ## [1.2.1]
 - Update missing proper pyproject package configuration to dismiss build warnings
