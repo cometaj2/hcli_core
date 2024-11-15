@@ -5,9 +5,13 @@ def test_function():
     setup = """
     #!/bin/bash
 
-    gunicorn --workers=1 --threads=1 "hcli_core:connector()" --daemon
+
+    # we setup a custom credentials file for the test run
+    echo -e "[config]
+core.auth = False" > ./test_credentials
+
+    gunicorn --workers=1 --threads=1 "hcli_core:connector(config_path=\\\"./test_credentials\\\")" --daemon
     huckle cli install http://127.0.0.1:8000
-    echo '{"hello":"world"}' | jsonf go
     """
 
     p1 = subprocess.Popen(['bash', '-c', setup], stdin=subprocess.PIPE, stdout=subprocess.PIPE)

@@ -6,7 +6,11 @@ def test_function():
     #!/bin/bash
     set -x
 
-    gunicorn --workers=1 --threads=1 "hcli_core:connector(\\"`hcli_core sample hfm`\\")" --daemon
+    # we setup a custom credentials file for the test run
+    echo -e "[config]
+core.auth = False" > ./test_credentials
+
+    gunicorn --workers=1 --threads=1 "hcli_core:connector(\\\"`hcli_core sample hfm`\\\", config_path=\\\"./test_credentials\\\")" --daemon
     huckle cli install http://127.0.0.1:8000
     """
 

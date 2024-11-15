@@ -355,7 +355,7 @@ class CredentialManager:
                 break
         return
 
-    def key(self, username):
+    def create_key(self, username):
         with self._lock:
             try:
                 with open(self.config_file_path, 'r') as cred_file:
@@ -454,7 +454,57 @@ class CredentialManager:
                     return msg
 
             except Exception as e:
-                msg = f"error deleting api key: {str(e)}."
+                msg = f"error deleting api key: {str(e)}"
+                log.error(msg)
+                return msg
+
+    def rotate_key(self, username, keyid):
+        with self._lock:
+            try:
+                with open(self.config_file_path, 'r') as cred_file:
+                    parser = ConfigParser(interpolation=None)
+                    parser.read_file(cred_file)
+
+                    # Find the section with matching keyid
+                    target_section = None
+                    owner = None
+                    for section in parser.sections():
+                        if parser.has_option(section, "keyid") and parser.get(section, "keyid") == keyid:
+                            owner = parser.get(section, "owner")
+                            target_section = section
+                            break
+
+                    if target_section is None:
+                        msg = f"api key {keyid} not found."
+                        log.warning(msg)
+                        return msg
+
+                    # Check permissions - allow if user is owner or is admin
+                    is_admin = username == "admin"  # You might want to adjust this check based on your admin detection logic
+                    if not is_admin and owner != username:
+                        msg = f"user {username} not authorized to rotate key {keyid} owned by {owner}."
+                        log.warning(msg)
+                        return msg
+
+                    (apikey, created) = self.generate_apikey()
+                    hashed_apikey = self.hash_apikey(apikey)
+
+                    parser.set(target_section, "apikey", str(hashed_apikey))
+                    parser.set(target_section, "created", str(created))
+
+                    # Write back to file
+                    with open(self.config_file_path, 'w') as cred_file:
+                        parser.write(cred_file)
+
+                    # Reload credentials in memory
+                    self._parse_credentials()
+
+                    msg = f"api key {keyid} rotated for user {username}."
+                    log.info(msg)
+                    return keyid + "    " + apikey + "    " + created
+
+            except Exception as e:
+                msg = f"error deleting api key: {str(e)}"
                 log.error(msg)
                 return msg
 

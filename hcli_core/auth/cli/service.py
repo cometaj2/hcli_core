@@ -10,7 +10,7 @@ from functools import wraps
 
 log = logger.Logger("hco")
 
-
+# Additional authentication check on all service calls just in case authentication is somehow bypassed
 def requires_auth(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
@@ -121,7 +121,7 @@ class Service:
                 log.warning(msg)
                 return msg
 
-            return self.cm.key(username)
+            return self.cm.create_key(username)
 
         except Exception as e:
             msg = f"error changing password: {str(e)}"
@@ -137,6 +137,18 @@ class Service:
 
         except Exception as e:
             msg = f"error removing api key: {str(e)}"
+            log.error(msg)
+            return msg
+
+    @requires_auth
+    def key_rotate(self, keyid):
+        requesting_username = config.ServerContext.get_current_user()
+
+        try:
+            return self.cm.rotate_key(requesting_username, keyid)
+
+        except Exception as e:
+            msg = f"error rotating api key: {str(e)}"
             log.error(msg)
             return msg
 

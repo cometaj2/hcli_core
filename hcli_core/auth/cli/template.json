@@ -24,6 +24,10 @@
         {
             "command": "hco key rm {p}",
             "http": "post"
+        },
+        {
+            "command": "hco key rotate {p}",
+            "http": "post"
         }
     ],
     "cli": [
@@ -41,11 +45,12 @@
                 },
                 {
                     "name": "description",
-                    "description": "The \"hco\" utility manages user accounts following standard Unix/Linux patterns. It provides basic operations for adding users, removing users, and managing passwords."
+                    "description": "The \"hco\" utility helps manage user credentials. It provides basic operations for adding users, removing users, managing passwords for HTTP Basic Authentication support, as well as key commands to help manage API keys for direct Bearer authentication support via HCLI Core API Key (HCOAK).\n\nThe expected HCOAK HTTP Authentication Bearer format is simply base64 encoded and colon separated 'keyid:hcoak' (i.e. Bearer base64(keyid:hcoak)). For example:\n\nkeyid = GJSLKO5Z5M\n\nhcoak = hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ\n\nbase64(GJSLKO5Z5M:hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ)"
+
                 },
                 {
                     "name": "examples",
-                    "description": "hco useradd johndoe\n\ntr -d '\\(rsn' < somepasswordfile | hco passwd username\n\nhco userdel johndoe\n\nhco ls"
+                    "description": "hco useradd johndoe\n\ntr -d '\\(rsn' < somepasswordfile | hco passwd username\n\nhco userdel johndoe\n\nhco ls\n\nhco key johndoe\n\nhco key rotate GJSLKO5Z5M"
                 }
             ],
             "command": [
@@ -179,11 +184,11 @@
                 },
                 {
                     "name": "description",
-                    "description": "Creates a new API key for the specified username. A user can create their own API keys but the admin can create API keys for any user. The command returns a unique keyid followed by the API key itself when successful."
+                    "description": "Creates a new HCLI Core API Key (HCOAK) for the specified username. A user can create their own API keys but the admin can create API keys for any user. The command returns a unique keyid followed by the API key and the creation timestamp when successful."
                 },
                 {
                     "name": "example",
-                    "description": "hco key username\n\nGJSLKO5Z5M    hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ"
+                    "description": "hco key johndoe\n\nGJSLKO5Z5M    hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ    2024-11-14T12:45:03.862520-08:00"
                 }
             ],
             "command": [
@@ -191,6 +196,11 @@
                     "href": "hcokeyrm",
                     "name": "rm",
                     "description": "Remove an API key by keyid."
+                },
+                {
+                    "href": "hcokeyrotate",
+                    "name": "rotate",
+                    "description": "Rotate an API key by keyid."
                 }
             ],
             "parameter": {
@@ -211,7 +221,7 @@
                 },
                 {
                     "name": "description",
-                    "description": "Removes a API key by keyid if the requester owns the API key or if the requestor is the administrator."
+                    "description": "Removes a API key by keyid if the requester owns the API key or if the requester is the administrator."
                 },
                 {
                     "name": "example",
@@ -220,6 +230,31 @@
             ],
             "parameter": {
                 "href": "hcokeyrmparameter"
+            }
+        },
+        {
+            "id": "hcokeyrotate",
+            "name": "rotate",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "rotate - rotate an API key by keyid"
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hco key rotate <keyid>"
+                },
+                {
+                    "name": "description",
+                    "description": "Rotates a API key by keyid if the requester owns the API key or if the requester is the administrator. The command returns the same keyid, followed by a new API key and creation timestamp, when successful"
+                },
+                {
+                    "name": "example",
+                    "description": "hco key rotate GJSLKO5Z5M"
+                }
+            ],
+            "parameter": {
+                "href": "hcokeyrotateparameter"
             }
         }
     ]

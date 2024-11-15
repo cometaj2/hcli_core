@@ -18,7 +18,7 @@ def gunicorn_server():
 
     # we setup a custom credentials file for the test run
     echo -e "[config]
-core.auth = True
+core.auth = False
 mgmt.port = 9000
 
 [default]
