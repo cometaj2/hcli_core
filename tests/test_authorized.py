@@ -2,13 +2,11 @@ import subprocess
 import os
 import pytest
 
-# generate an api key with the bootstrapped admin password
 def test_hco_key_admin(gunicorn_server_auth, cleanup):
     hello = """
     #!/bin/bash
     set -x
 
-    export PATH=$PATH:~/.huckle/bin
     hco key admin
 
     """
@@ -28,11 +26,25 @@ def test_hco_key_admin(gunicorn_server_auth, cleanup):
     assert key_id.isalnum(), "Key ID should be alphanumeric"
     assert api_key.startswith("hcoak_"), "API key should start with 'hcoak_'"
 
+def test_hco_ls(gunicorn_server_auth, cleanup):
+    hello = """
+    #!/bin/bash
+    set -x
+
+    hco ls
+
+    """
+
+    p2 = subprocess.Popen(['bash', '-c', hello], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    out, err = p2.communicate()
+    result = out.decode('utf-8')
+
+    assert('admin\n' in result)
+
 def test_jsonf(gunicorn_server_auth, cleanup):
     hello = """
     #!/bin/bash
 
-    export PATH=$PATH:~/.huckle/bin
     echo '{"hello":"world"}' | jsonf go
     kill $(ps aux | grep '[g]unicorn' | awk '{print $2}')
     """
