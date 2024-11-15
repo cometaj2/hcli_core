@@ -66,6 +66,9 @@ class CLI:
                 keyid = self.commands[3]
                 status = self.service.key_rotate(keyid)
                 return io.BytesIO((status+"\n").encode())
+            elif self.commands[2] == "ls":
+                status = self.service.key_ls()
+                return io.BytesIO((status+"\n").encode())
             else:
                 username = self.commands[2]
                 status = self.service.key(username)

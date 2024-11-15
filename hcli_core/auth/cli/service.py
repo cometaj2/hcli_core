@@ -152,6 +152,18 @@ class Service:
             log.error(msg)
             return msg
 
+    @requires_auth
+    def key_ls(self):
+        requesting_username = config.ServerContext.get_current_user()
+
+        try:
+            return self.cm.list_keys(requesting_username)
+
+        except Exception as e:
+            msg = f"error listing api keys: {str(e)}"
+            log.error(msg)
+            return msg
+
     def _cfg(self):
         context = config.ServerContext.get_current_server()
         return config.Config(context)

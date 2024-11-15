@@ -28,6 +28,10 @@
         {
             "command": "hco key rotate {p}",
             "http": "post"
+        },
+        {
+            "command": "hco key ls",
+            "http": "get"
         }
     ],
     "cli": [
@@ -201,6 +205,11 @@
                     "href": "hcokeyrotate",
                     "name": "rotate",
                     "description": "Rotate an API key by keyid."
+                },
+                {
+                    "href": "hcokeyls",
+                    "name": "ls",
+                    "description": "List API keys."
                 }
             ],
             "parameter": {
@@ -256,6 +265,28 @@
             "parameter": {
                 "href": "hcokeyrotateparameter"
             }
+        },
+        {
+            "id": "hcokeyls",
+            "name": "ls",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "ls - list API keys"
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hco key rotate <keyid>"
+                },
+                {
+                    "name": "description",
+                    "description": "Lists all API keys the requester owns or all keys if the requester is the administrator."
+                },
+                {
+                    "name": "example",
+                    "description": "hco key ls"
+                }
+            ]
         }
     ]
 }

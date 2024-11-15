@@ -482,7 +482,7 @@ class CredentialManager:
                     # Check permissions - allow if user is owner or is admin
                     is_admin = username == "admin"  # You might want to adjust this check based on your admin detection logic
                     if not is_admin and owner != username:
-                        msg = f"user {username} not authorized to rotate key {keyid} owned by {owner}."
+                        msg = f"user {username} cannot rotate key {keyid} owned by {owner}."
                         log.warning(msg)
                         return msg
 
@@ -505,6 +505,45 @@ class CredentialManager:
 
             except Exception as e:
                 msg = f"error deleting api key: {str(e)}"
+                log.error(msg)
+                return msg
+
+    def list_keys(self, username):
+        with self._lock:
+            try:
+                with open(self.config_file_path, 'r') as cred_file:
+                    parser = ConfigParser(interpolation=None)
+                    parser.read_file(cred_file)
+
+                    # Store results
+                    key_info = []
+
+                    # Iterate through sections to find API keys
+                    for section in parser.sections():
+                        if not parser.has_option(section, "keyid"):
+                            continue
+
+                        owner = parser.get(section, "owner")
+                        # Only show keys if user is admin or owns the key
+                        is_admin = username == "admin"
+                        if not is_admin and owner != username:
+                            continue
+
+                        keyid = parser.get(section, "keyid")
+                        created = parser.get(section, "created")
+                        status = parser.get(section, "status")
+
+                        key_info.append(f"{keyid}    {created}    {owner}    {status}")
+
+                    if not key_info:
+                        msg = "no api keys found."
+                        log.warning(msg)
+                        return msg
+
+                    return "\n".join(key_info)
+
+            except Exception as e:
+                msg = f"error listing api keys: {str(e)}"
                 log.error(msg)
                 return msg
 

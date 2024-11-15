@@ -26,40 +26,55 @@ is used.
 The configuration file is expected to be formatted in the configparser format which defines sections and assigned name = value pairs. See
 the EXAMPLE section for details on how to submit a custom configuration file path to hcli_core at launch.
 .PP
-The configuration supports enabling or disable authentication for:
+The configuration supports enabling or disabling authentication for the Core HCLI application provided as a plugin path.
 .PP
-- The Core HCLI application provided as a plugin path.
-.br
-- The Management HCLI application used to manage local credentials (hco).
+If enabled, hco, the Management HCLI application used to manage local credentials
+.I always requires authentication.
 .PP
 .I
 .SS CONFIGURATION FILE FORMAT
 [config]
 .br
-core.auth = False
+core.auth = <True | False>
 .br
-mgmt.port = 9000
+mgmt.port = <port>
 .br
 .SH AUTHENTICATION
-If authentication is configured for an HCLI application, HCLI Core expects to be able to use a config and credentials file, called 'credentials'.
-The default included credentials file provided with HCLI Core SHOULD NOT be used but is included as an example and to enable bootstrapping with a default configuration. A user managed configuration/credentials file path should be provided at startup instead.
+If authentication is configured for an HCLI application, HCLI Core expects to be able to use a single combined configuration and credentials file.
+.PP
+The default included credentials file provided with HCLI Core SHOULD NOT be used but is included as an example and sets a sensible and bare default configuration.
+A user managed configuration/credentials file path should be provided at startup instead with the following configuration:
+.PP
+[config]
+.br
+core.auth = True
+.br
+mgmt.port = 9000
+.PP
+[default]
+.br
+username = admin
+.br
+password = *
+.br
+salt = *
 .PP
 The HCLI Management application (hco) is made available on the configured management port 'mgmt.port' to help manage user credentials and api keys for both the HCLI Management application and the Core HCLI application. The HCLI Management app will not be made available unless the port is set in the configuration file.
 .PP
-The default expected administrator is an 'admin' user set with '*' defaults for both the password and salt. On first startup, HCLI Core generates a random password and assigns it to the admin user. The password is immediately set in the credentials file and is displayed only once in the log output. It SHOULD be changed immediately to maintain security.
+The default expected administrator is an 'admin' user set with '*' defaults for both the password and salt. On first startup, HCLI Core will generate a random password and will assign it to the admin user. The password is immediately hashed and set in the credentials file and the password is displayed only once in the log output. 
+.I It SHOULD be changed immediately via an HCLI client to maintain security.
 .PP
 HCLI Core can function without any credentials listed in the credentials file but the HCLI Management application will not allow interaction without credentials.
 .PP
 .SS HTTP BASIC AUTHENTICATION
 By default, usernames and passwords stored in the credentials file are expected to be used with HTTP Basic Authentication. Note that usernames and passwords can't contain a ':'.
 .PP
-The credentials file MAY contain as many additional users as is desired; one user per uniquely named section.
+The credentials file MAY contain as many additional users as is desired; one globally unique named user per unique section name.
 .PP
-HTTP Basic Authenthentication SHOULD NOT be used without HTTPS and SHOULD NOT generally be considered secure. This is provided as a bare convenience if authentication capabilities are found useful.
-.I However, authentication using HTTP Basic Authentication is slower by design to help improve security. Its use SHOULD remain limited, and other authentication schemes should be preferred.
+HTTP Basic Authenthentication SHOULD NOT be used without HTTPS and SHOULD NOT generally be considered secure. This is provided as a bare convenience if authentication capabilities are found useful. However, authentication using HTTP Basic Authentication is slower by design to help improve security. Its use SHOULD remain limited, and other authentication schemes should be preferred.
 .PP
 .SS HCOAK (HCLI CORE API KEY) AUTHENTICATION
-API keyids and API keys stored in the credentials file are expected to be used with the HCLI Core bundled 'hco' HCLI application generated API keys. Those API keys SHOULD make use of the HTTP Bearer authentication scheme.
+API key IDs and API keys stored in the credentials file are expected to be used with the HCLI Core bundled 'hco' HCLI application generated API keys. Those API keys SHOULD make use of the HTTP Bearer authentication scheme.
 .PP
 The expected HCOAK Bearer format is a base64 encoded and colon separated 'keyid:hcoak' (Bearer base64(keyid:hcoak)). For example:
 .PP
@@ -67,7 +82,7 @@ keyid = GJSLKO5Z5M
 .br
 hcoak = hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ
 .PP
-The credentials file MAY contain as many additional keyids and apikeys as is desired; one such keyid and apikey per uniquely named section.
+Bearer base64(GJSLKO5Z5M:hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ)
 .PP
 HCOAK SHOULD NOT be used without HTTPS and is primary intended to be used with 3rd party HCLI applications hosted alongside hco.
 .PP
