@@ -65,6 +65,9 @@ password = `cat ./password`" > ~/.huckle/etc/jsonf/credentials
     assert os.path.exists('./test_credentials'), "test_credentials not found"
     assert os.path.exists('./password'), "password not found"
 
+@pytest.fixture(scope="module")
+def cleanup():
+
     # Let the tests run
     yield
 

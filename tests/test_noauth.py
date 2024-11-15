@@ -2,7 +2,7 @@ import subprocess
 import os
 import pytest
 
-def test_function():
+def test_function(cleanup):
     setup = """
     #!/bin/bash
     set -x
