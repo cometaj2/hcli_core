@@ -1,5 +1,6 @@
 import subprocess
 import os
+import pytest
 
 def test_function():
     setup = """
@@ -10,12 +11,23 @@ def test_function():
     echo -e "[config]
 core.auth = False" > ./test_credentials
 
-    gunicorn --workers=1 --threads=1 "hcli_core:connector(\\\"`hcli_core sample hfm`\\\", config_path=\\\"./test_credentials\\\")" --daemon
+    gunicorn --workers=1 --threads=1 -b 0.0.0.0:8000 "hcli_core:connector(plugin_path=\\\"`hcli_core sample hfm`\\\", config_path=\\\"./test_credentials\\\")" --daemon
+
     huckle cli install http://127.0.0.1:8000
+
+    echo "Debug checks post-install..."
+    cat ~/.huckle/etc/hfm/config
     """
 
     p1 = subprocess.Popen(['bash', '-c', setup], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     out, err = p1.communicate()
+
+
+    if out is not None:
+        print(f"STDOUT: {out}")
+
+    if err is not None:
+        print(f"STDERR: {err}")
 
     hello = """
     #!/bin/bash
@@ -34,6 +46,9 @@ core.auth = False" > ./test_credentials
     p2 = subprocess.Popen(['bash', '-c', hello], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     out, err = p2.communicate()
     result = out.decode('utf-8')
+
+    if err is not None:
+        print(f"STDERR: {err}")
 
     assert(result == '{"hello":"world"}\n')
 
