@@ -41,6 +41,9 @@ password = `cat ./password`" > ~/.huckle/etc/hco/credentials
     echo -e "[default]
 username = admin
 password = `cat ./password`" > ~/.huckle/etc/jsonf/credentials
+
+    sed -i.backup 's/auth\.mode = skip/auth\.mode = basic/' ~/.huckle/etc/hco/config
+    sed -i.backup 's/auth\.mode = skip/auth\.mode = basic/' ~/.huckle/etc/jsonf/config
     """
     process = subprocess.Popen(['bash', '-c', setup], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     out, err = process.communicate()
