@@ -7,6 +7,7 @@ def test_hco_key_admin(gunicorn_server_auth, cleanup):
     #!/bin/bash
     set -x
 
+    export PATH=$PATH:~/.huckle/bin
     hco key admin
 
     """
@@ -31,6 +32,7 @@ def test_hco_ls(gunicorn_server_auth, cleanup):
     #!/bin/bash
     set -x
 
+    export PATH=$PATH:~/.huckle/bin
     hco ls
 
     """
@@ -45,6 +47,7 @@ def test_jsonf(gunicorn_server_auth, cleanup):
     hello = """
     #!/bin/bash
 
+    export PATH=$PATH:~/.huckle/bin
     echo '{"hello":"world"}' | jsonf go
     kill $(ps aux | grep '[g]unicorn' | awk '{print $2}')
     """
