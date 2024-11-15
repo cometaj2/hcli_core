@@ -3,7 +3,7 @@ import os
 import pytest
 
 # generate an api key with the bootstrapped admin password
-def test_hco_key_admin(gunicorn_server):
+def test_hco_key_admin(gunicorn_server_auth):
     hello = """
     #!/bin/bash
     set -x
@@ -27,3 +27,19 @@ def test_hco_key_admin(gunicorn_server):
     # Verify format patterns
     assert key_id.isalnum(), "Key ID should be alphanumeric"
     assert api_key.startswith("hcoak_"), "API key should start with 'hcoak_'"
+
+def test_jsonf(gunicorn_server_auth):
+    hello = """
+    #!/bin/bash
+
+    export PATH=$PATH:~/.huckle/bin
+    echo '{"hello":"world"}' | jsonf go
+    kill $(ps aux | grep '[g]unicorn' | awk '{print $2}')
+    """
+
+    p2 = subprocess.Popen(['bash', '-c', hello], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    out, err = p2.communicate()
+    result = out.decode('utf-8')
+
+    assert('{\n    "hello": "world"\n}\n' in result)
+

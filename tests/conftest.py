@@ -4,12 +4,17 @@ import pytest
 
 # bootstrap the test by starting an hcli server with mgmt config and fresh * admin creds
 @pytest.fixture(scope="module")
-def gunicorn_server():
+def gunicorn_server_auth():
     # Start gunicorn server
     setup = """
     #!/bin/bash
     set -x
     export PATH=$PATH:~/.huckle/bin
+
+    echo "Cleanup preexisting huckle hcli installations..."
+    huckle cli rm hco
+    huckle cli rm jsonf
+    huckle cli rm hfm
 
     echo "Cleanup old run data..."
     rm -f ./gunicorn-error.log
@@ -18,7 +23,7 @@ def gunicorn_server():
 
     echo "Setup a custom credentials file for the test run"
     echo -e "[config]
-core.auth = False
+core.auth = True
 mgmt.port = 9000
 
 [default]
