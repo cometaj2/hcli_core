@@ -1,0 +1,82 @@
+[2024-11-16 10:47:32 -0800] [1919] [INFO] Starting gunicorn 23.0.0
+[2024-11-16 10:47:32 -0800] [1919] [INFO] Listening at: http://0.0.0.0:8000 (1919)
+[2024-11-16 10:47:32 -0800] [1919] [INFO] Using worker: sync
+[2024-11-16 10:47:32 -0800] [1922] [INFO] Booting worker with pid: 1922
+[2024-11-16 10:47:33 -0800] [INFO    ] [hcli_core] [  __init__.py:15 ] ================================================
+[2024-11-16 10:47:33 -0800] [INFO    ] [hcli_core] [  __init__.py:16 ] Core HCLI application:
+[2024-11-16 10:47:33 -0800] [INFO    ] [hcli_core] [  __init__.py:17 ] /Users/jeff/Documents/workspace/hcli/hcli_core/hcli_core/sample/hfm/cli
+[2024-11-16 10:47:33 -0800] [INFO    ] [hcli_core] [    config.py:157] Custom configuration for 'core':
+[2024-11-16 10:47:33 -0800] [INFO    ] [hcli_core] [    config.py:161] ./noauth_credentials
+[2024-11-16 10:47:33 -0800] [INFO    ] [hcli_core] [    config.py:252] Credentials file permissions (octal): 0o644
+[2024-11-16 10:47:33 -0800] [CRITICAL] [hcli_core] [    config.py:164] The credentials file's permissions should be set to 600 (e.g. chmod 600 credentials).
+[2024-11-16 10:47:33 -0800] [INFO    ] [hcli_core] [    config.py:133] Core Auth: False
+[2024-11-16 10:47:33 -0800] [INFO    ] [hcli_core] [    config.py:230] Successfully loaded CLI plugin for core.
+[2024-11-16 10:47:33 -0800] [INFO    ] [hcli_core] [credential.py:85 ] Loading credentials:
+[2024-11-16 10:47:33 -0800] [INFO    ] [hcli_core] [credential.py:86 ] ./noauth_credentials
+[2024-11-16 10:47:33 -0800] [WARNING ] [hcli_core] [credential.py:92 ] No [default] credential available for ./noauth_credentials.
+[2024-11-16 10:47:33 -0800] [1922] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/Users/jeff/.venv/lib/python3.11/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+    worker.init_process()
+  File "/Users/jeff/.venv/lib/python3.11/site-packages/gunicorn/workers/base.py", line 135, in init_process
+    self.load_wsgi()
+  File "/Users/jeff/.venv/lib/python3.11/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+    self.wsgi = self.app.wsgi()
+                ^^^^^^^^^^^^^^^
+  File "/Users/jeff/.venv/lib/python3.11/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+                    ^^^^^^^^^^^
+  File "/Users/jeff/.venv/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/.venv/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/.venv/lib/python3.11/site-packages/gunicorn/util.py", line 423, in import_app
+    app = app(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Documents/workspace/hcli/hcli_core/hcli_core/__init__.py", line 19, in connector
+    core_server = coreapp.server()
+                  ^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Documents/workspace/hcli/hcli_core/hcli_core/hcliapp.py", line 39, in server
+    server = falcon.App(middleware=[authenticator.SelectiveAuthMiddleware(self.name)])
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Documents/workspace/hcli/hcli_core/hcli_core/auth/authenticator.py", line 103, in __init__
+    super().__init__(name)
+  File "/Users/jeff/Documents/workspace/hcli/hcli_core/hcli_core/auth/authenticator.py", line 20, in __init__
+    self.cm = credential.CredentialManager(self.cfg.config_file_path)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Documents/workspace/hcli/hcli_core/hcli_core/auth/credential.py", line 29, in __new__
+    cls._instance.__init__(config_file_path)
+  File "/Users/jeff/Documents/workspace/hcli/hcli_core/hcli_core/auth/credential.py", line 49, in __init__
+    if self._is_admin_reset_state():
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Documents/workspace/hcli/hcli_core/hcli_core/auth/credential.py", line 384, in _is_admin_reset_state
+    for section, cred_list in self._credentials.items():
+                              ^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'items'
+[2024-11-16 10:47:33 -0800] [1922] [INFO] Worker exiting (pid: 1922)
+[2024-11-16 10:47:33 -0800] [1919] [ERROR] Worker (pid:1922) exited with code 3
+[2024-11-16 10:47:33 -0800] [1919] [ERROR] Shutting down: Master
+[2024-11-16 10:47:33 -0800] [1919] [ERROR] Reason: Worker failed to boot.
+[2024-11-16 11:26:50 -0800] [5403] [INFO] Starting gunicorn 23.0.0
+[2024-11-16 11:26:50 -0800] [5403] [INFO] Listening at: http://0.0.0.0:8000 (5403)
+[2024-11-16 11:26:50 -0800] [5403] [INFO] Using worker: sync
+[2024-11-16 11:26:50 -0800] [5406] [INFO] Booting worker with pid: 5406
+[2024-11-16 11:26:50 -0800] [INFO    ] [hcli_core] [  __init__.py:15 ] ================================================
+[2024-11-16 11:26:50 -0800] [INFO    ] [hcli_core] [  __init__.py:16 ] Core HCLI application:
+[2024-11-16 11:26:50 -0800] [INFO    ] [hcli_core] [  __init__.py:17 ] /Users/jeff/Documents/workspace/hcli/hcli_core/hcli_core/sample/hfm/cli
+[2024-11-16 11:26:50 -0800] [INFO    ] [hcli_core] [    config.py:157] Custom configuration for 'core':
+[2024-11-16 11:26:50 -0800] [INFO    ] [hcli_core] [    config.py:161] ./noauth_credentials
+[2024-11-16 11:26:50 -0800] [INFO    ] [hcli_core] [    config.py:252] Credentials file permissions (octal): 0o644
+[2024-11-16 11:26:50 -0800] [CRITICAL] [hcli_core] [    config.py:164] The credentials file's permissions should be set to 600 (e.g. chmod 600 credentials).
+[2024-11-16 11:26:50 -0800] [INFO    ] [hcli_core] [    config.py:133] Core Auth: False
+[2024-11-16 11:26:50 -0800] [INFO    ] [hcli_core] [    config.py:230] Successfully loaded CLI plugin for core.
+[2024-11-16 11:26:50 -0800] [INFO    ] [hcli_core] [credential.py:85 ] Loading credentials:
+[2024-11-16 11:26:50 -0800] [INFO    ] [hcli_core] [credential.py:86 ] ./noauth_credentials
+[2024-11-16 11:26:50 -0800] [WARNING ] [hcli_core] [credential.py:92 ] No [default] credential available for ./noauth_credentials.
+[2024-11-16 11:26:50 -0800] [5406] [INFO] Worker exiting (pid: 5406)
+['hfm', 'cp', '-l', './hello.json']
+['hfm', 'cp', '-r', '"hello.json"']
+[2024-11-16 11:26:50 -0800] [5403] [INFO] Handling signal: term
+[2024-11-16 11:26:50 -0800] [5403] [ERROR] Worker (pid:5406) was sent SIGTERM!

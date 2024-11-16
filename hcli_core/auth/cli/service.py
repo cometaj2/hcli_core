@@ -10,6 +10,7 @@ from functools import wraps
 
 log = logger.Logger("hco")
 
+
 # Additional authentication check on all service calls just in case authentication is somehow bypassed
 def requires_auth(func):
     @wraps(func)

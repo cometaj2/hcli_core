@@ -7,7 +7,9 @@ import threading
 import time
 from datetime import datetime, timezone, timedelta
 from configparser import ConfigParser
-from contextlib import suppress
+from contextlib import suppress, contextmanager
+from pathlib import Path
+import portalocker
 
 from hcli_core import logger
 from hcli_core import config
@@ -36,8 +38,18 @@ class CredentialManager:
                 if not CredentialManager._initialized:
                     self._credentials = None
                     self.config_file_path = config_file_path
+
+                    self._last_refresh = 0
+                    self._credentials_ttl = 5  # Eventually consistent every 5 seconds
+
+                    # This helps guarantee multiprocess handling on the bootstrap case
+                    # (only 1 process sets the bootstrap password and the rest follow suit)
+                    with self._write_lock():
+                        self._parse_credentials()
+                        if self._is_admin_reset_state():
+                            self._bootstrap()
+
                     self._bootstrap_password = None
-                    self._parse_credentials()
                     CredentialManager._initialized = True
 
     @property
@@ -49,6 +61,21 @@ class CredentialManager:
     def credentials(self, value):
         with self._lock:
             self._credentials = value
+
+    @contextmanager 
+    def _write_lock(self):
+        lockfile = Path(self.config_file_path).with_suffix('.lock')
+        with portalocker.Lock(lockfile, timeout=10) as lock:
+            yield
+
+    # Get credentials with TTL-based refresh
+    def _get_credentials(self):
+        current_time = time.time()
+        with self._lock:
+            if current_time - self._last_refresh > self._credentials_ttl:
+                with self._write_lock():
+                    self._parse_credentials()
+            return self._credentials
 
     def _parse_credentials(self):
         with self._lock:
@@ -100,9 +127,6 @@ class CredentialManager:
 
                     self._credentials = new_credentials
 
-                    if self.is_admin_reset_state():
-                        self.bootstrap()
-
                     return
 
             except Exception as e:
@@ -136,11 +160,11 @@ class CredentialManager:
                         parser.set(section_name, "salt", "*")
 
                 # Write back to file
-                with open(self.config_file_path, 'w') as cred_file:
-                    parser.write(cred_file)
+                with self._write_lock():
+                    with open(self.config_file_path, 'w') as cred_file:
+                        parser.write(cred_file)
+                    self._parse_credentials()
 
-                # Reload credentials in memory
-                self._parse_credentials()
                 msg = f"user {username} added."
                 log.info(msg)
                 return msg
@@ -178,11 +202,52 @@ class CredentialManager:
                         return msg
 
                 # Write back to file
+                with self._write_lock():
+                    with open(self.config_file_path, 'w') as cred_file:
+                        parser.write(cred_file)
+                    self._parse_credentials()
+
+                msg = f"credentials updated for user {username}."
+                log.info(msg)
+                return msg
+
+            except Exception as e:
+                msg = f"error updating credentials: {str(e)}."
+                log.error(msg)
+                return msg
+
+    # Special bootstrap case to avoid initial multiprocess deadlock
+    def _bootstrap_passwd(self, username, password):
+        with self._lock:
+            try:
+                with open(self.config_file_path, 'r') as cred_file:
+                    parser = ConfigParser(interpolation=None)
+                    parser.read_file(cred_file)
+
+                    # Update or add user
+                    found = False
+                    for section in parser.sections():
+                        if parser.has_option(section, "username") and parser.get(section, "username") == username:
+                            (password_hash, salt) = self.hash_password(password)
+                            parser.set(section, "salt", salt)
+                            parser.set(section, "password", password_hash)
+
+                            # We reset the special admin bootstrap case
+                            if username == 'admin' and self._bootstrap_password is not None:
+                                self._bootstrap_password = None
+
+                            found = True
+                            break
+
+                    if not found:
+                        msg = f"user {username} not found."
+                        log.warning(msg)
+                        return msg
+
                 with open(self.config_file_path, 'w') as cred_file:
                     parser.write(cred_file)
-
-                # Reload credentials in memory
                 self._parse_credentials()
+
                 msg = f"credentials updated for user {username}."
                 log.info(msg)
                 return msg
@@ -216,11 +281,11 @@ class CredentialManager:
                     parser.remove_section(user_section)
 
                 # Write back to file
-                with open(self.config_file_path, 'w') as cred_file:
-                    parser.write(cred_file)
+                with self._write_lock():
+                    with open(self.config_file_path, 'w') as cred_file:
+                        parser.write(cred_file)
+                    self._parse_credentials()
 
-                # Reload credentials in memory
-                self._parse_credentials()
                 msg = f"user {username} deleted."
                 log.info(msg)
                 return msg
@@ -312,8 +377,11 @@ class CredentialManager:
         with self._lock:
             return self._credentials is not None
 
-    def is_admin_reset_state(self):
+    def _is_admin_reset_state(self):
         reset_state = False
+
+        if not self._credentials:
+            return reset_state
 
         # Find the right section by username
         for section, cred_list in self._credentials.items():
@@ -330,7 +398,7 @@ class CredentialManager:
 
         return reset_state
 
-    def bootstrap(self):
+    def _bootstrap(self):
         # Find the right section by username
         for section, cred_list in self._credentials.items():
             cred_dict = {k: v for cred in cred_list for k, v in cred.items()}
@@ -349,7 +417,7 @@ class CredentialManager:
                         log.critical(f"Password: {self._bootstrap_password}")
                         log.critical("This password will only be shown once in logs")
                         log.critical("================================================")
-                        self.passwd('admin', self._bootstrap_password)
+                        self._bootstrap_passwd('admin', self._bootstrap_password)
                         self._bootstrap_password = None
                         return
                 break
@@ -397,11 +465,11 @@ class CredentialManager:
                     parser.set(section_name, "status", "valid")
 
                 # Write back to file
-                with open(self.config_file_path, 'w') as cred_file:
-                    parser.write(cred_file)
+                with self._write_lock():
+                    with open(self.config_file_path, 'w') as cred_file:
+                        parser.write(cred_file)
+                    self._parse_credentials()
 
-                # Reload credentials in memory
-                self._parse_credentials()
                 msg = f"api key {keyid} created for user {username}."
                 log.info(msg)
                 return keyid + "    " + apikey + "    " + created
@@ -443,11 +511,10 @@ class CredentialManager:
                     parser.remove_section(target_section)
 
                     # Write back to file
-                    with open(self.config_file_path, 'w') as cred_file:
-                        parser.write(cred_file)
-
-                    # Reload credentials in memory
-                    self._parse_credentials()
+                    with self._write_lock():
+                        with open(self.config_file_path, 'w') as cred_file:
+                            parser.write(cred_file)
+                        self._parse_credentials()
 
                     msg = f"api key {keyid} deleted successfully for owner {owner}."
                     log.info(msg)
@@ -493,11 +560,10 @@ class CredentialManager:
                     parser.set(target_section, "created", str(created))
 
                     # Write back to file
-                    with open(self.config_file_path, 'w') as cred_file:
-                        parser.write(cred_file)
-
-                    # Reload credentials in memory
-                    self._parse_credentials()
+                    with self._write_lock():
+                        with open(self.config_file_path, 'w') as cred_file:
+                            parser.write(cred_file)
+                        self._parse_credentials()
 
                     msg = f"api key {keyid} rotated for user {username}."
                     log.info(msg)
