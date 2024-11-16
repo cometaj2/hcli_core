@@ -133,7 +133,6 @@ class CredentialManager:
                 msg = f"unable to load credentials: {str(e)}."
                 log.error(msg)
                 self._credentials = None
-                #assert isinstance(self._credentials, dict)
                 return msg
 
     def useradd(self, username):
@@ -163,6 +162,8 @@ class CredentialManager:
                 with self._write_lock():
                     with open(self.config_file_path, 'w') as cred_file:
                         parser.write(cred_file)
+                        cred_file.flush()
+                        os.fsync(cred_file.fileno())
                     self._parse_credentials()
 
                 msg = f"user {username} added."
@@ -205,6 +206,8 @@ class CredentialManager:
                 with self._write_lock():
                     with open(self.config_file_path, 'w') as cred_file:
                         parser.write(cred_file)
+                        cred_file.flush()
+                        os.fsync(cred_file.fileno())
                     self._parse_credentials()
 
                 msg = f"credentials updated for user {username}."
@@ -246,6 +249,8 @@ class CredentialManager:
 
                 with open(self.config_file_path, 'w') as cred_file:
                     parser.write(cred_file)
+                    cred_file.flush()
+                    os.fsync(cred_file.fileno())
                 self._parse_credentials()
 
                 msg = f"credentials updated for user {username}."
@@ -284,6 +289,8 @@ class CredentialManager:
                 with self._write_lock():
                     with open(self.config_file_path, 'w') as cred_file:
                         parser.write(cred_file)
+                        cred_file.flush()
+                        os.fsync(cred_file.fileno())
                     self._parse_credentials()
 
                 msg = f"user {username} deleted."
@@ -304,6 +311,7 @@ class CredentialManager:
                     return bootstrap_valid
             else:
                 try:
+                    self._get_credentials()
                     if not self._credentials:
                         return False
 
@@ -329,6 +337,7 @@ class CredentialManager:
     def validate_hcoak(self, keyid, apikey):
         with self._lock:
             try:
+                self._get_credentials()
                 if not self._credentials:
                     return False
 
@@ -468,6 +477,8 @@ class CredentialManager:
                 with self._write_lock():
                     with open(self.config_file_path, 'w') as cred_file:
                         parser.write(cred_file)
+                        cred_file.flush()
+                        os.fsync(cred_file.fileno())
                     self._parse_credentials()
 
                 msg = f"api key {keyid} created for user {username}."
@@ -514,6 +525,8 @@ class CredentialManager:
                     with self._write_lock():
                         with open(self.config_file_path, 'w') as cred_file:
                             parser.write(cred_file)
+                            cred_file.flush()
+                            os.fsync(cred_file.fileno())
                         self._parse_credentials()
 
                     msg = f"api key {keyid} deleted successfully for owner {owner}."
@@ -563,6 +576,8 @@ class CredentialManager:
                     with self._write_lock():
                         with open(self.config_file_path, 'w') as cred_file:
                             parser.write(cred_file)
+                            cred_file.flush()
+                            os.fsync(cred_file.fileno())
                         self._parse_credentials()
 
                     msg = f"api key {keyid} rotated for user {username}."
