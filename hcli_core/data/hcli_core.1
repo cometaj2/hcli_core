@@ -59,7 +59,7 @@ password = *
 .br
 salt = *
 .PP
-The HCLI Management application (hco) is made available on the configured management port 'mgmt.port' to help manage user credentials and api keys for both the HCLI Management application and the Core HCLI application. The HCLI Management app will not be made available unless the port is set in the configuration file.
+The HCLI Management application (hco) is made available on the configured management port 'mgmt.port' to help manage user credentials and api keys for both the HCLI Management application and the Core HCLI application. The HCLI Management app will not be made available unless the port is set in the configuration file and the corresponding port is bound at startup. See the EXAMPLE section for a multi port hcli_core launch.
 .PP
 The default expected administrator is an 'admin' user set with '*' defaults for both the password and salt. On first startup, HCLI Core will generate a random password and will assign it to the admin user. The password is immediately hashed and set in the credentials file and the password is displayed only once in the log output. 
 .I It SHOULD be changed immediately via an HCLI client to maintain security.
@@ -84,7 +84,7 @@ hcoak = hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qn
 .PP
 Bearer base64(GJSLKO5Z5M:hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ)
 .PP
-HCOAK SHOULD NOT be used without HTTPS and is primary intended to be used with 3rd party HCLI applications hosted alongside hco.
+HCOAK SHOULD NOT be used without HTTPS and is primary intended to be used with 3rd party HCLI applications hosted on HCLI Core.
 .PP
 .SS CREDENTIALS FILE FORMAT
 [default]

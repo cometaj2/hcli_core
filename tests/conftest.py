@@ -88,8 +88,8 @@ def cleanup():
     # One final check with Python's os module
     if os.path.exists('./gunicorn-error.log'):
         os.remove('./gunicorn-error.log')
-#     if os.path.exists('./gunicorn-noauth-error.log'):
-#         os.remove('./gunicorn-noauth-error.log')
+    if os.path.exists('./gunicorn-noauth-error.log'):
+        os.remove('./gunicorn-noauth-error.log')
     if os.path.exists('./test_credentials'):
         os.remove('./test_credentials')
     if os.path.exists('./noauth_credentials'):
@@ -103,7 +103,7 @@ def cleanup():
 
     # Verify files are gone
     assert not os.path.exists('./gunicorn-error.log'), "gunicorn-error.log still exists"
-#     assert not os.path.exists('./gunicorn-noauth-error.log'), "gunicorn-noauth-error.log still exists"
+    assert not os.path.exists('./gunicorn-noauth-error.log'), "gunicorn-noauth-error.log still exists"
     assert not os.path.exists('./test_credentials'), "test_credentials still exists"
     assert not os.path.exists('./test_credentials.lock'), "test_credentials.lock still exists"
     assert not os.path.exists('./noauth_credentials'), "test_credentials still exists"

@@ -15,6 +15,7 @@ from hcli_core import config
 from hcli_core import template
 
 from hcli_core.auth import authenticator
+from hcli_core.error import handle_hcli_error, HCLIError
 
 log = logger.Logger("hcli_core")
 
@@ -37,6 +38,10 @@ class HCLIApp:
 
         # We setup the HCLI Connector with the selective authentication for final execution only
         server = falcon.App(middleware=[authenticator.SelectiveAuthMiddleware(self.name)])
+
+        # Register the HCLI error handler
+        server.add_error_handler(falcon.HTTPError, handle_hcli_error)
+        server.add_error_handler(HCLIError, handle_hcli_error)
 
         server.add_route(home.HomeController.route, api.HomeApi())
         server.add_route(secondaryhome.SecondaryHomeController.route, api.SecondaryHomeApi())

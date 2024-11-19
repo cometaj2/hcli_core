@@ -6,6 +6,7 @@ from datetime import datetime
 from hcli_core import logger
 from hcli_core import config
 from hcli_core.auth import credential
+from hcli_core.error import *
 
 log = logger.Logger("hcli_core")
 
@@ -26,7 +27,10 @@ class AuthMiddleware:
             client_ip = self.get_client_ip(req)
             if not self.is_authenticated(req, client_ip):
                 resp.append_header('WWW-Authenticate', 'Basic realm="default"')
-                raise falcon.HTTPUnauthorized()
+                raise HCLIAuthenticationError(
+                    detail="invalid credentials provided",
+                    instance=req.path
+                )
 
     # Extract client IP from request, handling proxy forwarding.
     def get_client_ip(self, req: falcon.Request):
@@ -64,8 +68,10 @@ class AuthMiddleware:
 
             auth_header = req.get_header('Authorization')
             if not auth_header:
+                msg = "no authorization header."
                 self.log_failed_attempt(client_ip)
-                log.warning('No authorization header.')
+                log.warning(msg)
+                raise HCLIAuthenticationError(detail=msg)
                 return False
 
             auth_type, auth_string = auth_header.split(' ', 1)
@@ -76,8 +82,10 @@ class AuthMiddleware:
                 authenticated = self.cm.validate(username, password)
 
                 if not authenticated:
+                    msg = 'invalid credentials for username: ' + username + "."
                     self.log_failed_attempt(client_ip)
-                    log.warning('Invalid credentials for username: ' + username + ".")
+                    log.warning(msg)
+                    raise HCLIAuthenticationError(detail=msg)
                     return False
 
             elif auth_type.lower() == 'bearer':
@@ -87,13 +95,17 @@ class AuthMiddleware:
                 if prefix == 'hcoak':
                     authenticated = self.cm.validate_hcoak(keyid, apikey)
                 else:
-                    log.warning('Unknown authentication scheme.')
+                    msg = 'unknown authentication scheme.'
+                    log.warning(msg)
                     self.log_failed_attempt(client_ip)
+                    raise HCLIAuthenticationError(detail=msg)
                     return False
 
             else:
-                log.warning('Unknown authentication scheme.')
+                msg = 'unknown authentication scheme.'
+                log.warning(msg)
                 self.log_failed_attempt(client_ip)
+                raise HCLIAuthenticationError(detail=msg)
                 return False
 
             return authenticated

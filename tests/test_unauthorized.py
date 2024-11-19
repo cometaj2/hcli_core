@@ -23,7 +23,7 @@ def test_hco_key_admin(gunicorn_server_auth, cleanup):
     print(result)
     print(error)
 
-    assert '401 unauthorized' in error.lower()
+    assert 'no authorization header' in error.lower()
 
 def test_jsonf(gunicorn_server_auth, cleanup):
     hello = """
@@ -45,4 +45,4 @@ def test_jsonf(gunicorn_server_auth, cleanup):
     print(result)
     print(error)
 
-    assert '401 unauthorized' in error.lower()
+    assert 'no authorization header' in error.lower()

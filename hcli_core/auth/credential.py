@@ -1,18 +1,18 @@
-import sys
 import os
-import json
 import hashlib
 import base64
 import threading
 import time
+import portalocker
+
 from datetime import datetime, timezone, timedelta
 from configparser import ConfigParser
 from contextlib import suppress, contextmanager
 from pathlib import Path
-import portalocker
 
 from hcli_core import logger
 from hcli_core import config
+from hcli_core.error import *
 
 log = logger.Logger("hcli_core")
 
@@ -91,21 +91,18 @@ class CredentialManager:
                         msg = f"No [default] credential available for {self.config_file_path}."
                         log.warning(msg)
                         self._credentials = None
-                        return msg
 
                     # Check if we have a default admin username and password
                     if not parser.has_option("default", "username") or parser.get("default", "username") != "admin" or not parser.has_option("default", "password"):
                         msg = f"Invalid or missing admin username or password in [default] section of {self.config_file_path}."
                         log.warning(msg)
                         self._credentials = None
-                        return msg
 
                     # Check if we have a salt
                     if not parser.has_option("default", "salt"):
                         msg = f"Invalid or missing salt in [default] section of {self.config_file_path}."
                         log.warning(msg)
                         self._credentials = None
-                        return msg
 
                     # Check for unique usernames across all sections
                     usernames = set()
@@ -116,7 +113,6 @@ class CredentialManager:
                                 msg = f"duplicate username '{username}' found in {self.config_file_path}."
                                 log.critical(msg)
                                 self._credentials = None
-                                return msg
                             usernames.add(username)
 
                     new_credentials = {}
@@ -129,11 +125,13 @@ class CredentialManager:
 
                     return
 
+            except HCLIError:
+                raise
             except Exception as e:
                 msg = f"unable to load credentials: {str(e)}."
                 log.error(msg)
                 self._credentials = None
-                return msg
+                raise HCLIInternalServerError(detail=msg)
 
     def useradd(self, username):
         with self._lock:
@@ -149,7 +147,7 @@ class CredentialManager:
                             found = True
                             msg = f"user {username} already exists."
                             log.warning(msg)
-                            return msg
+                            raise HCLIConflictError(detail=msg)
 
                     if not found:
                         section_name = f"user_{username}"
@@ -168,12 +166,14 @@ class CredentialManager:
 
                 msg = f"user {username} added."
                 log.info(msg)
-                return msg
+                return ""
 
+            except HCLIError:
+                raise
             except Exception as e:
                 msg = f"error updating credentials: {str(e)}."
                 log.error(msg)
-                return msg
+                raise HCLIInternalServerError(detail=msg)
 
     def passwd(self, username, password):
         with self._lock:
@@ -182,7 +182,7 @@ class CredentialManager:
                     parser = ConfigParser(interpolation=None)
                     parser.read_file(cred_file)
 
-                    # Update or add user
+                    # Update
                     found = False
                     for section in parser.sections():
                         if parser.has_option(section, "username") and parser.get(section, "username") == username:
@@ -200,7 +200,7 @@ class CredentialManager:
                     if not found:
                         msg = f"user {username} not found."
                         log.warning(msg)
-                        return msg
+                        raise HCLINotFoundError(detail=msg)
 
                 # Write back to file
                 with self._write_lock():
@@ -212,12 +212,14 @@ class CredentialManager:
 
                 msg = f"credentials updated for user {username}."
                 log.info(msg)
-                return msg
+                return ""
 
+            except HCLIError:
+                raise
             except Exception as e:
-                msg = f"error updating credentials: {str(e)}."
+                msg = f"error updating credentials: {str(e)}"
                 log.error(msg)
-                return msg
+                raise HCLIInternalServerError(detail=msg)
 
     # Special bootstrap case to avoid initial multiprocess deadlock
     def _bootstrap_passwd(self, username, password):
@@ -245,7 +247,7 @@ class CredentialManager:
                     if not found:
                         msg = f"user {username} not found."
                         log.warning(msg)
-                        return msg
+                        raise HCLINotFoundError(detail=msg)
 
                 with open(self.config_file_path, 'w') as cred_file:
                     parser.write(cred_file)
@@ -255,12 +257,14 @@ class CredentialManager:
 
                 msg = f"credentials updated for user {username}."
                 log.info(msg)
-                return msg
+                return ""
 
+            except HCLIError:
+                raise
             except Exception as e:
                 msg = f"error updating credentials: {str(e)}."
                 log.error(msg)
-                return msg
+                raise HCLIInternalServerError(detail=msg)
 
     def userdel(self, username):
         with self._lock:
@@ -280,7 +284,7 @@ class CredentialManager:
                     if user_section is None:
                         msg = f"user {username} not found."
                         log.warning(msg)
-                        return msg
+                        raise HCLINotFoundError(detail=msg)
 
                     # Remove the section
                     parser.remove_section(user_section)
@@ -295,12 +299,14 @@ class CredentialManager:
 
                 msg = f"user {username} deleted."
                 log.info(msg)
-                return msg
+                return ""
 
+            except HCLIError:
+                raise
             except Exception as e:
                 msg = f"error deleting {username}: {str(e)}"
                 log.error(msg)
-                return msg
+                raise HCLIInternalServerError(detail=msg)
 
     def validate(self, username, password):
         with self._lock:
@@ -329,10 +335,12 @@ class CredentialManager:
 
                     return False
 
+                except HCLIError:
+                    raise
                 except Exception as e:
-                    msg = f"error validating credentials: {str(e)}."
+                    msg = f"error validating credentials: {str(e)}"
                     log.error(msg)
-                    return False
+                    raise HCLIInternalServerError(detail=msg)
 
     def validate_hcoak(self, keyid, apikey):
         with self._lock:
@@ -353,10 +361,12 @@ class CredentialManager:
 
                 return False
 
+            except HCLIError:
+                raise
             except Exception as e:
-                msg = f"error validating credentials: {str(e)}."
+                msg = f"error validating credentials: {str(e)}"
                 log.error(msg)
-                return False
+                raise HCLIInternalServerError(detail=msg)
 
     # Hash password using 600000 (1Password/LastPass) iterations of PBKDF2-SHA256 with 32 bit salt.
     # dklen of 32 for sha256, 64 for sha512
@@ -457,7 +467,7 @@ class CredentialManager:
                     if not found:
                         msg = f"user {username} doesn't exist."
                         log.warning(msg)
-                        return msg
+                        raise HCLINotFoundError(detail=msg)
 
                     # Create new section with next number
                     section_name = f"{username}_apikey{highest_key_num + 1}"
@@ -483,12 +493,14 @@ class CredentialManager:
 
                 msg = f"api key {keyid} created for user {username}."
                 log.info(msg)
-                return keyid + "    " + apikey + "    " + created
+                return keyid + "    " + apikey + "    " + created + "\n"
 
+            except HCLIError:
+                raise
             except Exception as e:
-                msg = f"error updating credentials: {str(e)}."
+                msg = f"error updating credentials: {str(e)}"
                 log.error(msg)
-                return msg
+                raise HCLIInternalServerError(detail=msg)
 
     def delete_key(self, username, keyid):
         with self._lock:
@@ -509,14 +521,14 @@ class CredentialManager:
                     if target_section is None:
                         msg = f"api key {keyid} not found."
                         log.warning(msg)
-                        return msg
+                        raise HCLINotFoundError(detail=msg)
 
                     # Check permissions - allow if user is owner or is admin
                     is_admin = username == "admin"  # You might want to adjust this check based on your admin detection logic
                     if not is_admin and owner != username:
                         msg = f"user {username} not authorized to delete key {keyid} owned by {owner}."
                         log.warning(msg)
-                        return msg
+                        raise HCLIAuthorizationError(detail=msg)
 
                     # Remove the section
                     parser.remove_section(target_section)
@@ -531,12 +543,14 @@ class CredentialManager:
 
                     msg = f"api key {keyid} deleted successfully for owner {owner}."
                     log.info(msg)
-                    return msg
+                    return ""
 
+            except HCLIError:
+                raise
             except Exception as e:
                 msg = f"error deleting api key: {str(e)}"
                 log.error(msg)
-                return msg
+                raise HCLIInternalServerError(detail=msg)
 
     def rotate_key(self, username, keyid):
         with self._lock:
@@ -557,14 +571,14 @@ class CredentialManager:
                     if target_section is None:
                         msg = f"api key {keyid} not found."
                         log.warning(msg)
-                        return msg
+                        raise HCLINotFoundError(detail=msg)
 
                     # Check permissions - allow if user is owner or is admin
                     is_admin = username == "admin"  # You might want to adjust this check based on your admin detection logic
                     if not is_admin and owner != username:
                         msg = f"user {username} cannot rotate key {keyid} owned by {owner}."
                         log.warning(msg)
-                        return msg
+                        raise HCLIAuthorizationError(detail=msg)
 
                     (apikey, created) = self.generate_apikey()
                     hashed_apikey = self.hash_apikey(apikey)
@@ -582,12 +596,14 @@ class CredentialManager:
 
                     msg = f"api key {keyid} rotated for user {username}."
                     log.info(msg)
-                    return keyid + "    " + apikey + "    " + created
+                    return keyid + "    " + apikey + "    " + created + "\n"
 
+            except HCLIError:
+                raise
             except Exception as e:
                 msg = f"error deleting api key: {str(e)}"
                 log.error(msg)
-                return msg
+                raise HCLIInternalServerError(detail=msg)
 
     def list_keys(self, username):
         with self._lock:
@@ -619,14 +635,16 @@ class CredentialManager:
                     if not key_info:
                         msg = "no api keys found."
                         log.warning(msg)
-                        return msg
+                        raise HCLINotFoundError(detail=msg)
 
                     return "\n".join(key_info)
 
+            except HCLIError:
+                raise
             except Exception as e:
                 msg = f"error listing api keys: {str(e)}"
                 log.error(msg)
-                return msg
+                raise HCLIInternalServerError(detail=msg)
 
     # Or base32 approach (10 chars) to help avoid 1/I 0/O visual discrepancies.
     def generate_keyid(self):

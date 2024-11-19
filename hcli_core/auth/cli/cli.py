@@ -31,12 +31,12 @@ class CLI:
         if command == "useradd":
             username = self.commands[2]
             status = self.service.useradd(username)
-            return io.BytesIO((status+"\n").encode())
+            return io.BytesIO((status).encode())
 
         elif command == "userdel":
             username = self.commands[2]
             status = self.service.userdel(username)
-            return io.BytesIO((status+"\n").encode())
+            return io.BytesIO((status).encode())
 
         elif command == "passwd":
             username = self.commands[2]
@@ -44,34 +44,34 @@ class CLI:
             if self.inputstream is None:
                 msg = "no password provided."
                 log.error(msg)
-                return io.BytesIO((msg+"\n").encode())
+                raise HCLIBadRequestError(detail=msg)
 
             f = io.BytesIO()
             for chunk in iter(partial(self.inputstream.read, 16384), b''):
                 f.write(chunk)
 
             status = self.service.passwd(username, f)
-            return io.BytesIO((status+"\n").encode())
+            return io.BytesIO((status).encode())
 
         elif command == "ls":
             users = self.service.ls()
-            return io.BytesIO((users+"\n").encode())
+            return io.BytesIO((users).encode())
 
         elif command == "key":
             if self.commands[2] == "rm":
                 keyid = self.commands[3]
                 status = self.service.key_rm(keyid)
-                return io.BytesIO((status+"\n").encode())
+                return io.BytesIO((status).encode())
             elif self.commands[2] == "rotate":
                 keyid = self.commands[3]
                 status = self.service.key_rotate(keyid)
-                return io.BytesIO((status+"\n").encode())
+                return io.BytesIO((status).encode())
             elif self.commands[2] == "ls":
                 status = self.service.key_ls()
-                return io.BytesIO((status+"\n").encode())
+                return io.BytesIO((status).encode())
             else:
                 username = self.commands[2]
                 status = self.service.key(username)
-                return io.BytesIO((status+"\n").encode())
+                return io.BytesIO((status).encode())
 
         return None
