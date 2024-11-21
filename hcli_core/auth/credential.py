@@ -637,7 +637,7 @@ class CredentialManager:
                         log.warning(msg)
                         raise HCLINotFoundError(detail=msg)
 
-                    return "\n".join(key_info)
+                    return "\n".join(key_info) + "\n"
 
             except HCLIError:
                 raise
