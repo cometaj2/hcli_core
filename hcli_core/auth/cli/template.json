@@ -32,6 +32,14 @@
         {
             "command": "hco key ls",
             "http": "get"
+        },
+        {
+            "command": "hco validate basic {p}",
+            "http": "post"
+        },
+        {
+            "command": "hco validate hcoak {p}",
+            "http": "post"
         }
     ],
     "cli": [
@@ -81,6 +89,11 @@
                 {
                     "href": "hcokey",
                     "name": "key",
+                    "description": "API key management"
+                },
+                {
+                    "href": "hcovalidate",
+                    "name": "validate",
                     "description": "API key management"
                 }
             ]
@@ -287,6 +300,78 @@
                     "description": "hco key ls"
                 }
             ]
+        },
+        {
+            "id": "hcovalidate",
+            "name": "validate",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "validate - validate credentials"
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hco validate <type> <username | keyid>"
+                },
+                {
+                    "name": "description",
+                    "description": "Validates provided credentials. Supports basic auth (username/password) and HCOAK validation. This is intended to be used to check the validity of provided credentials. The password or apikey must be provided via stdin for security. Note that the HCLI client used to interact with hco (e.g. huckle) must have credentials set for a valid user or apikey to be able to validate provided credentials."
+                }
+            ],
+            "command": [
+                {
+                    "href": "hcovalidatebasic",
+                    "name": "basic",
+                    "description": "Validate HTTP Basic Authentication credentials"
+                },
+                {
+                    "href": "hcovalidatehcoak", 
+                    "name": "hcoak",
+                    "description": "Validate HCLI Core API Key (HCOAK) credentials"
+                }
+            ]
+        },
+        {
+            "id": "hcovalidatebasic",
+            "name": "basic",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "validate - validate HTTP Basic Authentication credentials"
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hco validate basic <username>"
+                },
+                {
+                    "name": "description",
+                    "description": "Validates provided credentials. Supports HTTP Basic Authentication (username/password). This is intended to be used to check the validity of provided credentials. The password is provided via stdin for security. Note that the HCLI client used to interact with hco (e.g. huckle) must have credentials set for a valid user or apikey to be able to validate provided credentials."
+                }
+            ],
+            "parameter": {
+                "href": "hcovalidatebasicparameter"
+            }
+        },
+        {
+            "id": "hcovalidatehcoak",
+            "name": "hcoak",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "validate - validate HCLI Core API Key (HCOAK) Authentication credentials"
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hco validate hcoak <keyid>"
+                },
+                {
+                    "name": "description",
+                    "description": "Validates provided credentials. Supports HCLI Core API Key (HCOAK) authentication (keyid/apikey). This is intended to be used to check the validity of provided credentials. The apikey is provided via stdin for security. Note that the HCLI client used to interact with hco (e.g. huckle) must have credentials set for a valid user or apikey to be able to validate provided credentials."
+                }
+            ],
+            "parameter": {
+                "href": "hcovalidatehcoakparameter"
+            }
         }
     ]
 }

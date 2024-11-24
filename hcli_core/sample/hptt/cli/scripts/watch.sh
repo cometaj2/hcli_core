@@ -8,6 +8,6 @@ do
     then
         hptt channel stream -r 'default' | sox -v 10.0 --ignore-length -t wav - -t wav - | play -
     fi
-    
+
     sleep 1
 done

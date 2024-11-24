@@ -25,7 +25,7 @@ do
         grep "start" |
         wc -l`
     fi
-     
+
     if [[ "$silence" == "1" ]]
         then
         pid=`ps -ef | grep "/usr/bin/[v]lc -I dummy -vvv alsa://hw:1,0 --sout #standard{access=file,mux=wav,dst=-} vlc:quit" |

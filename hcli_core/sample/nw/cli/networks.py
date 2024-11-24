@@ -5,7 +5,7 @@ from ipaddress import *
 
 class Networks:
     pools = None
-    
+
     def __init__(self):
         if not data.DAO().exists():
             self.pools = []
@@ -18,7 +18,7 @@ class Networks:
 
     def serialize(self):
         return data.DAO(self).serialize()   
-    
+
     # lists allocatable networks across all logical groups.
     def listFreeNetworks(self):
         subnets = ""
@@ -130,7 +130,7 @@ class Networks:
                                         pool["free"].append(str(i))
                                 except:
                                     pass
-    
+
                             pool["free"].sort(key=lambda network: int(network.split("/")[1]), reverse=True)
                             data.DAO(self).save()
                             subnet = subnet + str(ipnetwork) + "\n"
@@ -168,8 +168,8 @@ class Networks:
                                         if i not in pool["free"]:
                                             pool["free"].append(str(i))
                                     except:
-                                        pass                                
-        
+                                        pass
+
                                 pool["free"].sort(key=lambda network: int(network.split("/")[1]), reverse=True)
                                 data.DAO(self).save()
                                 subnet = subnet + str(ipnetwork) + "\n"
@@ -180,7 +180,7 @@ class Networks:
                     except:
                         pass
 
-        return subnet    
+        return subnet
 
     # deallocate a specific CIDR range from a logical group if the provided network matches exactly
     def deallocateSpecificNetwork(self, groupname, network):

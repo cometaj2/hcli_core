@@ -46,7 +46,7 @@ class Config:
     def get_management_port(cls, config_path=None):
         with cls._global_lock:
             if not config_path:
-                config_path = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "auth/credentials")
+                config_path = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "auth/cli/credentials")
 
             try:
                 parser = ConfigParser(interpolation=None)
@@ -90,10 +90,12 @@ class Config:
                     instance.template = None
                     instance.plugin_path = instance.root + "/cli"
                     instance.cli = None
-                    instance.default_config_file_path = instance.root + "/auth/credentials"
+                    instance.default_config_file_path = instance.root + "/auth/cli/credentials"
                     instance.config_file_path = None
                     instance.auth = True
                     instance.log = logger.Logger(f"hcli_core")
+                    instance.mgmt_credentials = 'local'
+                    instance.mgmt_credentials_remote_url = '*'
                     if name == 'management':
                         instance.mgmt_port = 9000
                     cls._instances[name] = instance
@@ -141,6 +143,18 @@ class Config:
                                         else:
                                             self.mgmt_port = port
                                             log.info("Management Port: " + str(self.mgmt_port))
+                                elif name == "mgmt.credentials":
+                                        mgmt_credentials = value
+                                        valid = (mgmt_credentials == 'local' or mgmt_credentials == 'remote')
+                                        if not valid:
+                                            log.warning("Unsupported credentials management mode: " + str(value) + ". Defaulting to local.")
+                                            self.mgmt_credentials = 'local'
+                                        else:
+                                            self.mgmt_credentials = value
+                                            log.info("Credentials management: " + str(self.mgmt_credentials))
+                                elif name == "mgmt.credentials.remote.url":
+                                        self.mgmt_credentials_remote_url = value
+                                        log.info("Credentials management remote URL: " + str(self.mgmt_credentials_remote_url))
                             if self.name == 'management':
                                 log.info("Management Auth: " + str(self.auth))
                             if self.name == 'management' and not parser.has_option("config", "mgmt.port"):

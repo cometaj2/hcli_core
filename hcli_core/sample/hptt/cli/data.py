@@ -9,7 +9,7 @@ except ImportError:
 
 class DAO:
     path = os.path.dirname(__file__)
-    
+
     """ Adds an object's attributes verbatim to a resource """
     def __init__(self, model=None):
         if model is not None:
@@ -18,7 +18,7 @@ class DAO:
 
     """ Serializes an inherently well structured haliot resource to application/hal+json """
     def serialize(self):
-        return json.dumps(self, default=lambda o: o.__dict__, 
+        return json.dumps(self, default=lambda o: o.__dict__,
                           sort_keys=True,
                           indent=4)
 

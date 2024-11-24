@@ -6,7 +6,7 @@ class Chroot:
     root = os.path.dirname(inspect.getfile(lambda: None))
     chroot = root + "/chroot"
     pwd = chroot
-    
+
     def __init__(self):
         if not os.path.exists(self.chroot):
             os.makedirs(self.chroot)

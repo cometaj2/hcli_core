@@ -1,4 +1,5 @@
 import os
+import io
 import hashlib
 import base64
 import threading
@@ -9,6 +10,7 @@ from datetime import datetime, timezone, timedelta
 from configparser import ConfigParser
 from contextlib import suppress, contextmanager
 from pathlib import Path
+from huckle import stdin, cli
 
 from hcli_core import logger
 from hcli_core import config
@@ -82,24 +84,24 @@ class CredentialManager:
             try:
                 with open(self.config_file_path, 'r') as cred_file:
                     parser = ConfigParser(interpolation=None)
-                    log.info("Loading credentials:")
-                    log.info(self.config_file_path)
+                    log.debug("Loading credentials:")
+                    log.debug(self.config_file_path)
                     parser.read_file(cred_file)
 
                     # Check if we have a default section for the admin user
                     if not parser.has_section("default"):
                         msg = f"No [default] credential available for {self.config_file_path}."
-                        log.warning(msg)
+                        log.info(msg)
                         self._credentials = None
 
                     # Check if we have a default admin username and password
-                    if not parser.has_option("default", "username") or parser.get("default", "username") != "admin" or not parser.has_option("default", "password"):
+                    elif not parser.has_option("default", "username") or parser.get("default", "username") != "admin" or not parser.has_option("default", "password"):
                         msg = f"Invalid or missing admin username or password in [default] section of {self.config_file_path}."
                         log.warning(msg)
                         self._credentials = None
 
                     # Check if we have a salt
-                    if not parser.has_option("default", "salt"):
+                    elif not parser.has_option("default", "salt"):
                         msg = f"Invalid or missing salt in [default] section of {self.config_file_path}."
                         log.warning(msg)
                         self._credentials = None
@@ -110,7 +112,7 @@ class CredentialManager:
                         if parser.has_option(section, "username"):
                             username = parser.get(section, "username")
                             if username in usernames:
-                                msg = f"duplicate username '{username}' found in {self.config_file_path}."
+                                msg = f"Duplicate username '{username}' found in {self.config_file_path}."
                                 log.critical(msg)
                                 self._credentials = None
                             usernames.add(username)
@@ -128,7 +130,7 @@ class CredentialManager:
             except HCLIError:
                 raise
             except Exception as e:
-                msg = f"unable to load credentials: {str(e)}."
+                msg = f"unable to load credentials: {str(e)}"
                 log.error(msg)
                 self._credentials = None
                 raise HCLIInternalServerError(detail=msg)
@@ -171,7 +173,7 @@ class CredentialManager:
             except HCLIError:
                 raise
             except Exception as e:
-                msg = f"error updating credentials: {str(e)}."
+                msg = f"error updating credentials: {str(e)}"
                 log.error(msg)
                 raise HCLIInternalServerError(detail=msg)
 
@@ -262,7 +264,7 @@ class CredentialManager:
             except HCLIError:
                 raise
             except Exception as e:
-                msg = f"error updating credentials: {str(e)}."
+                msg = f"error updating credentials: {str(e)}"
                 log.error(msg)
                 raise HCLIInternalServerError(detail=msg)
 
@@ -310,13 +312,45 @@ class CredentialManager:
 
     def validate(self, username, password):
         with self._lock:
-            # Special case for bootstrap password
-            if self._bootstrap_password is not None:
-                if username == 'admin':
-                    bootstrap_valid = password == self._bootstrap_password
-                    return bootstrap_valid
-            else:
-                try:
+            try:
+                cfg = config.Config(config.ServerContext.get_current_server())
+                if cfg.mgmt_credentials == 'remote':
+    #                 chunks = cli(f"huckle cli install {cfg.mgmt_credentials_remote_url}")
+
+                    remote_password = io.BytesIO(password.encode())
+                    with stdin(remote_password):
+                        log.info(f"Forwarding authentication for {username} to {cfg.mgmt_credentials_remote_url}")
+                        chunks = cli(f"hco validate basic {username}")
+
+                        data = ""
+                        stream = ""
+                        try:
+                            for dest, chunk in chunks:
+                                if dest == 'stdout':
+                                    stream = dest
+                                    data = ''.join(chunk.decode('utf-8'))
+                                else:
+                                    stream = dest
+                                    data = ''.join(chunk.decode('utf-8'))
+                        except Exception as e:
+                            log.error(e)
+                            return False
+
+                        data = data.rstrip()
+                        if stream == 'stderr':
+                            log.error(data)
+
+                        if data == 'valid':
+                            return True
+                        else:
+                            return False
+
+                # Special case for bootstrap password
+                if self._bootstrap_password is not None:
+                    if username == 'admin':
+                        bootstrap_valid = password == self._bootstrap_password
+                        return bootstrap_valid
+                else:
                     self._get_credentials()
                     if not self._credentials:
                         return False
@@ -335,16 +369,48 @@ class CredentialManager:
 
                     return False
 
-                except HCLIError:
-                    raise
-                except Exception as e:
-                    msg = f"error validating credentials: {str(e)}"
-                    log.error(msg)
-                    raise HCLIInternalServerError(detail=msg)
+            except HCLIError:
+                raise
+            except Exception as e:
+                msg = f"error validating credentials: {str(e)}"
+                log.error(msg)
+                raise HCLIInternalServerError(detail=msg)
 
     def validate_hcoak(self, keyid, apikey):
         with self._lock:
             try:
+                cfg = config.Config(config.ServerContext.get_current_server())
+                if cfg.mgmt_credentials == 'remote':
+#                     chunks = cli(f"huckle cli install {cfg.mgmt_credentials_remote_url}")
+
+                    remote_apikey = io.BytesIO(apikey.encode())
+                    with stdin(remote_apikey):
+                        log.info(f"Forwarding authentication for {keyid} to {cfg.mgmt_credentials_remote_url}")
+                        chunks = cli(f"hco validate hcoak {keyid}")
+
+                        data = ""
+                        stream = ""
+                        try:
+                            for dest, chunk in chunks:
+                                if dest == 'stdout':
+                                    stream = dest
+                                    data = ''.join(chunk.decode('utf-8'))
+                                else:
+                                    stream = dest
+                                    data = ''.join(chunk.decode('utf-8'))
+                        except Exception as e:
+                            log.error(e)
+                            return False
+
+                        data = data.rstrip()
+                        if stream == 'stderr':
+                            log.error(data)
+
+                        if data == 'valid':
+                            return True
+                        else:
+                            return False
+
                 self._get_credentials()
                 if not self._credentials:
                     return False

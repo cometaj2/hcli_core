@@ -8,7 +8,7 @@ from os import path
 class CLI:
     commands = None
     inputstream = None
-    
+
     def __init__(self, commands, inputstream):
         self.commands = commands
         self.inputstream = inputstream

@@ -26,4 +26,4 @@ class Channel:
         self.ptt = "inactive"
 
     def serialize(self):
-        return data.DAO(self).serialize()   
+        return data.DAO(self).serialize()

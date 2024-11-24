@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.1.0]
+- Add remote authentication support to enable centralized credentials management across HCLI services
+- Fix unused returns in authenticator.py
+- Fix empty output for hco logging
+
 ## [3.0.1]
 - Fix missing carriage return when listing keys with hco key ls
 

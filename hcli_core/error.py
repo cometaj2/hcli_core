@@ -27,7 +27,7 @@ class HCLIError(Exception):
         super().__init__(title)
         self.title = title
         self.status = status
-        self.detail = detail
+        self.detail = "hcli_core: " + detail
         self.type_uri = type_uri or f"about:blank"
         self.instance = instance
         self.extensions = extensions or {}

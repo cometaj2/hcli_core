@@ -9,7 +9,7 @@ class CLI:
     commands = None
     inputstream = None
     chroot = None
-    
+
     def __init__(self, commands, inputstream):
         self.commands = commands
         self.inputstream = inputstream
@@ -29,7 +29,7 @@ class CLI:
         if self.commands[1] == "ls":
             content = bytearray(b'')
 
-            ls = subprocess.Popen(["ls", "-la", self.chroot.pwd], stdout=subprocess.PIPE,)            
+            ls = subprocess.Popen(["ls", "-la", self.chroot.pwd], stdout=subprocess.PIPE,)
             pipe = ls.stdout
 
             for line in pipe:

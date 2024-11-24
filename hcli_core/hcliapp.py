@@ -14,7 +14,7 @@ from hcli_core import logger
 from hcli_core import config
 from hcli_core import template
 
-from hcli_core.auth import authenticator
+from hcli_core.auth.cli import authenticator
 from hcli_core.error import handle_hcli_error, HCLIError
 
 log = logger.Logger("hcli_core")

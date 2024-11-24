@@ -4,12 +4,12 @@ import io
 from hcli_core import logger
 from hcli_core import config
 
-from hcli_core.auth import credential
+from hcli_core.auth.cli import credential
 from hcli_core.error import *
 
 from functools import wraps
 
-log = logger.Logger("hco")
+log = logger.Logger("hcli_core")
 
 
 # Additional authentication check on all service calls just in case authentication is somehow bypassed
@@ -125,6 +125,63 @@ class Service:
         requesting_username = config.ServerContext.get_current_user()
 
         return self.cm.list_keys(requesting_username)
+
+    @requires_auth
+    def validate_basic(self, username, password_stream):
+        requesting_username = config.ServerContext.get_current_user()
+
+        if not password_stream:
+            msg = "no password provided."
+            log.error(msg)
+            raise HCLIBadRequestError(detail=msg)
+
+        # Read password from stream
+        password = password_stream.getvalue().decode().strip()
+        if not password:
+            msg = "empty password."
+            log.error(msg)
+            raise HCLIBadRequestError(detail=msg)
+
+        valid = self.cm.validate(username, password)
+        result = "invalid"
+        if valid is True:
+            result = "valid"
+
+        msg = f"{requesting_username} is validating user {username} for HTTP Basic Authentication. {result}."
+        if result == "valid":
+            log.info(msg)
+        else:
+            log.warning(msg)
+
+        return result + "\n"
+
+    @requires_auth
+    def validate_hcoak(self, keyid, apikey_stream):
+        requesting_username = config.ServerContext.get_current_user()
+
+        if not apikey_stream:
+            msg = "no apikey provided."
+            log.error(msg)
+            raise HCLIBadRequestError(detail=msg)
+
+        apikey = apikey_stream.getvalue().decode().strip()
+        if not apikey:
+            msg = "empty apikey."
+            log.error(msg)
+            raise HCLIBadRequestError(detail=msg)
+
+        valid = self.cm.validate_hcoak(keyid, apikey)
+        result = "invalid"
+        if valid is True:
+            result = "valid"
+
+        msg = f"{requesting_username} is validating keyid {keyid} for HCOAK. {result}."
+        if result == "valid":
+            log.info(msg)
+        else:
+            log.warning(msg)
+
+        return result + "\n"
 
     def _cfg(self):
         context = config.ServerContext.get_current_server()
