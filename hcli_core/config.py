@@ -95,7 +95,6 @@ class Config:
                     instance.auth = True
                     instance.log = logger.Logger(f"hcli_core")
                     instance.mgmt_credentials = 'local'
-                    instance.mgmt_credentials_remote_url = '*'
                     if name == 'management':
                         instance.mgmt_port = 9000
                     cls._instances[name] = instance
@@ -152,9 +151,6 @@ class Config:
                                         else:
                                             self.mgmt_credentials = value
                                             log.info("Credentials management: " + str(self.mgmt_credentials))
-                                elif name == "mgmt.credentials.remote.url":
-                                        self.mgmt_credentials_remote_url = value
-                                        log.info("Credentials management remote URL: " + str(self.mgmt_credentials_remote_url))
                             if self.name == 'management':
                                 log.info("Management Auth: " + str(self.auth))
                             if self.name == 'management' and not parser.has_option("config", "mgmt.port"):

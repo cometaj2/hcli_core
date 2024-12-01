@@ -1,5 +1,6 @@
 import os
 import inspect
+import base64
 
 from hcli_core import logger
 from hcli_core import hcliapp
@@ -40,7 +41,6 @@ def connector(plugin_path=None, config_path=None):
 
         # If using Basic auth, it will be in format "Basic base64(username:password)"
         if auth_info.startswith('Basic '):
-            import base64
 
             # Extract and decode the base64 credentials
             encoded_credentials = auth_info.split(' ')[1]
@@ -53,7 +53,6 @@ def connector(plugin_path=None, config_path=None):
 
         # If using HCOAK Bearer auth, it will be in format "Bearer base64(keyid:hcoak(apikey))"
         if auth_info.startswith('Bearer '):
-            import base64
 
             # Extract and decode the base64 credentials
             encoded_credentials = auth_info.split(' ')[1]

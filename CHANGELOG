@@ -5,16 +5,18 @@ The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [3.1.0]
-- Add remote authentication support to enable centralized credentials management across HCLI services
+- Add remote authentication support via hco to enable centralized credentials management across HCLI services
 - Fix unused returns in authenticator.py
 - Fix empty output for hco logging
+- Fix error when returning empty list of key via hco key ls
+- Fix log output when no default credentials are set in the credentials file
 
 ## [3.0.1]
 - Fix missing carriage return when listing keys with hco key ls
 
 ## [3.0.0]
 - Add HTTP API Problem Details support [RFC9457] per HCLI spec to help with client-side STDERR differentiation
-- Update hco to return problem detail errors rather than success messages containing
+- Update hco to return problem detail errors rather than success messages containing errorlike messages
 - Update to a more sensible default configuration (disabled management port and credentials management app)
 
 ## [2.1.0]
@@ -104,13 +106,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Update README. Badge move out of title.
 
 ## [0.18.3]
-- Remove hg from the sample applications and into it's own independent repository to foster independent development.
+- Remove hg from the sample applications and into its own independent repository to foster independent development.
 - Update hg related documentation.
 - Remove hg related dependencies to pyserial and background scheduler.
 - Remove remaining hc related documentation in README.
 
 ## [0.18.2]
-- Remove hc from the sample applications and into it's own independent repository to foster independent development.
+- Remove hc from the sample applications and into its own independent repository to foster independent development.
 - Update hc related documentation.
 - Remove hc related dependencies to pyserial and background scheduler.
 - Fix badging URLs and reorder.

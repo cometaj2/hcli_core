@@ -94,7 +94,7 @@
                 {
                     "href": "hcovalidate",
                     "name": "validate",
-                    "description": "API key management"
+                    "description": "Validate credentials"
                 }
             ]
         },

@@ -72,12 +72,12 @@ class CredentialManager:
 
     # Get credentials with TTL-based refresh
     def _get_credentials(self):
-        current_time = time.time()
         with self._lock:
-            if current_time - self._last_refresh > self._credentials_ttl:
-                with self._write_lock():
+            with self._write_lock():
+                current_time = time.time()
+                if current_time - self._last_refresh > self._credentials_ttl:
                     self._parse_credentials()
-            return self._credentials
+                return self._credentials
 
     def _parse_credentials(self):
         with self._lock:
@@ -315,23 +315,34 @@ class CredentialManager:
             try:
                 cfg = config.Config(config.ServerContext.get_current_server())
                 if cfg.mgmt_credentials == 'remote':
-    #                 chunks = cli(f"huckle cli install {cfg.mgmt_credentials_remote_url}")
+                    chunks = cli("huckle cli config hco url")
+
+                    data = ""
+                    stream = ""
+                    try:
+                        for dest, chunk in chunks:
+                            stream = dest
+                            data = ''.join(chunk.decode('utf-8'))
+                    except Exception as e:
+                        log.error(e)
+                        return False
+
+                    data = data.rstrip()
+                    if stream == 'stderr':
+                        log.error(data)
+                        return False
 
                     remote_password = io.BytesIO(password.encode())
                     with stdin(remote_password):
-                        log.info(f"Forwarding authentication for {username} to {cfg.mgmt_credentials_remote_url}")
+                        log.info(f"Forwarding authentication for {username} to {data}")
                         chunks = cli(f"hco validate basic {username}")
 
                         data = ""
                         stream = ""
                         try:
                             for dest, chunk in chunks:
-                                if dest == 'stdout':
-                                    stream = dest
-                                    data = ''.join(chunk.decode('utf-8'))
-                                else:
-                                    stream = dest
-                                    data = ''.join(chunk.decode('utf-8'))
+                                stream = dest
+                                data = ''.join(chunk.decode('utf-8'))
                         except Exception as e:
                             log.error(e)
                             return False
@@ -381,11 +392,26 @@ class CredentialManager:
             try:
                 cfg = config.Config(config.ServerContext.get_current_server())
                 if cfg.mgmt_credentials == 'remote':
-#                     chunks = cli(f"huckle cli install {cfg.mgmt_credentials_remote_url}")
+                    chunks = cli("huckle cli config hco url")
+
+                    data = ""
+                    stream = ""
+                    try:
+                        for dest, chunk in chunks:
+                            stream = dest
+                            data = ''.join(chunk.decode('utf-8'))
+                    except Exception as e:
+                        log.error(e)
+                        return False
+
+                    data = data.rstrip()
+                    if stream == 'stderr':
+                        log.error(data)
+                        return False
 
                     remote_apikey = io.BytesIO(apikey.encode())
                     with stdin(remote_apikey):
-                        log.info(f"Forwarding authentication for {keyid} to {cfg.mgmt_credentials_remote_url}")
+                        log.info(f"Forwarding authentication for {keyid} to {data}")
                         chunks = cli(f"hco validate hcoak {keyid}")
 
                         data = ""
@@ -699,9 +725,7 @@ class CredentialManager:
                         key_info.append(f"{keyid}    {created}    {owner}    {status}")
 
                     if not key_info:
-                        msg = "no api keys found."
-                        log.warning(msg)
-                        raise HCLINotFoundError(detail=msg)
+                        return ""
 
                     return "\n".join(key_info) + "\n"
 
