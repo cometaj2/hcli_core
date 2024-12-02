@@ -6,10 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [3.1.0]
 - Add remote authentication support via hco to enable centralized credentials management across HCLI services
+- Add lazy hcliapp initialization to avoid creating port unbound resources if they aren't going to be used
 - Fix unused returns in authenticator.py
 - Fix empty output for hco logging
 - Fix error when returning empty list of key via hco key ls
 - Fix log output when no default credentials are set in the credentials file
+- Fix to remove all outstanding trailing \n in both stdout for hco and stderr problem detail (HCLIErrors)
 
 ## [3.0.1]
 - Fix missing carriage return when listing keys with hco key ls

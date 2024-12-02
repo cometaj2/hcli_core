@@ -128,16 +128,21 @@ Supports
     - nw    - a flexible IP Address Management (IPAM) service.
 - Support for use of any 3rd party HCLI code that meets CLI interface requirements and HCLI template requirements (i.e. see sample HCLIs).
 - Support large input and output streams as application/octet-stream.
-- HTTP Basic Authentication with sha512 hashed passwords. See hcli_core help for details.
+- HTTP Basic Authentication.  See hcli_core help for details.
+- HCLI Core API Key (HCOAK) Authencitation. See hcli_core help for details.
+- Support HTTP API Problem Details [RFC9457] per spec to help with client-side STDERR output.
+- Credentials Management via the hco HCLI.
+- Centralized remote authentication support via hco for HCLIs configured for remote credential management
 
 To Do
 -----
 
-- Support HTTP API Problem Details [RFC9457] per spec to help with client-side STDERR output.
 - Automated tests for all bundled HCLI samples.
 - Separate out HCLI applications from HCLI Core to help avoid application dependencies bleeding onto HCLI Core.
 - Rate limiting.
 - Lockout on multiple failed authentications.
+- Better role handling for admin vs users for remote validation
+- Better logging configuration support
 
 Bugs
 ----

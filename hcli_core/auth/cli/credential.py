@@ -1,4 +1,5 @@
 import os
+import inspect
 import io
 import hashlib
 import base64
@@ -39,7 +40,11 @@ class CredentialManager:
             with self._lock:
                 if not CredentialManager._initialized:
                     self._credentials = None
-                    self.config_file_path = config_file_path
+
+                    if not config_file_path:
+                        self.config_file_path = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "credentials")
+                    else:
+                        self.config_file_path = config_file_path
 
                     self._last_refresh = 0
                     self._credentials_ttl = 5  # Eventually consistent every 5 seconds
@@ -585,7 +590,7 @@ class CredentialManager:
 
                 msg = f"api key {keyid} created for user {username}."
                 log.info(msg)
-                return keyid + "    " + apikey + "    " + created + "\n"
+                return keyid + "    " + apikey + "    " + created
 
             except HCLIError:
                 raise
@@ -688,7 +693,7 @@ class CredentialManager:
 
                     msg = f"api key {keyid} rotated for user {username}."
                     log.info(msg)
-                    return keyid + "    " + apikey + "    " + created + "\n"
+                    return keyid + "    " + apikey + "    " + created
 
             except HCLIError:
                 raise
@@ -727,7 +732,7 @@ class CredentialManager:
                     if not key_info:
                         return ""
 
-                    return "\n".join(key_info) + "\n"
+                    return "\n".join(key_info)
 
             except HCLIError:
                 raise

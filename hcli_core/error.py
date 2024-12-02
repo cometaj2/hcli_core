@@ -6,7 +6,7 @@ def handle_hcli_error(req, resp, ex, params):
     if isinstance(ex, HCLIError):
         resp.status = getattr(falcon, f'HTTP_{ex.status}')
         resp.content_type = 'application/problem+json'
-        resp.text = json.dumps(ex.to_dict(), indent=4) + '\n'
+        resp.text = json.dumps(ex.to_dict(), indent=4)
     elif isinstance(ex, falcon.HTTPError):
         error_dict = {
             "type": f"about:blank",
@@ -16,7 +16,7 @@ def handle_hcli_error(req, resp, ex, params):
         }
         resp.status = ex.status
         resp.content_type = 'application/problem+json'
-        resp.text = json.dumps(error_dict, indent=4) + '\n'
+        resp.text = json.dumps(error_dict, indent=4)
     else:
         raise ex
 

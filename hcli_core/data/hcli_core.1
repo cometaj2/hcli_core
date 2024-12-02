@@ -1,4 +1,4 @@
-.TH HCLI_CORE 1 "JUNE 2019" Linux "User Manuals"
+.TH HCLI_CORE 1 "JUNE 2024" Linux "User Manuals"
 .SH NAME
 hcli_core \- An HCLI Connector that can be used to expose a REST API with a built-in CLI, via hypertext command line interface (HCLI) semantics.
 .SH SYNOPSIS
@@ -31,7 +31,6 @@ The configuration supports enabling or disabling authentication for the Core HCL
 If enabled, hco, the Management HCLI application used to manage local credentials
 .I always requires authentication.
 .PP
-.I
 .SS CONFIGURATION FILE FORMAT
 [config]
 .br
@@ -39,10 +38,12 @@ core.auth = <True | False>
 .br
 mgmt.port = <port>
 .br
+mgmt.credentials = <local | remote>
+.br
 .SH AUTHENTICATION
 If authentication is configured for an HCLI application, HCLI Core expects to be able to use a single combined configuration and credentials file.
 .PP
-The default included credentials file provided with HCLI Core SHOULD NOT be used but is included as an example and sets a sensible and bare default configuration.
+The default credentials file provided with HCLI Core SHOULD NOT be used but is included as an example, and sets a sensible and bare default configuration.
 A user managed configuration/credentials file path should be provided at startup instead with the following configuration:
 .PP
 [config]
@@ -50,6 +51,8 @@ A user managed configuration/credentials file path should be provided at startup
 core.auth = True
 .br
 mgmt.port = 9000
+.br
+mgmt.credentials = local
 .PP
 [default]
 .br
@@ -85,6 +88,9 @@ hcoak = hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qn
 Bearer base64(GJSLKO5Z5M:hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ)
 .PP
 HCOAK SHOULD NOT be used without HTTPS and is primary intended to be used with 3rd party HCLI applications hosted on HCLI Core.
+.PP
+.SS CENTRALIZED AUTHENTICATION
+By its nature, HCLI is composable, so hcli_core is also trivially configurable to forward authentication to a remote centralized HCLI management application via huckle (https://github.com/cometaj2/huckle) and hco. See mgmt.credentials under EXAMPLE CONFIGURATION FILE and AUTHENTICATION.
 .PP
 .SS CREDENTIALS FILE FORMAT
 [default]

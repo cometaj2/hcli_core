@@ -41,7 +41,7 @@ def test_hco_ls(gunicorn_server_auth, cleanup):
     out, err = p2.communicate()
     result = out.decode('utf-8')
 
-    assert('admin\n' in result)
+    assert('admin' in result)
 
 def test_jsonf(gunicorn_server_auth, cleanup):
     hello = """
@@ -56,5 +56,5 @@ def test_jsonf(gunicorn_server_auth, cleanup):
     out, err = p2.communicate()
     result = out.decode('utf-8')
 
-    assert('{\n    "hello": "world"\n}\n' in result)
+    assert('{\n    "hello": "world"\n}' in result)
 

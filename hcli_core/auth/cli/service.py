@@ -95,7 +95,7 @@ class Service:
                     if "username" in cred:
                         users += cred["username"] + "\n"
 
-        return users
+        return users.rstrip()
 
     @requires_auth
     def key(self, username):
@@ -153,7 +153,7 @@ class Service:
         else:
             log.warning(msg)
 
-        return result + "\n"
+        return result
 
     @requires_auth
     def validate_hcoak(self, keyid, apikey_stream):
@@ -175,13 +175,13 @@ class Service:
         if valid is True:
             result = "valid"
 
-        msg = f"{requesting_username} is validating keyid {keyid} for HCOAK. {result}."
+        msg = f"{requesting_username} is validating keyid {keyid} for HCLI Core API Key Authentication. {result}."
         if result == "valid":
             log.info(msg)
         else:
             log.warning(msg)
 
-        return result + "\n"
+        return result
 
     def _cfg(self):
         context = config.ServerContext.get_current_server()
