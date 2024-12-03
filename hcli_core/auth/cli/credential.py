@@ -95,20 +95,26 @@ class CredentialManager:
 
                     # Check if we have a default section for the admin user
                     if not parser.has_section("default"):
-                        msg = f"No [default] credential available for {self.config_file_path}."
-                        log.info(msg)
+                        msg1 = f"No [default] admin credential available:"
+                        msg2 = f"{self.config_file_path}"
+                        log.info(msg1)
+                        log.info(msg2)
                         self._credentials = None
 
                     # Check if we have a default admin username and password
                     elif not parser.has_option("default", "username") or parser.get("default", "username") != "admin" or not parser.has_option("default", "password"):
-                        msg = f"Invalid or missing admin username or password in [default] section of {self.config_file_path}."
-                        log.warning(msg)
+                        msg1 = f"Invalid or missing admin username or password in [default] section:"
+                        msg2 = f"{self.config_file_path}"
+                        log.warning(msg1)
+                        log.warning(msg2)
                         self._credentials = None
 
                     # Check if we have a salt
                     elif not parser.has_option("default", "salt"):
-                        msg = f"Invalid or missing salt in [default] section of {self.config_file_path}."
-                        log.warning(msg)
+                        msg1 = f"Invalid or missing salt in [default] section:"
+                        msg2 = f"{self.config_file_path}"
+                        log.warning(msg1)
+                        log.warning(msg2)
                         self._credentials = None
 
                     # Check for unique usernames across all sections

@@ -83,7 +83,7 @@ class LazyServerManager:
                 # Only get mgmt port from config, core port will be discovered
                 self.mgmt_port = config.Config.get_management_port(config_path)
 
-                log.info(f"Waiting for first request with lazy initialization...")
+                log.info(f"Lazy initialization...")
                 self._initialized = True
 
     # Lazy initialize server for given port if it matches configuration.
