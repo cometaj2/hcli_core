@@ -89,8 +89,10 @@ Bearer base64(GJSLKO5Z5M:hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D
 .PP
 HCOAK SHOULD NOT be used without HTTPS and is primary intended to be used with 3rd party HCLI applications hosted on HCLI Core.
 .PP
-.SS CENTRALIZED AUTHENTICATION
-By its nature, HCLI is composable, so hcli_core is also trivially configurable to forward authentication to a remote centralized HCLI management application via huckle (https://github.com/cometaj2/huckle) and hco. See mgmt.credentials under EXAMPLE CONFIGURATION FILE and AUTHENTICATION.
+.SS CENTRALIZED REMOTE AUTHENTICATION
+By its nature, HCLI is composable, so hcli_core is also trivially configurable to forward authentication to a remote centralized HCLI management application via huckle (https://github.com/cometaj2/huckle) and hco. See mgmt.credentials under CONFIGURATION FILE FORMAT and AUTHENTICATION.
+.PP
+Since HCLI Core uses hco to validate credentials remotely, and since hco is configured via huckle, see huckle help for information on how to setup authentication for hco.
 .PP
 .SS CREDENTIALS FILE FORMAT
 [default]
