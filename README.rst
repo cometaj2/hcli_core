@@ -132,7 +132,7 @@ Supports
 - HCLI Core API Key (HCOAK) Authencitation. See hcli_core help for details.
 - Support HTTP API Problem Details [RFC9457] per spec to help with client-side STDERR output.
 - Credentials Management via the hco HCLI.
-- Centralized remote authentication support via hco for HCLIs configured for remote credential management
+- Centralized remote authentication support via hco for HCLI Core services configured for remote credential management
 
 To Do
 -----
@@ -143,6 +143,7 @@ To Do
 - Lockout on multiple failed authentications.
 - Better role handling for admin vs users for remote validation
 - Better logging configuration support
+- Role assignment for hco remote validation authorization
 
 Bugs
 ----
