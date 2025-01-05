@@ -5,9 +5,9 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "hcli_core"
 dynamic = ["version", "dependencies"]
-description = "An HCLI Connector that can be used to expose a REST API as a CLI, via hypertext command line interface (HCLI) semantics."
+description = "An HCLI Connector that can be used to expose a REST API that behaves as a CLI, via hypertext command line interface (HCLI) semantics."
 readme = "README.rst"
-authors = [{name = "Jeff Michaud", email = "cometaj2@comcast.net"}]
+authors = [{name = "Jeff Michaud", email = "cometaj2@proton.me"}]
 license = {text = "MIT"}
 classifiers = [
     "Development Status :: 4 - Beta",
