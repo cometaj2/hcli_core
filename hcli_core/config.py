@@ -67,6 +67,32 @@ class Config:
                 log.warning(f"Error reading management port configuration: {e}")
                 return None
 
+    # Get management root aggregation cue from config file if explicitly configured, else None.
+    @classmethod
+    def get_core_root(cls, config_path=None):
+        with cls._global_lock:
+            if not config_path:
+                config_path = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "auth/cli/credentials")
+
+            try:
+                parser = ConfigParser(interpolation=None)
+                with open(config_path, 'r') as config_file:
+                    parser.read_file(config_file)
+
+                    if parser.has_section("config") and parser.has_option("config", "core.root"):
+                        try:
+                            root = parser.get("config", "core.root")
+                            if root == 'aggregate':
+                                return root
+                            log.warning(f"Invalid core root value: {root}")
+                        except ValueError:
+                            log.warning("Invalid core root configuration")
+
+                return None
+            except Exception as e:
+                log.warning(f"Error reading management root configuration: {e}")
+                return None
+
     def __new__(cls, name=None):
         # If no name provided, get it from context
         if name is None:
@@ -95,6 +121,7 @@ class Config:
                     instance.auth = True
                     instance.log = logger.Logger(f"hcli_core")
                     instance.mgmt_credentials = 'local'
+                    instance.core_root = None
                     if name == 'management':
                         instance.mgmt_port = 9000
                     cls._instances[name] = instance
@@ -151,6 +178,15 @@ class Config:
                                         else:
                                             self.mgmt_credentials = value
                                             log.info("Credentials management: " + str(self.mgmt_credentials))
+                                elif name == "core.root":
+                                        core_root = value
+                                        valid = (core_root == 'aggregate')
+                                        if not valid:
+                                            log.warning("Unsupported core root override: " + str(value) + ". Defaulting to None.")
+                                            self.core_root = None
+                                        else:
+                                            self.core_root = value
+                                            log.info("Core root override: " + str(self.core_root))
                             if self.name == 'management':
                                 log.info("Management Auth: " + str(self.auth))
                             if self.name == 'management' and not parser.has_option("config", "mgmt.port"):

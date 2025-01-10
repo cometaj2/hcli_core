@@ -4,7 +4,7 @@ import falcon
 from threading import RLock
 
 from hcli_core.hcli import api
-from hcli_core.hcli import home
+from hcli_core.hcli import root
 from hcli_core.hcli import secondaryhome
 from hcli_core.hcli import document
 from hcli_core.hcli import command
@@ -46,7 +46,6 @@ class HCLIApp:
         server.add_error_handler(falcon.HTTPError, handle_hcli_error)
         server.add_error_handler(HCLIError, handle_hcli_error)
 
-        server.add_route(home.HomeController.route, api.HomeApi())
         server.add_route(secondaryhome.SecondaryHomeController.route, api.SecondaryHomeApi())
         server.add_route(document.DocumentController.route, api.DocumentApi())
         server.add_route(command.CommandController.route, api.CommandApi())
@@ -78,13 +77,33 @@ class LazyServerManager:
                 self.plugin_path = plugin_path
                 self.config_path = config_path
                 self.servers = {}  # port -> server mapping
+                self.apps = {}     # type -> HCLIApp mapping
                 self.server_lock = RLock()
 
                 # Only get mgmt port from config, core port will be discovered
                 self.mgmt_port = config.Config.get_management_port(config_path)
+                self.core_root = config.Config.get_core_root(config_path)
 
                 log.info(f"Lazy initialization...")
                 self._initialized = True
+
+    def _get_mgmt_app(self):
+        if 'management' not in self.apps:
+            root_path = os.path.dirname(inspect.getfile(lambda: None))
+            mgmt_plugin_path = os.path.join(root_path, 'auth', 'cli')
+            log.info("================================================")
+            log.info(f"Initializing Management HCLI application:")
+            log.info(f"{mgmt_plugin_path}")
+            self.apps['management'] = HCLIApp("management", mgmt_plugin_path, self.config_path)
+        return self.apps['management']
+
+    def _get_core_app(self):
+        if 'core' not in self.apps:
+            log.info("================================================")
+            log.info(f"Initializing Core HCLI application:")
+            log.info(f"{self.plugin_path}")
+            self.apps['core'] = HCLIApp("core", self.plugin_path, self.config_path)
+        return self.apps['core']
 
     # Lazy initialize server for given port if it matches configuration.
     def get_server(self, port):
@@ -96,22 +115,38 @@ class LazyServerManager:
             if port in self.servers:
                 return self.servers[port]
 
-            # For management port, only initialize if it matches configured port
-            if self.mgmt_port and port == self.mgmt_port:
-                root = os.path.dirname(inspect.getfile(lambda: None))
-                mgmt_plugin_path = os.path.join(root, 'auth', 'cli')
-                log.info("================================================")
-                log.info(f"Initializing Management HCLI application:")
-                log.info(f"{mgmt_plugin_path}")
-                mgmtapp = HCLIApp("management", mgmt_plugin_path, self.config_path)
-                self.servers[port] = ('management', mgmtapp.server())
+            # For management port, only initialize if it matches configured port or if we're aggregating the root
+            if (self.mgmt_port and port == self.mgmt_port):
+                mgmtapp = self._get_mgmt_app()
+                server = mgmtapp.server()
+                server.add_route(root.RootController.route, api.RootApi())
+                self.servers[port] = ('management', server)
 
             # For any other port, assume it's a core server port
             elif not self.mgmt_port or port != self.mgmt_port:
-                log.info("================================================")
-                log.info(f"Initializing Core HCLI application:")
-                log.info(f"{self.plugin_path}")
-                coreapp = HCLIApp("core", self.plugin_path, self.config_path)
-                self.servers[port] = ('core', coreapp.server())
+                coreapp = self._get_core_app()
+                server = coreapp.server()
+                server.add_route(root.RootController.route, api.RootApi())
+                self.servers[port] = ('core', server)
 
             return self.servers.get(port)
+
+    # Special case for root aggregation.
+    def get_root(self, port):
+        server_info = self.get_server(port)
+        if not server_info:
+            return None
+
+        server_type, server = server_info
+        templates = []
+
+        if server_type == 'management':
+            templates.append(self._get_mgmt_app().cfg.template)
+        else:  # Core server
+            templates.append(self._get_core_app().cfg.template)
+            if self.core_root == 'aggregate':
+                templates.append(self._get_mgmt_app().cfg.template)
+
+        server.add_route(root.RootController.route, api.RootApi(templates))
+
+        return server_info

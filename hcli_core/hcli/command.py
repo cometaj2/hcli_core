@@ -7,7 +7,6 @@ from hcli_core.haliot import hal
 from hcli_core.hcli import semantic
 from hcli_core.hcli import profile
 from hcli_core.hcli import document
-from hcli_core.hcli import home
 from hcli_core.hcli import secondaryhome
 
 class Command:

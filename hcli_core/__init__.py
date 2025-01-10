@@ -19,9 +19,17 @@ def connector(plugin_path=None, config_path=None):
     # We select a response server based on port
     def port_router(environ, start_response):
         server_port = int(environ.get('SERVER_PORT', 0))
+        path = environ.get('PATH_INFO', '/')
+
+        server_info = None
+
+        # Special handling for root path aggregation
+        if path == '/' and server_manager.core_root == 'aggregate':
+            server_info = server_manager.get_root(server_port)
+        else:
+            server_info = server_manager.get_server(server_port)
 
         # Get or initialize the appropriate server
-        server_info = server_manager.get_server(server_port)
         if not server_info:
             log.warning(f"Request received on unconfigured port: {server_port}")
             start_response('404 Not Found', [('Content-Type', 'text/plain')])

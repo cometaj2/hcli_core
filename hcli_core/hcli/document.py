@@ -7,7 +7,6 @@ from hcli_core import config
 from hcli_core.hcli import semantic
 from hcli_core.hcli import profile
 from hcli_core.hcli import command as hcommand
-from hcli_core.hcli import home
 from hcli_core.hcli import secondaryhome
 from hcli_core.hcli import option
 from hcli_core.hcli import execution

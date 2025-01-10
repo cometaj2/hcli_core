@@ -1,4 +1,4 @@
-from hcli_core.hcli import home
+from hcli_core.hcli import root
 from hcli_core.hcli import secondaryhome
 from hcli_core.hcli import document
 from hcli_core.hcli import command as hcommand
@@ -15,10 +15,13 @@ def requires_auth(cls):
     cls.requires_auth = True
     return cls
 
-class HomeApi:
+class RootApi:
+    def __init__(self, templates=None):
+        self.templates = templates
+
     def on_get(self, req, resp):
         resp.content_type = "application/hal+json"
-        resp.text = home.HomeController().serialize()
+        resp.text = root.RootController(self.templates).serialize()
 
 class SecondaryHomeApi:
     def on_get(self, req, resp):
