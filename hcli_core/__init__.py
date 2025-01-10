@@ -21,13 +21,7 @@ def connector(plugin_path=None, config_path=None):
         server_port = int(environ.get('SERVER_PORT', 0))
         path = environ.get('PATH_INFO', '/')
 
-        server_info = None
-
-        # Special handling for root path aggregation
-        if path == '/' and server_manager.core_root == 'aggregate':
-            server_info = server_manager.get_root(server_port)
-        else:
-            server_info = server_manager.get_server(server_port)
+        server_info = server_manager.get_server_for_request(server_port, path)
 
         # Get or initialize the appropriate server
         if not server_info:

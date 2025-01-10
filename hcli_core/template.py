@@ -49,6 +49,17 @@ class Template:
     def findRoot(self):
         return self.cli[0]
 
+    """ We try to see if this template owns this path structure """
+    def owns(self, path):
+        segments = [s for s in path.split('/') if s]
+
+        if segments:
+            uid = segments[-1]
+            root = self.findRoot()
+            return uid.startswith(root['id'])
+
+        return False
+
     def findCommandsForId(self, uid):
         for index, i in enumerate(self.cli):
             arg = self.cli[index]

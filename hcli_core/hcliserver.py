@@ -150,3 +150,26 @@ class LazyServerManager:
         server.add_route(root.RootController.route, api.RootApi(templates))
 
         return server_info
+
+    # Get appropriate server based on port and path
+    def get_server_for_request(self, port, path):
+        # For root path in aggregate mode, handle specially
+        if path == '/' and self.core_root == 'aggregate':
+            return self.get_root(port)
+
+        server_info = self.get_server(port)
+        if not server_info:
+            return None
+
+        server_type, server = server_info
+
+        # In aggregate mode on core port
+        if self.core_root == 'aggregate' and port != self.mgmt_port:
+            mgmtapp = self._get_mgmt_app()
+
+            # If path belongs to HCO, return management server
+            if mgmtapp.cfg.template.owns(path):
+                mgmt_server = mgmtapp.server()
+                return ('management', mgmt_server)
+
+        return server_info
