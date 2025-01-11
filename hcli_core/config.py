@@ -82,7 +82,7 @@ class Config:
                     if parser.has_section("config") and parser.has_option("config", "core.root"):
                         try:
                             root = parser.get("config", "core.root")
-                            if root == 'aggregate':
+                            if root == 'aggregate' or root == 'management':
                                 return root
                             log.warning(f"Invalid core root value: {root}")
                         except ValueError:
@@ -180,7 +180,7 @@ class Config:
                                             log.info("Credentials management: " + str(self.mgmt_credentials))
                                 elif name == "core.root":
                                         core_root = value
-                                        valid = (core_root == 'aggregate')
+                                        valid = (core_root == 'aggregate' or core_root == 'management')
                                         if not valid:
                                             log.warning("Unsupported core root override: " + str(value) + ". Defaulting to None.")
                                             self.core_root = None

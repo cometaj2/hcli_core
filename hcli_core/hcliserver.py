@@ -140,7 +140,7 @@ class LazyServerManager:
         server_type, server = server_info
         templates = []
 
-        if server_type == 'management':
+        if server_type == 'management' or self.core_root == 'management':
             templates.append(self._get_mgmt_app().cfg.template)
         else:  # Core server
             templates.append(self._get_core_app().cfg.template)
@@ -153,8 +153,9 @@ class LazyServerManager:
 
     # Get appropriate server based on port and path
     def get_server_for_request(self, port, path):
-        # For root path in aggregate mode, handle specially
-        if path == '/' and self.core_root == 'aggregate':
+
+        # For root path in aggregate mode, or management override over the core hcli, handle specially
+        if path == '/':
             return self.get_root(port)
 
         server_info = self.get_server(port)
@@ -163,8 +164,12 @@ class LazyServerManager:
 
         server_type, server = server_info
 
-        # In aggregate mode on core port
-        if self.core_root == 'aggregate' and port != self.mgmt_port:
+        # In aggregate mode on core port or in management mode on core port
+        if self.core_root == 'management':
+            mgmtapp = self._get_mgmt_app()
+            server = mgmtapp.server()
+            return ('management', server)
+        elif self.core_root == 'aggregate' and port != self.mgmt_port:
             mgmtapp = self._get_mgmt_app()
 
             # If path belongs to HCO, return management server

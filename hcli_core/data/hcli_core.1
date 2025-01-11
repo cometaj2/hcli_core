@@ -31,10 +31,19 @@ The configuration supports enabling or disabling authentication for the Core HCL
 If enabled, hco, the Management HCLI application used to manage local credentials
 .I always requires authentication.
 .PP
+.SS CORE ROOT OVERRIDE
+In contexts where ports are not an option, such as with serverless AWS Lambda, a core.root override configuration is possible to force the root of the service to behave in different ways. By default, only the 3rd Party HCLI app is presented if core.root is not configured. Otherwise:
+.PP
+- Aggregate - aggregates both the 3rd party HCLI app and hco under the root. See core.root under CONFIGURATION FILE FORMAT.
+.br
+- Management - displaces the 3rd party HCLI app and ONLY presents hco under the root. See core.root under CONFIGURATION FILE FORMAT.
+.PP
 .SS CONFIGURATION FILE FORMAT
 [config]
 .br
 core.auth = <True | False>
+.br
+core.root = <aggregate | management>
 .br
 mgmt.port = <port>
 .br
@@ -44,7 +53,7 @@ mgmt.credentials = <local | remote>
 If authentication is configured for an HCLI application, HCLI Core expects to be able to use a single combined configuration and credentials file.
 .PP
 The default credentials file provided with HCLI Core SHOULD NOT be used but is included as an example, and sets a sensible and bare default configuration.
-A user managed configuration/credentials file path should be provided at startup instead with the following configuration:
+A user managed configuration/credentials file path should be provided at startup instead that looks something like the following configuration:
 .PP
 [config]
 .br

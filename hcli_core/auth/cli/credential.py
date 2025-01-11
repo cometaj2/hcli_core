@@ -697,7 +697,7 @@ class CredentialManager:
                             os.fsync(cred_file.fileno())
                         self._parse_credentials()
 
-                    msg = f"api key {keyid} rotated for user {username}."
+                    msg = f"api key {keyid} rotated by {username} for {owner}."
                     log.info(msg)
                     return keyid + "    " + apikey + "    " + created
 

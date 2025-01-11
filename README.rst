@@ -59,7 +59,7 @@ HCLI client such as Huckle (https://github.com/cometaj2/huckle). The following r
     pip install hcli-core
     pip install gunicorn
     pip install huckle
-    gunicorn --workers=5 --threads=2 -b 127.0.0.1:8000 "hcli_core:connector()"
+    gunicorn --workers=1 --threads=2 -b 127.0.0.1:8000 "hcli_core:connector()"
 
 Usage
 -----
@@ -92,7 +92,7 @@ CLI interface (cli.py) and HCLI template (template.json) requirements:
     pip install hcli-core
     pip install gunicorn
     pip install huckle
-    gunicorn --workers=5 --threads=2 "hcli_core:connector(\"`hcli_hai path`\")"
+    gunicorn --workers=1 --threads=2 "hcli_core:connector(\"`hcli_hai path`\")"
 
 3rd Party HCLI Usage
 --------------------
@@ -133,6 +133,7 @@ Supports
 - Support HTTP API Problem Details [RFC9457] per spec to help with client-side STDERR output.
 - Credentials Management via the hco HCLI.
 - Centralized remote authentication support via hco for HCLI Core services configured for remote credential management
+- Serverless deployment (i.e. AWS Lambda)
 
 To Do
 -----
@@ -150,6 +151,7 @@ Bugs
 
 - No good handling of control over request and response in cli code which can lead to exceptions and empty response client side.
 - The hfm sample HCLI fails disgracefully when copying a remote file name that doesn't exist (server error).
+- Routing can ambiguous and fail if the 3rd party HCLI app's name start with hco in core.root aggregate configuration (template.py owns)
 
 .. |build status| image:: https://circleci.com/gh/cometaj2/hcli_core.svg?style=shield
    :target: https://circleci.com/gh/cometaj2/hcli_core
