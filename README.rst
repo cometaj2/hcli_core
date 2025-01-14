@@ -3,12 +3,12 @@
 HCLI Core
 =========
 
-An HCLI Connector that can be used to expose a REST API as a CLI, via hypertext
+An HCLI Connector that can be used to expose a REST API that behaves as a CLI, via hypertext
 command line interface (HCLI) semantics.
 
 ----
 
-HCLI Core implements an HCLI Connector, a type of Service Connector, as a WSGI application and provides a way
+HCLI Core implements an HCLI Connector, a type of Service Connector, as a WSGI application, and provides a way
 for developers to expose a service hosted CLI, as a REST API, via HCLI semantics. Such an API exposes a "built-in"
 CLI that can be interacted with dynamically with any HCLI client. Up to date, in-band, man page style API/CLI
 documentation is readily available for use to help understand how to interact with the API.
@@ -37,7 +37,7 @@ Help shape HCLI and it's ecosystem by raising issues on github!
 Related HCLI Projects
 ---------------------
 
-- hcli-hc, a python package for an HCL (hc) that can act both as a gcode streamer (e.g. for OpenBuilds Blackbox controller v1.1g) and CNC interface. In other words, this HCLI acts in the same capacity as the OpenBuilds CONTROL software and OpenBuilds Interface CNC Touch hardware to help control a GRBL v1.1g controlled CNC. [5]
+- hcli-hc, a python package for an HCLI (hc) that can act both as a gcode streamer (e.g. for OpenBuilds Blackbox controller v1.1g) and CNC interface. In other words, this HCLI acts in the same capacity as the OpenBuilds CONTROL software and OpenBuilds Interface CNC Touch hardware to help control a GRBL v1.1g controlled CNC. [5]
 
 - hcli-hai, a python package wrapper for an HCLI (hai) that can interact with LLMs via terminal input and output streams. [6]
 
@@ -118,7 +118,7 @@ Supports
 --------
 
 - HTTP/HTTPS.
-- HCLI version 1.0 server semantics for hal+json
+- HCLI version 1.0 server semantics for hal+json.
 - Web Server Gateway Interface (WSGI) through PEP 3333 and Falcon.
 - Bundled Sample HCLIs:
     - jsonf - a simple formatter for JSON.
@@ -132,8 +132,23 @@ Supports
 - HCLI Core API Key (HCOAK) Authencitation. See hcli_core help for details.
 - Support HTTP API Problem Details [RFC9457] per spec to help with client-side STDERR output.
 - Credentials Management via the hco HCLI.
-- Centralized remote authentication support via hco for HCLI Core services configured for remote credential management
-- Serverless deployment (i.e. AWS Lambda)
+- Centralized remote authentication support via hco for HCLI Core services configured for remote credential management.
+- Serverless deployment (i.e. AWS Lambda).
+
+Authentication
+--------------
+
+HCLI Core makes available the deployment of an HCLI Management app (hco) to manage authentication credentials for the deployed 3rd party HCLI service, and can be configured for authentication in two distinct ways:
+
+- local - HCLI Core manages the credentials locally for the 3rd party HCLI app.
+- remote - HCLI Core forwards credentials validation to a remotely hosted hco for 3rd party HCLI app access.
+
+The remote configuration allows for centralized remote authentication support across many deployed HCLIs. This is trivially accomplished via HCLI Core making use of the huckle HCLI client, and via hco and HCLI semantics, to forward validation of provided credentials to a remotely hosted hcli_core service exposing hco. See 'hcli_core help' for details.
+
+Security
+--------
+
+HCLI Core implements a trusted integration model. In other words, 3rd party HCLIs running via HCLI Core MUST be trusted not to interfere with HCLI Core. 3rd party HCLIs are inherently able to do anything that Python can do, and as such, a 3rd party HCLI cannot coherently be isolated from HCLI Core as a security boundary. If a trust boundary needs to be established on authentication grounds, then authentication SHOULD be managed elsewhere (i.e. by another layer on the network or via a remotely hosted hco; see Authentication).
 
 To Do
 -----
@@ -142,9 +157,9 @@ To Do
 - Separate out HCLI applications from HCLI Core to help avoid application dependencies bleeding onto HCLI Core.
 - Rate limiting.
 - Lockout on multiple failed authentications.
-- Better role handling for admin vs users for remote validation
-- Better logging configuration support
-- Role assignment for hco remote validation authorization
+- Better role handling for admin vs users for remote validation.
+- Better logging configuration support.
+- Role assignment for hco remote validation authorization.
 
 Bugs
 ----
