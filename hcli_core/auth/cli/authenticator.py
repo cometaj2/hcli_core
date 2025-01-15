@@ -11,7 +11,7 @@ from hcli_core.error import *
 log = logger.Logger("hcli_core")
 
 
-class AuthMiddleware:
+class AuthenticationMiddleware:
     def __init__(self, name):
         self.cfg = config.Config(name)
 
@@ -103,14 +103,14 @@ class AuthMiddleware:
 
             return authenticated
 
-class SelectiveAuthMiddleware(AuthMiddleware):
+class SelectiveAuthenticationMiddleware(AuthenticationMiddleware):
     def __init__(self, name):
         super().__init__(name)
 
     # Called after Falcon routes the request to a resource
     def process_resource(self, req, resp, resource, params):
         log.debug(f"Process resource called with: {type(resource)}")
-        if getattr(resource, 'requires_auth', False):
+        if getattr(resource, 'requires_authentication', False):
             log.debug("Resource requires auth, authenticating...")
             super().process_request(req, resp)
         else:

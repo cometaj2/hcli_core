@@ -157,6 +157,7 @@ class Config:
                                             if value.lower() == 'true':
                                                 self.auth = True
                                             elif value.lower() == 'false':
+                                                log.warning("Authentication is disabled for the core HCLI app. Make sure this is intentional.")
                                                 self.auth = False
                                         log.info("Core Auth: " + str(self.auth))
                                 elif name == "mgmt.port":

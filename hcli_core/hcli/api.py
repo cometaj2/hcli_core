@@ -11,8 +11,8 @@ from functools import wraps
 
 # Class decorator to mark resources that need authentication.
 # This allows us to navigate the HCLI API surface without authentication except for final execution.
-def requires_auth(cls):
-    cls.requires_auth = True
+def requires_authentication(cls):
+    cls.requires_authentication = True
     return cls
 
 class RootApi:
@@ -66,7 +66,7 @@ class ExecutionApi:
         resp.content_type = "application/hal+json"
         resp.text = execution.ExecutionController(uid, command).serialize()
 
-@requires_auth
+@requires_authentication
 class FinalExecutionApi:
     def on_get(self, req, resp, uid):
         command = req.params['command']

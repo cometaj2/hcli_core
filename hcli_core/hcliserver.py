@@ -40,7 +40,7 @@ class HCLIApp:
     def server(self):
 
         # We setup the HCLI Connector with the selective authentication for final execution only
-        server = falcon.App(middleware=[authenticator.SelectiveAuthMiddleware(self.name)])
+        server = falcon.App(middleware=[authenticator.SelectiveAuthenticationMiddleware(self.name)])
 
         # Register the HCLI error handler
         server.add_error_handler(falcon.HTTPError, handle_hcli_error)
