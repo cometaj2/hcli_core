@@ -111,6 +111,18 @@ class Template:
 
         return None
 
+    """ We attempt to retrieves a specific executable command's allowed roles"""
+    def findPermissionForExecutable(self, command):
+
+        # Find the executable command definition
+        executable = self.findExecutable(command)
+
+        if not executable:
+            return None
+
+        # Return permissions if defined, None otherwise
+        return executable.get('permissions')
+
     # We convert the current command to an executable-like format
     def displayParameter(self, command):
         for index, i in enumerate(self.executable):

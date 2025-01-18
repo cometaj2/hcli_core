@@ -7,16 +7,19 @@ def test_hfm(cleanup):
     #!/bin/bash
     set -x
 
+    export HUCKLE_HOME=~/.huckle_test
+    eval $(huckle env)
+
     # we setup a custom credentials file for the test run
     echo -e "[config]
 core.auth = False" > ./noauth_credentials
 
-    gunicorn --workers=1 --threads=1 -b 0.0.0.0:8000 "hcli_core:connector(plugin_path=\\\"`hcli_core sample hfm`\\\", config_path=\\\"./noauth_credentials\\\")" --daemon --log-file=./gunicorn-noauth.log --error-logfile=./gunicorn-noauth-error.log --capture-output
+    gunicorn --workers=1 --threads=1 -b 0.0.0.0:18000 "hcli_core:connector(plugin_path=\\\"`hcli_core sample hfm`\\\", config_path=\\\"./noauth_credentials\\\")" --daemon --log-file=./gunicorn-noauth.log --error-logfile=./gunicorn-noauth-error.log --capture-output
 
     cat ./gunicorn-noauth.log
     cat ./gunicorn-noauth-error.log
 
-    huckle cli install http://127.0.0.1:8000
+    huckle cli install http://127.0.0.1:18000
     """
 
     p1 = subprocess.Popen(['bash', '-c', setup], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -32,7 +35,8 @@ core.auth = False" > ./noauth_credentials
     #!/bin/bash
     set -x
 
-    export PATH=$PATH:~/.huckle/bin
+    export HUCKLE_HOME=~/.huckle_test
+    eval $(huckle env)
     echo '{"hello":"world"}' > hello.json
     cat hello.json | hfm cp -l ./hello.json
     hfm cp -r hello.json > hello1.json

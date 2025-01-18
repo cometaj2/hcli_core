@@ -770,3 +770,29 @@ class CredentialManager:
         with suppress(Exception):
             if self._lock._is_owned():
                 self._lock.release()
+
+    # Get roles for a user from the credentials file. Returns list of roles.
+    def get_user_roles(self, username):
+        with self._lock:
+            try:
+                self._get_credentials()  # Ensure credentials are up to date
+                if not self._credentials:
+                    return []
+
+                roles = []
+                if username == 'admin':
+                    roles.append('admin')
+
+                # All valid users get 'user' role
+                for section, cred_list in self._credentials.items():
+                    cred_dict = {k: v for cred in cred_list for k, v in cred.items()}
+                    if cred_dict.get('username') == username:
+                        roles.append('user')
+                        break
+
+                return roles
+
+            except Exception as e:
+                msg = f"error getting roles: {str(e)}"
+                log.error(msg)
+                raise HCLIInternalServerError(detail=msg)

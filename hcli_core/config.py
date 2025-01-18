@@ -4,7 +4,7 @@ import stat
 import importlib
 import inspect
 from configparser import ConfigParser
-from threading import Lock
+from threading import Lock, local
 from hcli_core import logger
 import signal
 import atexit
@@ -14,27 +14,37 @@ log = logger.Logger("hcli_core")
 
 class ServerContext:
     _context = {}
-    _lock = Lock()
+
+from threading import local
+
+class ServerContext:
+    _context = local()
+
+    @classmethod
+    def _ensure_context(cls):
+        if not hasattr(cls._context, 'data'):
+            cls._context.data = {}
 
     @classmethod
     def set_current_server(cls, server_type):
-        with cls._lock:
-            cls._context['current_server'] = server_type
+        cls._ensure_context()
+        cls._context.data['current_server'] = server_type
 
     @classmethod
     def get_current_server(cls):
-        with cls._lock:
-            return cls._context.get('current_server', 'core')
+        cls._ensure_context()
+        return cls._context.data.get('current_server', 'core')
 
     @classmethod
     def set_current_user(cls, username):
-        with cls._lock:
-            cls._context['current_user'] = username
+        cls._ensure_context()
+        cls._context.data['current_user'] = username
 
     @classmethod
     def get_current_user(cls):
-        with cls._lock:
-            return cls._context.get('current_user', None)
+        cls._ensure_context()
+        return cls._context.data.get('current_user', None)
+
 
 class Config:
     _instances = {}       # Dictionary to store named instances
@@ -108,7 +118,8 @@ class Config:
             with cls._instance_locks[name]:  # Thread-safe instance creation
                 if name not in cls._instances:  # Double-checked locking
                     instance = super(Config, cls).__new__(cls)
-                    # Initialize instance attributes
+
+                    # core and management service shared values
                     instance.name = name
                     instance.root = os.path.dirname(inspect.getfile(lambda: None))
                     instance.sample = instance.root + "/sample"
@@ -122,6 +133,8 @@ class Config:
                     instance.log = logger.Logger(f"hcli_core")
                     instance.mgmt_credentials = 'local'
                     instance.core_root = None
+
+                    # management specific service value
                     if name == 'management':
                         instance.mgmt_port = 9000
                     cls._instances[name] = instance
@@ -144,56 +157,63 @@ class Config:
                 parser = ConfigParser(interpolation=None)
                 parser.read_file(config_file)
 
-                if parser.has_section("config"):
-                    for section_name in parser.sections():
-                        if section_name == "config":
-                            for name, value in parser.items("config"):
-                                if name == "core.auth":
-                                    if self.name == 'core':
-                                        if value != "False" and value != "True":
-                                            log.warning("Unsupported core auth value: " + str(value) + ". Enabling authentication.")
-                                            self.auth = True
-                                        else:
-                                            if value.lower() == 'true':
-                                                self.auth = True
-                                            elif value.lower() == 'false':
-                                                log.warning("Authentication is disabled for the core HCLI app. Make sure this is intentional.")
-                                                self.auth = False
-                                        log.info("Core Auth: " + str(self.auth))
-                                elif name == "mgmt.port":
-                                    if self.name == 'management':
-                                        port = int(value)
-                                        valid = (1 <= port <= 65536)
-                                        if not valid:
-                                            log.warning("Unsupported management port value: " + str(value) + ". Defaulting to 9000.")
-                                            self.mgmt_port = 9000
-                                        else:
-                                            self.mgmt_port = port
-                                            log.info("Management Port: " + str(self.mgmt_port))
-                                elif name == "mgmt.credentials":
-                                        mgmt_credentials = value
-                                        valid = (mgmt_credentials == 'local' or mgmt_credentials == 'remote')
-                                        if not valid:
-                                            log.warning("Unsupported credentials management mode: " + str(value) + ". Defaulting to local.")
-                                            self.mgmt_credentials = 'local'
-                                        else:
-                                            self.mgmt_credentials = value
-                                            log.info("Credentials management: " + str(self.mgmt_credentials))
-                                elif name == "core.root":
-                                        core_root = value
-                                        valid = (core_root == 'aggregate' or core_root == 'management')
-                                        if not valid:
-                                            log.warning("Unsupported core root override: " + str(value) + ". Defaulting to None.")
-                                            self.core_root = None
-                                        else:
-                                            self.core_root = value
-                                            log.info("Core root override: " + str(self.core_root))
-                            if self.name == 'management':
-                                log.info("Management Auth: " + str(self.auth))
-                            if self.name == 'management' and not parser.has_option("config", "mgmt.port"):
-                                log.info(f"Default Management Port: {self.mgmt_port}")
-                else:
-                    log.critical("No [config] configuration available for " + self.config_file_path + ".")
+                if not parser.has_section("config"):
+                    log.critical(f"No [config] section available in {self.config_file_path}")
+                    assert False
+
+                # Core authentication
+                if self.name == 'core':
+                    if parser.has_option("config", "core.auth"):
+                        value = parser.get("config", "core.auth")
+                        if value.lower() in ('true', 'false'):
+                            self.auth = value.lower() == 'true'
+                            if not self.auth:
+                                log.warning("Authentication is disabled for the core HCLI app. Make sure this is intentional.")
+                        else:
+                            log.warning(f"Invalid core.auth value: {value}. Enabling authentication.")
+                            self.auth = True
+                        log.info(f"Core Authentication: {self.auth}")
+
+                # Management configuration
+                if self.name == 'management':
+                    if parser.has_option("config", "mgmt.port"):
+                        try:
+                            port = int(parser.get("config", "mgmt.port"))
+                            if 1 <= port <= 65535:
+                                self.mgmt_port = port
+                            else:
+                                log.warning(f"Invalid management port value: {port}. Using default: 9000")
+                                self.mgmt_port = 9000
+                        except ValueError:
+                            log.warning(f"Invalid management port value. Using default: 9000")
+                            self.mgmt_port = 9000
+                        log.info(f"Management Port: {self.mgmt_port}")
+                    else:
+                        log.info(f"Default Management Port: {self.mgmt_port}")
+
+                # Common configuration options
+                value = parser.get("config", "mgmt.credentials", fallback=None)
+                if value is not None:
+                    if value in ('local', 'remote'):
+                        self.mgmt_credentials = value
+                    else:
+                        log.warning(f"Invalid credentials management mode: {value}. Using default: local")
+                        self.mgmt_credentials = 'local'
+                    log.info(f"Credentials management: {self.mgmt_credentials}")
+
+                value = parser.get("config", "core.root", fallback=None)
+                if value is not None:
+                    if value in ('aggregate', 'management'):
+                        self.core_root = value
+                    else:
+                        log.warning(f"Invalid core root override: {value}. Using default: None")
+                        self.core_root = None
+                    log.info(f"Core root override: {self.core_root}")
+
+                # Special logging for management auth
+                if self.name == 'management':
+                    log.info(f"Management Auth: {self.auth}")
+
         except Exception as e:
             log.critical(f"Unable to load configuration: {str(e)}")
             assert False

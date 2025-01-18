@@ -31,38 +31,8 @@ def connector(plugin_path=None, config_path=None):
 
         server_type, server = server_info
 
-        # Get authentication info from WSGI environ
-        auth_info = environ.get('HTTP_AUTHORIZATION', '')
-
-        # If using Basic auth, it will be in format "Basic base64(username:password)"
-        if auth_info.startswith('Basic '):
-
-            # Extract and decode the base64 credentials
-            encoded_credentials = auth_info.split(' ')[1]
-            decoded = base64.b64decode(encoded_credentials).decode('utf-8')
-            username = decoded.split(':')[0]
-
-            # Store username in environ for downstream handlers
-            environ['REMOTE_USER'] = username
-            config.ServerContext.set_current_user(username)
-
-        # If using HCOAK Bearer auth, it will be in format "Bearer base64(keyid:hcoak(apikey))"
-        if auth_info.startswith('Bearer '):
-
-            # Extract and decode the base64 credentials
-            encoded_credentials = auth_info.split(' ')[1]
-            decoded = base64.b64decode(encoded_credentials).decode('utf-8')
-            keyid = decoded.split(':')[0]
-
-            # Store username in environ for downstream handlers
-            environ['REMOTE_USER'] = keyid
-            config.ServerContext.set_current_user(keyid)
-
         # Debug logging
-        log.debug("Received request:")
-        log.debug(f"  Port: {server_port}")
-        log.debug(f"  Path: {environ.get('PATH_INFO', '/')}")
-        log.debug(f"  Method: {environ.get('REQUEST_METHOD', 'GET')}")
+        log.debug(f"{environ}")
 
         # Set server context and route request
         config.ServerContext.set_current_server(server_type)

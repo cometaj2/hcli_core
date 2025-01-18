@@ -11,7 +11,10 @@
         },
         {
             "command": "hco passwd {p}",
-            "http": "post"
+            "http": "post",
+            "permissions": {
+                "roles": ["user"]
+            }
         },
         {
             "command": "hco ls",
@@ -19,27 +22,45 @@
         },
         {
             "command": "hco key {p}",
-            "http": "post"
+            "http": "post",
+            "permissions": {
+                "roles": ["user"]
+            }
         },
         {
             "command": "hco key rm {p}",
-            "http": "post"
+            "http": "post",
+            "permissions": {
+                "roles": ["user"]
+            }
         },
         {
             "command": "hco key rotate {p}",
-            "http": "post"
+            "http": "post",
+            "permissions": {
+                "roles": ["user"]
+            }
         },
         {
             "command": "hco key ls",
-            "http": "get"
+            "http": "get",
+            "permissions": {
+                "roles": ["user"]
+            }
         },
         {
             "command": "hco validate basic {p}",
-            "http": "post"
+            "http": "post",
+            "permissions": {
+                "roles": ["user"]
+            }
         },
         {
             "command": "hco validate hcoak {p}",
-            "http": "post"
+            "http": "post",
+            "permissions": {
+                "roles": ["user"]
+            }
         }
     ],
     "cli": [

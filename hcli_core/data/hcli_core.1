@@ -17,7 +17,7 @@ HCLI Core deploys with support for two distinct HCLI:
 .PP
 - The user defined Core HCLI application provided as a plugin path.
 .br
-- The Management HCLI application used to manage local credentials (hco, which can be interacted with using an HCLI client).
+- The management HCLI application used to manage local credentials (hco), which can be interacted with using an HCLI client.
 .PP
 .SH CONFIGURATION
 HCLI Core relies on the use of a configuration file. If none is provided as a file path, the default configuration included with hcli_core
@@ -28,15 +28,15 @@ the EXAMPLE section for details on how to submit a custom configuration file pat
 .PP
 The configuration supports enabling or disabling authentication for the Core HCLI application provided as a plugin path.
 .PP
-If enabled, hco, the Management HCLI application used to manage local credentials
+If enabled, hco is used to manage credentials and authentication and client use
 .I always requires authentication.
 .PP
 .SS CORE ROOT OVERRIDE
 In contexts where ports are not an option, such as with serverless AWS Lambda, a core.root override configuration is possible to force the root of the service to behave in different ways. By default, only the 3rd Party HCLI app is presented if core.root is not configured. Otherwise:
 .PP
-- Aggregate - aggregates both the 3rd party HCLI app and hco under the root. See core.root under CONFIGURATION FILE FORMAT.
+- aggregate - aggregates both the 3rd party HCLI app and hco under the root. See core.root under CONFIGURATION FILE FORMAT.
 .br
-- Management - displaces the 3rd party HCLI app and ONLY presents hco under the root. See core.root under CONFIGURATION FILE FORMAT.
+- management - displaces the 3rd party HCLI app and ONLY presents hco under the root. See core.root under CONFIGURATION FILE FORMAT.
 .PP
 .SS CONFIGURATION FILE FORMAT
 [config]
@@ -71,12 +71,12 @@ password = *
 .br
 salt = *
 .PP
-The HCLI Management application (hco) is made available on the configured management port 'mgmt.port' to help manage user credentials and api keys for both the HCLI Management application and the Core HCLI application. The HCLI Management app will not be made available unless the port is set in the configuration file and the corresponding port is bound at startup. See the EXAMPLE section for a multi port hcli_core launch.
+The hco HCLI application is made available on the configured management port 'mgmt.port' to help manage user credentials and api keys for both hco and the Core HCLI application. The management HCLI app will not be made available unless the port is set in the configuration file and the corresponding port is bound at startup. See the EXAMPLE section for a multi port hcli_core launch.
 .PP
-The default expected administrator is an 'admin' user set with '*' defaults for both the password and salt. On first startup, HCLI Core will generate a random password and will assign it to the admin user. The password is immediately hashed and set in the credentials file and the password is displayed only once in the log output. 
+The default expected administrator is an 'admin' user set with '*' defaults for both the password and salt. On first startup, HCLI Core will generate a random password and will assign it to the admin user. The password is immediately hashed and set in the credentials file, and the password is displayed only once in the log output.
 .I It SHOULD be changed immediately via an HCLI client to maintain security.
 .PP
-HCLI Core can function without any credentials listed in the credentials file but the HCLI Management application will not allow interaction without credentials.
+HCLI Core can function without any credentials listed in the credentials file but hco will not allow interaction without credentials.
 .PP
 .SS HTTP BASIC AUTHENTICATION
 By default, usernames and passwords stored in the credentials file are expected to be used with HTTP Basic Authentication. Note that usernames and passwords can't contain a ':'.
@@ -99,7 +99,7 @@ Bearer base64(GJSLKO5Z5M:hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D
 HCOAK SHOULD NOT be used without HTTPS and is primary intended to be used with 3rd party HCLI applications hosted on HCLI Core.
 .PP
 .SS CENTRALIZED REMOTE AUTHENTICATION
-By its nature, HCLI is composable, so hcli_core is also trivially configurable to forward authentication to a remote centralized HCLI management application via huckle (https://github.com/cometaj2/huckle) and hco. See mgmt.credentials under CONFIGURATION FILE FORMAT and AUTHENTICATION.
+By its nature, HCLI is composable, so hcli_core is also trivially configurable to forward authentication to a remote centralized hco via huckle (https://github.com/cometaj2/huckle) and hco. See mgmt.credentials under CONFIGURATION FILE FORMAT and AUTHENTICATION.
 .PP
 Since HCLI Core uses hco to validate credentials remotely, and since hco is configured via huckle, see huckle help for information on how to setup authentication for hco.
 .PP
@@ -119,6 +119,19 @@ username = <someotheruser>
 password = <hashed password>
 .br
 salt = <salt>
+.PP
+.SH AUTHORIZATION
+The hco HCLI app is always enabled, and HCLI Core will rely on the presence of permissions in the executable portion of the HCLI template for hco bundled with HCLI Core.
+.PP
+All users are subject to permissions except the admin user, who can bypass all permissions and access any resource.
+.br
+Three user roles are made available for use under hco:
+.PP
+- admin - The administrator role
+.br
+- user - A default generic user role for users created by the administrator; primarily used to authenticate against the user defined Core HCLI app.
+.br
+- validator - A validator role for use to validating other users' credentials (e.g. see CENTRALIZED REMOTE AUTHENTICATION)
 .PP
 .SH COMMANDS
 .IP "path"
