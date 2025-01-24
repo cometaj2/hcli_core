@@ -52,14 +52,14 @@
             "command": "hco validate basic {p}",
             "http": "post",
             "permissions": {
-                "roles": ["user"]
+                "roles": ["validator"]
             }
         },
         {
             "command": "hco validate hcoak {p}",
             "http": "post",
             "permissions": {
-                "roles": ["user"]
+                "roles": ["validator"]
             }
         }
     ],

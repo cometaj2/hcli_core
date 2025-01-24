@@ -36,28 +36,15 @@ class Service:
     @requires_auth
     def useradd(self, username):
         requesting_username = config.ServerContext.get_current_user()
-
-        if requesting_username != "admin":
-            msg = f"cannot add user as {requesting_username}."
-            log.warning(msg)
-            raise HCLIAuthorizationError(detail=msg)
-
         return self.cm.useradd(username)
 
     @requires_auth
     def userdel(self, username):
         requesting_username = config.ServerContext.get_current_user()
-
-        if requesting_username != "admin":
-            msg = f"cannot delete user as {requesting_username}."
-            log.warning(msg)
-            raise HCLIAuthorizationError(detail=msg)
-
         return self.cm.userdel(username)
 
     @requires_auth
     def passwd(self, username, password_stream):
-        requesting_username = config.ServerContext.get_current_user()
 
         if not password_stream:
             msg = "no password provided."
@@ -71,8 +58,11 @@ class Service:
             log.error(msg)
             raise HCLIBadRequestError(detail=msg)
 
-        # The admin can update any user
-        if requesting_username != username and not requesting_username == "admin":
+        requesting_username = config.ServerContext.get_current_user()
+        requesting_user_roles = self.cm.get_user_roles(requesting_username)
+
+        # Allow password change if user is changing their own password or has admin role
+        if requesting_username != username and 'admin' not in requesting_user_roles:
             msg = f"the password can only be updated for {requesting_username}."
             log.warning(msg)
             raise HCLIAuthorizationError(detail=msg)
@@ -82,11 +72,6 @@ class Service:
     @requires_auth
     def ls(self):
         requesting_username = config.ServerContext.get_current_user()
-
-        if requesting_username != "admin":
-            msg = f"cannot list users as {requesting_username}."
-            log.warning(msg)
-            raise HCLIAuthorizationError(detail=msg)
 
         users = ""
         if self.cm.credentials:
@@ -100,8 +85,10 @@ class Service:
     @requires_auth
     def key(self, username):
         requesting_username = config.ServerContext.get_current_user()
+        requesting_user_roles = self.cm.get_user_roles(requesting_username)
 
-        if requesting_username != username and not requesting_username == "admin":
+        # Allow password change if user is changing their own password or has admin role
+        if requesting_username != username and 'admin' not in requesting_user_roles:
             msg = f"cannot create api keys for {username} as {requesting_username}."
             log.warning(msg)
             raise HCLIAuthorizationError(detail=msg)
@@ -111,24 +98,20 @@ class Service:
     @requires_auth
     def key_rm(self, keyid):
         requesting_username = config.ServerContext.get_current_user()
-
         return self.cm.delete_key(requesting_username, keyid)
 
     @requires_auth
     def key_rotate(self, keyid):
         requesting_username = config.ServerContext.get_current_user()
-
         return self.cm.rotate_key(requesting_username, keyid)
 
     @requires_auth
     def key_ls(self):
         requesting_username = config.ServerContext.get_current_user()
-
         return self.cm.list_keys(requesting_username)
 
     @requires_auth
     def validate_basic(self, username, password_stream):
-        requesting_username = config.ServerContext.get_current_user()
 
         if not password_stream:
             msg = "no password provided."
@@ -141,6 +124,14 @@ class Service:
             msg = "empty password."
             log.error(msg)
             raise HCLIBadRequestError(detail=msg)
+
+        requesting_username = config.ServerContext.get_current_user()
+        requesting_user_roles = self.cm.get_user_roles(requesting_username)
+
+        if 'admin' not in requesting_user_roles and 'validator' not in requesting_user_roles:
+            msg = f"{requesting_username} cannot validate credentials without the validator role."
+            log.warning(msg)
+            raise HCLIAuthorizationError(detail=msg)
 
         valid = self.cm.validate(username, password)
         result = "invalid"
@@ -157,7 +148,6 @@ class Service:
 
     @requires_auth
     def validate_hcoak(self, keyid, apikey_stream):
-        requesting_username = config.ServerContext.get_current_user()
 
         if not apikey_stream:
             msg = "no apikey provided."
@@ -175,6 +165,14 @@ class Service:
         if valid is True:
             result = "valid"
 
+        requesting_username = config.ServerContext.get_current_user()
+        requesting_user_roles = self.cm.get_user_roles(requesting_username)
+
+        if 'admin' not in requesting_user_roles and 'validator' not in requesting_user_roles:
+            msg = f"{requesting_username} cannot validate credentials without the validator role."
+            log.warning(msg)
+            raise HCLIAuthorizationError(detail=msg)
+
         msg = f"{requesting_username} is validating keyid {keyid} for HCLI Core API Key Authentication. {result}."
         if result == "valid":
             log.info(msg)
@@ -185,5 +183,4 @@ class Service:
 
     def _cfg(self):
         context = config.ServerContext.get_current_server()
-
         return config.Config(context)

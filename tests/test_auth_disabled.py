@@ -2,7 +2,7 @@ import subprocess
 import os
 import pytest
 
-def test_hfm(cleanup):
+def test_success_hfm(cleanup):
     setup = """
     #!/bin/bash
     set -x
@@ -37,7 +37,7 @@ core.auth = False" > ./noauth_credentials
 
     export HUCKLE_HOME=~/.huckle_test
     eval $(huckle env)
-    echo '{"hello":"world"}' > hello.json
+    echo -n '{"hello":"world"}' > hello.json
     cat hello.json | hfm cp -l ./hello.json
     hfm cp -r hello.json > hello1.json
     kill $(ps aux | grep '[g]unicorn' | awk '{print $2}')
@@ -50,11 +50,5 @@ core.auth = False" > ./noauth_credentials
     out, err = p2.communicate()
     result = out.decode('utf-8')
 
-    if out is not None:
-        print(f"STDOUT: {out}")
-
-    if err is not None:
-        print(f"STDERR: {err}")
-
-    assert(result == '{"hello":"world"}\n')
+    assert('{"hello":"world"}' == result)
 

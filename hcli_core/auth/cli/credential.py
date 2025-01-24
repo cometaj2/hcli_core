@@ -627,7 +627,8 @@ class CredentialManager:
                         raise HCLINotFoundError(detail=msg)
 
                     # Check permissions - allow if user is owner or is admin
-                    is_admin = username == "admin"  # You might want to adjust this check based on your admin detection logic
+                    requesting_user_roles = self.get_user_roles(requesting_username)
+                    is_admin = 'admin' in requesting_user_roles
                     if not is_admin and owner != username:
                         msg = f"user {username} not authorized to delete key {keyid} owned by {owner}."
                         log.warning(msg)
@@ -677,7 +678,8 @@ class CredentialManager:
                         raise HCLINotFoundError(detail=msg)
 
                     # Check permissions - allow if user is owner or is admin
-                    is_admin = username == "admin"  # You might want to adjust this check based on your admin detection logic
+                    requesting_user_roles = self.get_user_roles(requesting_username)
+                    is_admin = 'admin' in requesting_user_roles
                     if not is_admin and owner != username:
                         msg = f"user {username} cannot rotate key {keyid} owned by {owner}."
                         log.warning(msg)
@@ -724,8 +726,10 @@ class CredentialManager:
                             continue
 
                         owner = parser.get(section, "owner")
+
                         # Only show keys if user is admin or owns the key
-                        is_admin = username == "admin"
+                        requesting_user_roles = self.get_user_roles(requesting_username)
+                        is_admin = 'admin' in requesting_user_roles
                         if not is_admin and owner != username:
                             continue
 
@@ -780,15 +784,21 @@ class CredentialManager:
                     return []
 
                 roles = []
-                if username == 'admin':
-                    roles.append('admin')
-
-                # All valid users get 'user' role
                 for section, cred_list in self._credentials.items():
                     cred_dict = {k: v for cred in cred_list for k, v in cred.items()}
                     if cred_dict.get('username') == username:
-                        roles.append('user')
+                        # Get roles string from config and split by comma
+                        if 'roles' in cred_dict:
+                            # Split by comma and strip whitespace from each role
+                            roles.extend([role.strip() for role in cred_dict['roles'].split(',')])
+                        else:
+                            # If no roles specified, add default 'user' role
+                            roles.append('user')
                         break
+
+                # Special case for admin user
+                if username == 'admin' and 'admin' not in roles:
+                    roles.append('admin')
 
                 return roles
 

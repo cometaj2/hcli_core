@@ -171,19 +171,9 @@ class AuthorizationMiddleware:
         permissions = self.cfg.template.findPermissionForExecutable(command)
 
         if permissions is not None:
-
-            # Check roles
             if any(role in permissions.get('roles', []) for role in user_roles):
                 authorized = True
                 return authorized
-
-            # Check self permissions
-            if 'self' in permissions and any(role in permissions['self'] for role in user_roles):
-                command_parts = command.split()
-                if len(command_parts) > 2:
-                    target = command_parts[2]
-                    authorized = (username == target)
-                    return authorized
 
         return authorized
 

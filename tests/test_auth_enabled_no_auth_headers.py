@@ -2,7 +2,7 @@ import subprocess
 import os
 import pytest
 
-def test_hco_key_admin(gunicorn_server_auth, cleanup):
+def test_error_hco_key_admin(gunicorn_server_auth, cleanup):
     hello = """
     #!/bin/bash
     set -x
@@ -14,7 +14,6 @@ def test_hco_key_admin(gunicorn_server_auth, cleanup):
     huckle cli config hco auth.mode skip
 
     hco key admin
-
     """
 
     p2 = subprocess.Popen(['bash', '-c', hello], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -27,7 +26,7 @@ def test_hco_key_admin(gunicorn_server_auth, cleanup):
 
     assert 'no authorization header' in error.lower()
 
-def test_jsonf(gunicorn_server_auth, cleanup):
+def test_error_jsonf_go(gunicorn_server_auth, cleanup):
     hello = """
     #!/bin/bash
 

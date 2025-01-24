@@ -5,9 +5,10 @@ The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [3.5.0]
-- Add critical log output for core auth being disabled
+- Add warning log output for core auth being disabled
 - Add role based authorization for hco
 - Update tests to avoid impacting a default local installation of huckle
+- Update tests with additional tests
 
 ## [3.4.1]
 - Add clarifications in the README about authentication and security considerations
