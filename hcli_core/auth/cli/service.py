@@ -78,7 +78,9 @@ class Service:
             for section, creds in self.cm.credentials.items():
                 for cred in creds:
                     if "username" in cred:
-                        users += cred["username"] + "\n"
+                        user = cred["username"]
+                        user_roles = self.cm.get_user_roles(user)
+                        users += user + "    " + str(", ".join(user_roles)) + "\n"
 
         return users.rstrip()
 

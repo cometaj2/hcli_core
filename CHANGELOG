@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add role based authorization for hco
 - Update tests to avoid impacting a default local installation of huckle
 - Update tests with additional tests
+- Update hco ls to list user roles
 
 ## [3.4.1]
 - Add clarifications in the README about authentication and security considerations

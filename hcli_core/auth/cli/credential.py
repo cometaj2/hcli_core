@@ -793,7 +793,8 @@ class CredentialManager:
                             roles.extend([role.strip() for role in cred_dict['roles'].split(',')])
                         else:
                             # If no roles specified, add default 'user' role
-                            roles.append('user')
+                            if not username == 'admin':
+                                roles.append('user')
                         break
 
                 # Special case for admin user
