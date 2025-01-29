@@ -105,7 +105,7 @@
                 {
                     "href": "hcols",
                     "name": "ls",
-                    "description": "List all users"
+                    "description": "List all users and their associated role(s)"
                 },
                 {
                     "href": "hcokey",
@@ -200,11 +200,11 @@
                 },
                 {
                     "name": "description",
-                    "description": "List all users in the credentials file."
+                    "description": "List all users and associated roles in the credentials file."
                 },
                 {
                     "name": "example",
-                    "description": "hco ls | column"
+                    "description": "hco ls"
                 }
             ]
         },

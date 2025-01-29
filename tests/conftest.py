@@ -72,7 +72,7 @@ def cleanup():
     #!/bin/bash
     set -x  # Print commands as they execute
 
-    #rm -rf ~/.huckle_test
+    rm -rf ~/.huckle_test
     export HUCKLE_HOME=$HUCKLE_HOME_TEST
 
     # Force kill any remaining processes

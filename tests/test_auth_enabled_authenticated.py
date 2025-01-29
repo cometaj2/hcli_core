@@ -75,7 +75,7 @@ def test_success_hco_useradd_newuser_as_admin(gunicorn_server_auth, cleanup):
     out, err = p2.communicate()
     result = out.decode('utf-8')
 
-    assert('admin\nnewuser' == result)
+    assert('admin    admin\nnewuser    user' == result)
 
 def test_success_hco_userdel_newuser_as_admin(gunicorn_server_auth, cleanup):
     hello = """
@@ -92,7 +92,7 @@ def test_success_hco_userdel_newuser_as_admin(gunicorn_server_auth, cleanup):
     out, err = p2.communicate()
     result = out.decode('utf-8')
 
-    assert('admin' == result)
+    assert('admin    admin' == result)
 
 def test_success_hco_useradd_hello_as_admin(gunicorn_server_auth, cleanup):
     hello = """
@@ -111,7 +111,7 @@ def test_success_hco_useradd_hello_as_admin(gunicorn_server_auth, cleanup):
     out, err = p2.communicate()
     result = out.decode('utf-8')
 
-    assert('admin\nhello' == result)
+    assert('admin    admin\nhello    user' == result)
 
 def test_success_hco_validate_basic_hello_as_admin(gunicorn_server_auth, cleanup):
     hello = """
