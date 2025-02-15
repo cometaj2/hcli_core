@@ -74,7 +74,7 @@ class AuthenticationMiddleware:
         if auth_type.lower() == 'basic':
             decoded = base64.b64decode(auth_string).decode('utf-8')
             username, password = decoded.split(':', 1)
-            authenticated = self.cm.validate(username, password)
+            authenticated = self.cm.validate_basic(username, password)
 
             if not authenticated:
                 msg = 'invalid credentials for username: ' + username + "."

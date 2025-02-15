@@ -2,7 +2,7 @@ import subprocess
 import os
 import pytest
 
-def test_success_hfm(cleanup):
+def test_hfm_cp(cleanup):
     setup = """
     #!/bin/bash
     set -x
@@ -50,5 +50,5 @@ core.auth = False" > ./noauth_credentials
     out, err = p2.communicate()
     result = out.decode('utf-8')
 
-    assert('{"hello":"world"}' == result)
+    assert('{"hello":"world"}\n' == result)
 

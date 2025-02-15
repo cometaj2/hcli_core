@@ -79,8 +79,7 @@ class Service:
                 for cred in creds:
                     if "username" in cred:
                         user = cred["username"]
-                        user_roles = self.cm.get_user_roles(user)
-                        users += user + "    " + str(", ".join(user_roles)) + "\n"
+                        users += user + "\n"
 
         return users.rstrip()
 
@@ -135,7 +134,7 @@ class Service:
             log.warning(msg)
             raise HCLIAuthorizationError(detail=msg)
 
-        valid = self.cm.validate(username, password)
+        valid = self.cm.validate_basic(username, password)
         result = "invalid"
         if valid is True:
             result = "valid"
@@ -182,6 +181,29 @@ class Service:
             log.warning(msg)
 
         return result
+
+    @requires_auth
+    def role_add(self, username, role):
+        return self.cm.add_user_role(username, role)
+
+    @requires_auth
+    def role_rm(self, username, role):
+        return self.cm.remove_user_role(username, role)
+
+    @requires_auth
+    def role_ls(self):
+        requesting_username = config.ServerContext.get_current_user()
+
+        users = ""
+        if self.cm.credentials:
+            for section, creds in self.cm.credentials.items():
+                for cred in creds:
+                    if "username" in cred:
+                        user = cred["username"]
+                        user_roles = self.cm.get_user_roles(user)
+                        users += user + "    " + str(", ".join(user_roles)) + "\n"
+
+        return users.rstrip()
 
     def _cfg(self):
         context = config.ServerContext.get_current_server()

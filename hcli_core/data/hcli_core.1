@@ -99,9 +99,9 @@ Bearer base64(GJSLKO5Z5M:hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D
 HCOAK SHOULD NOT be used without HTTPS and is primary intended to be used with 3rd party HCLI applications hosted on HCLI Core.
 .PP
 .SS CENTRALIZED REMOTE AUTHENTICATION
-By its nature, HCLI is composable, so hcli_core is also trivially configurable to forward authentication to a remote centralized hco via huckle (https://github.com/cometaj2/huckle) and hco. See mgmt.credentials under CONFIGURATION FILE FORMAT and AUTHENTICATION.
+By its nature, HCLI is composable, so HCLI Core is also trivially configurable to forward authentication to a remote centralized hco via huckle (https://github.com/cometaj2/huckle). See mgmt.credentials under CONFIGURATION FILE FORMAT and AUTHENTICATION.
 .PP
-Since HCLI Core uses hco to validate credentials remotely, and since hco is configured via huckle, see huckle help for information on how to setup authentication for hco.
+Since HCLI Core uses hco to validate credentials, and since hco is configured via huckle, see huckle help for information on how to setup authentication for hco.
 .PP
 .SS CREDENTIALS FILE FORMAT
 [default]
@@ -131,7 +131,7 @@ Three user roles are made available for use under hco:
 .br
 - user - A default generic user role for users created by the administrator; primarily used to authenticate against the user defined Core HCLI app.
 .br
-- validator - A validator role for use to validating other users' credentials (e.g. see CENTRALIZED REMOTE AUTHENTICATION)
+- validator - A validator role for use to validate other users' credentials (e.g. see CENTRALIZED REMOTE AUTHENTICATION)
 .PP
 .SH COMMANDS
 .IP "path"

@@ -61,6 +61,18 @@
             "permissions": {
                 "roles": ["validator"]
             }
+        },
+        {
+            "command": "hco role add {p} {p}",
+            "http": "post"
+        },
+        {
+            "command": "hco role rm {p} {p}",
+            "http": "post"
+        },
+        {
+            "command": "hco role ls",
+            "http": "get"
         }
     ],
     "cli": [
@@ -74,7 +86,7 @@
                 },
                 {
                     "name": "synopsis",
-                    "description": "hco <command> [username]"
+                    "description": "hco <command> <parameters>"
                 },
                 {
                     "name": "description",
@@ -90,7 +102,7 @@
                 {
                     "href": "hcouseradd",
                     "name": "useradd",
-                    "description": "Create a new user account"
+                    "description": "Create a user account"
                 },
                 {
                     "href": "hcouserdel",
@@ -100,12 +112,12 @@
                 {
                     "href": "hcopasswd",
                     "name": "passwd",
-                    "description": "Change user password"
+                    "description": "Change a user password"
                 },
                 {
                     "href": "hcols",
                     "name": "ls",
-                    "description": "List all users and their associated role(s)"
+                    "description": "List all users"
                 },
                 {
                     "href": "hcokey",
@@ -116,6 +128,11 @@
                     "href": "hcovalidate",
                     "name": "validate",
                     "description": "Validate credentials"
+                },
+                {
+                    "href": "hcorole",
+                    "name": "role",
+                    "description": "User role management"
                 }
             ]
         },
@@ -125,7 +142,7 @@
             "section": [
                 {
                     "name": "name",
-                    "description": "useradd - create a new user account"
+                    "description": "useradd - create a user account"
                 },
                 {
                     "name": "synopsis",
@@ -133,7 +150,7 @@
                 },
                 {
                     "name": "description",
-                    "description": "Creates a new user account with the specified username. The account will be created with a locked password; use passwd to set the password."
+                    "description": "Creates a user account with the specified username. The account will be created with a locked password; use passwd to set the password."
                 }
             ],
             "parameter": {
@@ -167,11 +184,11 @@
             "section": [
                 {
                     "name": "name",
-                    "description": "passwd - change user password"
+                    "description": "passwd - change a user password"
                 },
                 {
                     "name": "synopsis",
-                    "description": "echo 'password' | hco passwd <username>"
+                    "description": "hco passwd <username>"
                 },
                 {
                     "name": "description",
@@ -192,7 +209,7 @@
             "section": [
                 {
                     "name": "name",
-                    "description": "ls - list users and roles"
+                    "description": "ls - list users"
                 },
                 {
                     "name": "synopsis",
@@ -200,11 +217,11 @@
                 },
                 {
                     "name": "description",
-                    "description": "List all users and associated roles in the credentials file."
+                    "description": "List all users."
                 },
                 {
                     "name": "example",
-                    "description": "hco ls"
+                    "description": "hco ls | column"
                 }
             ]
         },
@@ -218,7 +235,7 @@
                 },
                 {
                     "name": "synopsis",
-                    "description": "hco key <username>"
+                    "description": "hco key {<username> | rm <keyid> | rotate <keyid> | ls}"
                 },
                 {
                     "name": "description",
@@ -310,7 +327,7 @@
                 },
                 {
                     "name": "synopsis",
-                    "description": "hco key rotate <keyid>"
+                    "description": "hco key ls"
                 },
                 {
                     "name": "description",
@@ -332,7 +349,7 @@
                 },
                 {
                     "name": "synopsis",
-                    "description": "hco validate <type> <username | keyid>"
+                    "description": "hco validate {basic <username>| hcoak <keyid>}"
                 },
                 {
                     "name": "description",
@@ -393,6 +410,101 @@
             "parameter": {
                 "href": "hcovalidatehcoakparameter"
             }
+        },
+        {
+            "id": "hcorole",
+            "name": "role",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "role - user role management"
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hco role {add <username> <role> | rm <username> <role> | ls}"
+                },
+                {
+                    "name": "description",
+                    "description": "Allows for user role creation, deletion, and listing."
+                }
+            ],
+            "command": [
+                {
+                    "href": "hcoroleadd",
+                    "name": "add",
+                    "description": "Add a role to a user"
+                },
+                {
+                    "href": "hcorolerm",
+                    "name": "rm",
+                    "description": "Remove a role for a user"
+                },
+                {
+                    "href": "hcorolels",
+                    "name": "ls",
+                    "description": "List all users and associated roles."
+                }
+            ]
+        },
+        {
+            "id": "hcoroleadd",
+            "name": "add",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "add - add a role to a user"
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hco role add <username> <role>"
+                },
+                {
+                    "name": "description",
+                    "description": "Add a role to a user. Note that only an administrator can manage user roles."
+                }
+            ],
+            "parameter": {
+                "href": "hcoroleaddparameter"
+            }
+        },
+        {
+            "id": "hcorolerm",
+            "name": "rm",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "rm - remove a role for a user"
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hco role rm <username> <role>"
+                },
+                {
+                    "name": "description",
+                    "description": "Remove a role for a user. Note that only an administrator can manage user roles."
+                }
+            ],
+            "parameter": {
+                "href": "hcorolermparameter"
+            }
+        },
+        {
+            "id": "hcorolels",
+            "name": "ls",
+            "section": [
+                {
+                    "name": "name",
+                    "description": "ls - list all users and associated roles"
+                },
+                {
+                    "name": "synopsis",
+                    "description": "hco role ls"
+                },
+                {
+                    "name": "description",
+                    "description": "List all users and associated roles. Note that only an administrator can manage user roles."
+                }
+            ]
         }
     ]
 }

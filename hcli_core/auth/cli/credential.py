@@ -321,7 +321,7 @@ class CredentialManager:
                 log.error(msg)
                 raise HCLIInternalServerError(detail=msg)
 
-    def validate(self, username, password):
+    def validate_basic(self, username, password):
         with self._lock:
             try:
                 cfg = config.Config(config.ServerContext.get_current_server())
@@ -627,7 +627,7 @@ class CredentialManager:
                         raise HCLINotFoundError(detail=msg)
 
                     # Check permissions - allow if user is owner or is admin
-                    requesting_user_roles = self.get_user_roles(requesting_username)
+                    requesting_user_roles = self.get_user_roles(username)
                     is_admin = 'admin' in requesting_user_roles
                     if not is_admin and owner != username:
                         msg = f"user {username} not authorized to delete key {keyid} owned by {owner}."
@@ -678,7 +678,7 @@ class CredentialManager:
                         raise HCLINotFoundError(detail=msg)
 
                     # Check permissions - allow if user is owner or is admin
-                    requesting_user_roles = self.get_user_roles(requesting_username)
+                    requesting_user_roles = self.get_user_roles(username)
                     is_admin = 'admin' in requesting_user_roles
                     if not is_admin and owner != username:
                         msg = f"user {username} cannot rotate key {keyid} owned by {owner}."
@@ -728,7 +728,7 @@ class CredentialManager:
                         owner = parser.get(section, "owner")
 
                         # Only show keys if user is admin or owns the key
-                        requesting_user_roles = self.get_user_roles(requesting_username)
+                        requesting_user_roles = self.get_user_roles(username)
                         is_admin = 'admin' in requesting_user_roles
                         if not is_admin and owner != username:
                             continue
@@ -805,5 +805,124 @@ class CredentialManager:
 
             except Exception as e:
                 msg = f"error getting roles: {str(e)}"
+                log.error(msg)
+                raise HCLIInternalServerError(detail=msg)
+
+    def add_user_role(self, username, role):
+        with self._lock:
+            try:
+                with open(self.config_file_path, 'r') as cred_file:
+                    parser = ConfigParser(interpolation=None)
+                    parser.read_file(cred_file)
+
+                    # Find and update the user's credentials
+                    found = False
+                    for section in parser.sections():
+                        if parser.has_option(section, 'username') and parser.get(section, 'username') == username:
+                            # Get current roles string
+                            current_roles_str = parser.get(section, 'roles', fallback='')
+
+                            # Convert to list and clean whitespace
+                            current_roles = [r.strip() for r in current_roles_str.split(',')] if current_roles_str else []
+
+                            # Add role if not present
+                            if role not in current_roles:
+                                current_roles.append(role)
+
+                            # Handle special cases
+                            if username == 'admin' and 'admin' not in current_roles:
+                                current_roles.append('admin')
+                            elif username != 'admin' and 'user' not in current_roles:
+                                current_roles.append('user')
+
+                            # Filter out empty strings and join
+                            roles = ','.join([r for r in current_roles if r])
+
+                            # Update config
+                            parser.set(section, 'roles', roles)
+                            found = True
+                            break
+
+                    if not found:
+                        msg = f"user {username} not found."
+                        log.warning(msg)
+                        raise HCLINotFoundError(detail=msg)
+
+                    # Write back to file
+                    with self._write_lock():
+                        with open(self.config_file_path, 'w') as cred_file:
+                            parser.write(cred_file)
+                            cred_file.flush()
+                            os.fsync(cred_file.fileno())
+                        self._parse_credentials()
+
+                    msg = f"roles updated for user {username}."
+                    log.info(msg)
+                    return ""
+
+            except HCLIError:
+                raise
+            except Exception as e:
+                msg = f"error updating credentials: {str(e)}"
+                log.error(msg)
+                raise HCLIInternalServerError(detail=msg)
+
+    def remove_user_role(self, username, role):
+        with self._lock:
+            try:
+                with open(self.config_file_path, 'r') as cred_file:
+                    parser = ConfigParser(interpolation=None)
+                    parser.read_file(cred_file)
+
+                    # Find and update the user's credentials
+                    found = False
+                    for section in parser.sections():
+                        if parser.has_option(section, 'username') and parser.get(section, 'username') == username:
+                            # Get current roles string
+                            current_roles_str = parser.get(section, 'roles', fallback='')
+
+                            # Convert to list and clean whitespace
+                            current_roles = [r.strip() for r in current_roles_str.split(',')] if current_roles_str else []
+
+                            # Remove role if present
+                            if role in current_roles:
+                                current_roles.remove(role)
+
+                            # Handle special cases
+                            if username == 'admin':
+                                if 'admin' not in current_roles:
+                                    current_roles.append('admin')
+                            elif 'user' not in current_roles:
+                                current_roles.append('user')
+
+                            # Filter out empty strings and join
+                            roles = ','.join([r for r in current_roles if r])
+
+                            # Update config
+                            parser.set(section, 'roles', roles)
+                            found = True
+                            break
+
+                    if not found:
+                        msg = f"user {username} not found."
+                        log.warning(msg)
+                        raise HCLINotFoundError(detail=msg)
+
+                    # Write back to file
+                    with self._write_lock():
+                        with open(self.config_file_path, 'w') as cred_file:
+                            parser.write(cred_file)
+                            cred_file.flush()
+                            os.fsync(cred_file.fileno())
+                        self._parse_credentials()
+
+                    msg = f"roles updated for user {username}."
+                    log.info(msg)
+                    return ""
+
+            except HCLIError:
+                raise
+            except Exception as e:
+                msg = f"error updating credentials: {str(e)}"
                 log.error(msg)
                 raise HCLIInternalServerError(detail=msg)

@@ -104,4 +104,19 @@ class CLI:
                 status = self.service.validate_hcoak(keyid, f)
                 return io.BytesIO((status).encode())
 
+        elif command == "role":
+            if self.commands[2] == "add":
+                username = self.commands[3]
+                role = self.commands[4]
+                roleadd = self.service.role_add(username, role)
+
+            elif self.commands[2] == "rm":
+                username = self.commands[3]
+                role = self.commands[4]
+                rolerm = self.service.role_rm(username, role)
+
+            elif self.commands[2] == "ls":
+                rolels = self.service.role_ls()
+                return io.BytesIO((rolels).encode())
+
         return None

@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [3.5.0]
 - Add warning log output for core auth being disabled
 - Add role based authorization for hco
+- Add additional tests
+- Add dependency range for huckle to avoid hard locking the dependency
 - Update tests to avoid impacting a default local installation of huckle
-- Update tests with additional tests
 - Update hco ls to list user roles
+- Update to the latest version of huckle
 
 ## [3.4.1]
 - Add clarifications in the README about authentication and security considerations

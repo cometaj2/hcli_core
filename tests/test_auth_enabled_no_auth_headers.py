@@ -2,7 +2,7 @@ import subprocess
 import os
 import pytest
 
-def test_error_hco_key_admin(gunicorn_server_auth, cleanup):
+def test_hco_key_admin(gunicorn_server_auth, cleanup):
     hello = """
     #!/bin/bash
     set -x
@@ -26,7 +26,7 @@ def test_error_hco_key_admin(gunicorn_server_auth, cleanup):
 
     assert 'no authorization header' in error.lower()
 
-def test_error_jsonf_go(gunicorn_server_auth, cleanup):
+def test_jsonf_go(gunicorn_server_auth, cleanup):
     hello = """
     #!/bin/bash
 
