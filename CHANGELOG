@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.6.0]
+- Add remote authentication tests
+- Fix version command output
+
 ## [3.5.0]
 - Add warning log output for core auth being disabled
 - Add role based authorization for hco
