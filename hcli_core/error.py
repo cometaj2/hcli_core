@@ -1,33 +1,11 @@
-import json
-import falcon
-
-# Error handler for HCLI exceptions.
-def handle_hcli_error(req, resp, ex, params):
-    if isinstance(ex, HCLIError):
-        resp.status = getattr(falcon, f'HTTP_{ex.status}')
-        resp.content_type = 'application/problem+json'
-        resp.text = json.dumps(ex.to_dict(), indent=4)
-    elif isinstance(ex, falcon.HTTPError):
-        error_dict = {
-            "type": f"about:blank",
-            "title": ex.title or str(ex),
-            "status": ex.status,
-            "detail": ex.description
-        }
-        resp.status = ex.status
-        resp.content_type = 'application/problem+json'
-        resp.text = json.dumps(error_dict, indent=4)
-    else:
-        raise ex
-
-# Base exception class for HCLI errors implementing RFC9457.
+# Base exception class for errors implementing RFC9457 (problem details).
 class HCLIError(Exception):
 
     def __init__(self, title, status, detail=None, type_uri=None, instance=None, extensions=None):
         super().__init__(title)
         self.title = title
         self.status = status
-        self.detail = "hcli_core: " + detail
+        self.detail = detail
         self.type_uri = type_uri or f"about:blank"
         self.instance = instance
         self.extensions = extensions or {}
@@ -50,44 +28,6 @@ class HCLIError(Exception):
 
         return problem_detail
 
-# Falcon error handler for converting HCLIErrors to proper HTTP responses.
-class HCLIErrorHandler:
-
-    def __init__(self):
-        self.handle_exceptions = (HCLIError, falcon.HTTPError)
-
-    def __call__(self, ex, req, resp, params):
-        if isinstance(ex, HCLIError):
-            resp.status = falcon.code_to_http_status(ex.status)
-            resp.content_type = "application/problem+json"
-            resp.text = json.dumps(ex.to_dict(), indent=4)
-
-        elif isinstance(ex, falcon.HTTPError):
-            # Convert Falcon's built-in errors to Problem Details format
-            error_dict = {
-                "type": f"about:blank",
-                "title": ex.title or str(ex),
-                "status": ex.status,
-                "detail": ex.description
-            }
-            resp.status = falcon.code_to_http_status(ex.status)
-            resp.content_type = "application/problem+json"
-            resp.text = json.dumps(error_dict, indent=4)
-
-        else:
-            # Unexpected errors should be logged and return a 500
-            log.error(f"Unexpected error: {str(ex)}")
-            error_dict = {
-                "type": "about:blank",
-                "title": "Internal Server Error",
-                "status": 500,
-                "detail": "An unexpected error occurred"
-            }
-            resp.status = falcon.HTTP_500
-            resp.content_type = "application/problem+json"
-            resp.text = json.dumps(error_dict, indent=4)
-
-
 # 4xx Client Errors
 class HCLIBadRequestError(HCLIError):
     def __init__(self, detail=None, instance=None):
@@ -101,7 +41,7 @@ class HCLIBadRequestError(HCLIError):
 class HCLIAuthenticationError(HCLIError):
     def __init__(self, detail=None, instance=None):
         super().__init__(
-            title="Authentication Required",
+            title="Unauthorized",
             status=401,
             detail=detail,
             instance=instance
@@ -119,7 +59,7 @@ class HCLIPaymentRequiredError(HCLIError):
 class HCLIAuthorizationError(HCLIError):
     def __init__(self, detail=None, instance=None):
         super().__init__(
-            title="Permission Denied",
+            title="Forbidden",
             status=403,
             detail=detail,
             instance=instance
@@ -128,7 +68,7 @@ class HCLIAuthorizationError(HCLIError):
 class HCLINotFoundError(HCLIError):
     def __init__(self, detail=None, instance=None):
         super().__init__(
-            title="Resource Not Found",
+            title="Not Found",
             status=404,
             detail=detail,
             instance=instance
@@ -173,7 +113,7 @@ class HCLIRequestTimeoutError(HCLIError):
 class HCLIConflictError(HCLIError):
     def __init__(self, detail=None, instance=None):
         super().__init__(
-            title="Resource Conflict",
+            title="Conflict",
             status=409,
             detail=detail,
             instance=instance
@@ -182,7 +122,7 @@ class HCLIConflictError(HCLIError):
 class HCLIGoneError(HCLIError):
     def __init__(self, detail=None, instance=None):
         super().__init__(
-            title="Resource No Longer Available",
+            title="Gone",
             status=410,
             detail=detail,
             instance=instance
@@ -270,20 +210,18 @@ class HCLIMisdirectedRequestError(HCLIError):
         )
 
 class HCLIUnprocessableEntityError(HCLIError):
-    def __init__(self, detail=None, instance=None, field_errors=None):
-        extensions = {"field_errors": field_errors} if field_errors else None
+    def __init__(self, detail=None, instance=None):
         super().__init__(
             title="Unprocessable Entity",
             status=422,
             detail=detail,
-            instance=instance,
-            extensions=extensions
+            instance=instance
         )
 
 class HCLILockedError(HCLIError):
     def __init__(self, detail=None, instance=None):
         super().__init__(
-            title="Resource Locked",
+            title="Locked",
             status=423,
             detail=detail,
             instance=instance
@@ -326,14 +264,12 @@ class HCLIPreconditionRequiredError(HCLIError):
         )
 
 class HCLITooManyRequestsError(HCLIError):
-    def __init__(self, detail=None, instance=None, retry_after=None):
-        extensions = {"retry_after": retry_after} if retry_after else None
+    def __init__(self, detail=None, instance=None):
         super().__init__(
             title="Too Many Requests",
             status=429,
             detail=detail,
-            instance=instance,
-            extensions=extensions
+            instance=instance
         )
 
 class HCLIRequestHeaderFieldsTooLargeError(HCLIError):
@@ -384,14 +320,12 @@ class HCLIBadGatewayError(HCLIError):
         )
 
 class HCLIServiceUnavailableError(HCLIError):
-    def __init__(self, detail=None, instance=None, retry_after=None):
-        extensions = {"retry_after": retry_after} if retry_after else None
+    def __init__(self, detail=None, instance=None):
         super().__init__(
             title="Service Unavailable",
             status=503,
             detail=detail,
-            instance=instance,
-            extensions=extensions
+            instance=instance
         )
 
 class HCLIGatewayTimeoutError(HCLIError):

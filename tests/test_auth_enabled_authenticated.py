@@ -87,7 +87,7 @@ def test_hco_key_admin_as_admin(gunicorn_server_auth, cleanup):
     result = out.decode('utf-8')
     error = err.decode('utf-8')
 
-    assert f"hcli_core: api key {key_id} not found.\n" in error
+    assert f"api key {key_id} not found.\n" in error
 
 def test_hco_ls_as_admin(gunicorn_server_auth, cleanup):
     hello = """
@@ -222,7 +222,7 @@ def test_hco_validate_basic_hello_as_hello_user_role(gunicorn_server_auth, clean
     result = out.decode('utf-8')
     error = err.decode('utf-8')
 
-    assert('hcli_core: hello has insufficient permissions to execute hco validate basic "hello"\n' == error)
+    assert('hello has insufficient permissions to execute hco validate basic "hello"\n' == error)
 
 def test_hco_ls_as_hello_user(gunicorn_server_auth, cleanup):
     hello = """
@@ -239,7 +239,7 @@ def test_hco_ls_as_hello_user(gunicorn_server_auth, cleanup):
     result = out.decode('utf-8')
     error = err.decode('utf-8')
 
-    assert ('hcli_core: hello has insufficient permissions to execute hco ls\n' in error)
+    assert ('hello has insufficient permissions to execute hco ls\n' in error)
 
 def test_hco_useradd_yehaw_as_hello_user_role(gunicorn_server_auth, cleanup):
     hello = """
@@ -256,7 +256,7 @@ def test_hco_useradd_yehaw_as_hello_user_role(gunicorn_server_auth, cleanup):
     result = out.decode('utf-8')
     error = err.decode('utf-8')
 
-    assert ('hcli_core: hello has insufficient permissions to execute hco useradd "yehaw"\n' in error)
+    assert ('hello has insufficient permissions to execute hco useradd "yehaw"\n' in error)
 
 def test_hco_userdel_hello_as_hello_user_role(gunicorn_server_auth, cleanup):
     hello = """
@@ -273,7 +273,7 @@ def test_hco_userdel_hello_as_hello_user_role(gunicorn_server_auth, cleanup):
     result = out.decode('utf-8')
     error = err.decode('utf-8')
 
-    assert ('hcli_core: hello has insufficient permissions to execute hco userdel "hello"\n' in error)
+    assert ('hello has insufficient permissions to execute hco userdel "hello"\n' in error)
 
 
 

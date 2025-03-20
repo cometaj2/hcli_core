@@ -43,7 +43,7 @@ def main():
 
     hcli_core_help()
 
-# show huckle's version and the version of its dependencies
+# show version and version of dependencies
 def show_dependencies():
     def parse_dependency(dep_string):
         # Common version specifiers
