@@ -99,13 +99,13 @@ CLI interface (cli.py) and HCLI template (template.json) requirements:
 
 Open a different shell window.
 
-Setup the huckle env eval in your .bash_profile (or other bash configuration) to avoid having to execute eval everytime you want to invoke HCLIs by name (e.g. hg).
+Setup the huckle env eval in your .bash_profile (or other bash configuration) to avoid having to execute eval everytime you want to invoke HCLIs by name (e.g. hai).
 
 .. code-block:: console
     
     huckle cli install http://127.0.0.1:8000
     eval $(huckle env)
-    hg help
+    hai help
 
 Versioning
 ----------
@@ -144,6 +144,13 @@ HCLI Core makes available the deployment of an HCLI Management app (hco) to mana
 - remote - HCLI Core forwards credentials validation to a remotely hosted hco for 3rd party HCLI app access.
 
 The remote configuration allows for centralized remote authentication support across many deployed HCLIs. This is trivially accomplished via HCLI Core making use of the huckle HCLI client, and via hco and HCLI semantics, to forward validation of provided credentials to a remotely hosted hcli_core service exposing hco. See 'hcli_core help' for details.
+
+Artificial Intelligence
+-----------------------
+
+HCLI naturally presents, via in-band documentation availability, as a highly discoverable semantic landscape that can be used to trivially extend the capabilities of conversational LLMs by providing a mature conceptual and practical alternative to Model Context Protocol (MCP) or function calls.
+
+This is explored via hcli_hai https://github.com/cometaj2/hcli_hai and haillo https://github.com/cometaj2/haillo
 
 Security
 --------

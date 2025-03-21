@@ -15,7 +15,7 @@ from huckle import stdin, cli
 
 from hcli_core import logger
 from hcli_core import config
-from hcli_core.error import *
+from hcli_problem_details import *
 
 log = logger.Logger("hcli_core")
 
@@ -138,13 +138,13 @@ class CredentialManager:
 
                     return
 
-            except HCLIError:
+            except ProblemDetail:
                 raise
             except Exception as e:
                 msg = f"unable to load credentials: {str(e)}"
                 log.error(msg)
                 self._credentials = None
-                raise HCLIInternalServerError(detail=msg)
+                raise InternalServerError(detail=msg)
 
     def useradd(self, username):
         with self._lock:
@@ -160,7 +160,7 @@ class CredentialManager:
                             found = True
                             msg = f"user {username} already exists."
                             log.warning(msg)
-                            raise HCLIConflictError(detail=msg)
+                            raise ConflictError(detail=msg)
 
                     if not found:
                         section_name = f"user_{username}"
@@ -181,12 +181,12 @@ class CredentialManager:
                 log.info(msg)
                 return ""
 
-            except HCLIError:
+            except ProblemDetail:
                 raise
             except Exception as e:
                 msg = f"error updating credentials: {str(e)}"
                 log.error(msg)
-                raise HCLIInternalServerError(detail=msg)
+                raise InternalServerError(detail=msg)
 
     def passwd(self, username, password):
         with self._lock:
@@ -213,7 +213,7 @@ class CredentialManager:
                     if not found:
                         msg = f"user {username} not found."
                         log.warning(msg)
-                        raise HCLINotFoundError(detail=msg)
+                        raise NotFoundError(detail=msg)
 
                 # Write back to file
                 with self._write_lock():
@@ -227,12 +227,12 @@ class CredentialManager:
                 log.info(msg)
                 return ""
 
-            except HCLIError:
+            except ProblemDetail:
                 raise
             except Exception as e:
                 msg = f"error updating credentials: {str(e)}"
                 log.error(msg)
-                raise HCLIInternalServerError(detail=msg)
+                raise InternalServerError(detail=msg)
 
     # Special bootstrap case to avoid initial multiprocess deadlock
     def _bootstrap_passwd(self, username, password):
@@ -260,7 +260,7 @@ class CredentialManager:
                     if not found:
                         msg = f"user {username} not found."
                         log.warning(msg)
-                        raise HCLINotFoundError(detail=msg)
+                        raise NotFoundError(detail=msg)
 
                 with open(self.config_file_path, 'w') as cred_file:
                     parser.write(cred_file)
@@ -272,12 +272,12 @@ class CredentialManager:
                 log.info(msg)
                 return ""
 
-            except HCLIError:
+            except ProblemDetail:
                 raise
             except Exception as e:
                 msg = f"error updating credentials: {str(e)}"
                 log.error(msg)
-                raise HCLIInternalServerError(detail=msg)
+                raise InternalServerError(detail=msg)
 
     def userdel(self, username):
         with self._lock:
@@ -297,7 +297,7 @@ class CredentialManager:
                     if user_section is None:
                         msg = f"user {username} not found."
                         log.warning(msg)
-                        raise HCLINotFoundError(detail=msg)
+                        raise NotFoundError(detail=msg)
 
                     # Remove the section
                     parser.remove_section(user_section)
@@ -314,12 +314,12 @@ class CredentialManager:
                 log.info(msg)
                 return ""
 
-            except HCLIError:
+            except ProblemDetail:
                 raise
             except Exception as e:
                 msg = f"error deleting {username}: {str(e)}"
                 log.error(msg)
-                raise HCLIInternalServerError(detail=msg)
+                raise InternalServerError(detail=msg)
 
     def validate_basic(self, username, password):
         with self._lock:
@@ -391,12 +391,12 @@ class CredentialManager:
 
                     return False
 
-            except HCLIError:
+            except ProblemDetail:
                 raise
             except Exception as e:
                 msg = f"error validating credentials: {str(e)}"
                 log.error(msg)
-                raise HCLIInternalServerError(detail=msg)
+                raise InternalServerError(detail=msg)
 
     def validate_hcoak(self, keyid, apikey):
         with self._lock:
@@ -464,12 +464,12 @@ class CredentialManager:
 
                 return False
 
-            except HCLIError:
+            except ProblemDetail:
                 raise
             except Exception as e:
                 msg = f"error validating credentials: {str(e)}"
                 log.error(msg)
-                raise HCLIInternalServerError(detail=msg)
+                raise InternalServerError(detail=msg)
 
     # Hash password using 600000 (1Password/LastPass) iterations of PBKDF2-SHA256 with 32 bit salt.
     # dklen of 32 for sha256, 64 for sha512
@@ -570,7 +570,7 @@ class CredentialManager:
                     if not found:
                         msg = f"user {username} doesn't exist."
                         log.warning(msg)
-                        raise HCLINotFoundError(detail=msg)
+                        raise NotFoundError(detail=msg)
 
                     # Create new section with next number
                     section_name = f"{username}_apikey{highest_key_num + 1}"
@@ -598,12 +598,12 @@ class CredentialManager:
                 log.info(msg)
                 return keyid + "    " + apikey + "    " + created
 
-            except HCLIError:
+            except ProblemDetail:
                 raise
             except Exception as e:
                 msg = f"error updating credentials: {str(e)}"
                 log.error(msg)
-                raise HCLIInternalServerError(detail=msg)
+                raise InternalServerError(detail=msg)
 
     def delete_key(self, username, keyid):
         with self._lock:
@@ -624,7 +624,7 @@ class CredentialManager:
                     if target_section is None:
                         msg = f"api key {keyid} not found."
                         log.warning(msg)
-                        raise HCLINotFoundError(detail=msg)
+                        raise NotFoundError(detail=msg)
 
                     # Check permissions - allow if user is owner or is admin
                     requesting_user_roles = self.get_user_roles(username)
@@ -632,7 +632,7 @@ class CredentialManager:
                     if not is_admin and owner != username:
                         msg = f"user {username} not authorized to delete key {keyid} owned by {owner}."
                         log.warning(msg)
-                        raise HCLIAuthorizationError(detail=msg)
+                        raise AuthorizationError(detail=msg)
 
                     # Remove the section
                     parser.remove_section(target_section)
@@ -649,12 +649,12 @@ class CredentialManager:
                     log.info(msg)
                     return ""
 
-            except HCLIError:
+            except ProblemDetail:
                 raise
             except Exception as e:
                 msg = f"error deleting api key: {str(e)}"
                 log.error(msg)
-                raise HCLIInternalServerError(detail=msg)
+                raise InternalServerError(detail=msg)
 
     def rotate_key(self, username, keyid):
         with self._lock:
@@ -675,7 +675,7 @@ class CredentialManager:
                     if target_section is None:
                         msg = f"api key {keyid} not found."
                         log.warning(msg)
-                        raise HCLINotFoundError(detail=msg)
+                        raise NotFoundError(detail=msg)
 
                     # Check permissions - allow if user is owner or is admin
                     requesting_user_roles = self.get_user_roles(username)
@@ -683,7 +683,7 @@ class CredentialManager:
                     if not is_admin and owner != username:
                         msg = f"user {username} cannot rotate key {keyid} owned by {owner}."
                         log.warning(msg)
-                        raise HCLIAuthorizationError(detail=msg)
+                        raise AuthorizationError(detail=msg)
 
                     (apikey, created) = self.generate_apikey()
                     hashed_apikey = self.hash_apikey(apikey)
@@ -703,12 +703,12 @@ class CredentialManager:
                     log.info(msg)
                     return keyid + "    " + apikey + "    " + created
 
-            except HCLIError:
+            except ProblemDetail:
                 raise
             except Exception as e:
                 msg = f"error deleting api key: {str(e)}"
                 log.error(msg)
-                raise HCLIInternalServerError(detail=msg)
+                raise InternalServerError(detail=msg)
 
     def list_keys(self, username):
         with self._lock:
@@ -744,12 +744,12 @@ class CredentialManager:
 
                     return "\n".join(key_info)
 
-            except HCLIError:
+            except ProblemDetail:
                 raise
             except Exception as e:
                 msg = f"error listing api keys: {str(e)}"
                 log.error(msg)
-                raise HCLIInternalServerError(detail=msg)
+                raise InternalServerError(detail=msg)
 
     # Or base32 approach (10 chars) to help avoid 1/I 0/O visual discrepancies.
     def generate_keyid(self):
@@ -806,7 +806,7 @@ class CredentialManager:
             except Exception as e:
                 msg = f"error getting roles: {str(e)}"
                 log.error(msg)
-                raise HCLIInternalServerError(detail=msg)
+                raise InternalServerError(detail=msg)
 
     def add_user_role(self, username, role):
         with self._lock:
@@ -846,7 +846,7 @@ class CredentialManager:
                     if not found:
                         msg = f"user {username} not found."
                         log.warning(msg)
-                        raise HCLINotFoundError(detail=msg)
+                        raise NotFoundError(detail=msg)
 
                     # Write back to file
                     with self._write_lock():
@@ -860,12 +860,12 @@ class CredentialManager:
                     log.info(msg)
                     return ""
 
-            except HCLIError:
+            except ProblemDetail:
                 raise
             except Exception as e:
                 msg = f"error updating credentials: {str(e)}"
                 log.error(msg)
-                raise HCLIInternalServerError(detail=msg)
+                raise InternalServerError(detail=msg)
 
     def remove_user_role(self, username, role):
         with self._lock:
@@ -906,7 +906,7 @@ class CredentialManager:
                     if not found:
                         msg = f"user {username} not found."
                         log.warning(msg)
-                        raise HCLINotFoundError(detail=msg)
+                        raise NotFoundError(detail=msg)
 
                     # Write back to file
                     with self._write_lock():
@@ -920,9 +920,9 @@ class CredentialManager:
                     log.info(msg)
                     return ""
 
-            except HCLIError:
+            except ProblemDetail:
                 raise
             except Exception as e:
                 msg = f"error updating credentials: {str(e)}"
                 log.error(msg)
-                raise HCLIInternalServerError(detail=msg)
+                raise InternalServerError(detail=msg)

@@ -19,7 +19,7 @@ from hcli_core import template
 
 from hcli_core.auth.cli import authenticator
 from hcli_core.handler import HCLIErrorHandler
-from hcli_core.error import HCLIError
+from hcli_problem_details import ProblemDetail
 
 log = logger.Logger("hcli_core")
 
@@ -52,7 +52,7 @@ class HCLIApp:
         # Register the HCLI error handler
         error_handler = HCLIErrorHandler()
         server.add_error_handler(falcon.HTTPError, error_handler)
-        server.add_error_handler(HCLIError, error_handler)
+        server.add_error_handler(ProblemDetail, error_handler)
 
         server.add_route(secondaryhome.SecondaryHomeController.route, api.SecondaryHomeApi())
         server.add_route(document.DocumentController.route, api.DocumentApi())

@@ -7,7 +7,7 @@ from datetime import datetime
 from hcli_core import logger
 from hcli_core import config
 from hcli_core.auth.cli import credential
-from hcli_core.error import *
+from hcli_problem_details import *
 
 log = logger.Logger("hcli_core")
 
@@ -27,7 +27,7 @@ class AuthenticationMiddleware:
             client_ip = self.get_client_ip(req)
             if not self.is_authenticated(req, client_ip):
                 resp.append_header('WWW-Authenticate', 'Basic realm="default"')
-                raise HCLIAuthenticationError(detail="invalid credentials provided", instance=req.path)
+                raise AuthenticationError(detail="invalid credentials provided", instance=req.path)
 
     # Extract client IP from request, handling proxy forwarding.
     def get_client_ip(self, req: falcon.Request):
@@ -67,7 +67,7 @@ class AuthenticationMiddleware:
             msg = "no authorization header."
             self.log_failed_attempt(client_ip)
             log.warning(msg)
-            raise HCLIAuthenticationError(detail=msg)
+            raise AuthenticationError(detail=msg)
 
         auth_type, auth_string = auth_header.split(' ', 1)
 
@@ -80,7 +80,7 @@ class AuthenticationMiddleware:
                 msg = 'invalid credentials for username: ' + username + "."
                 self.log_failed_attempt(client_ip)
                 log.warning(msg)
-                raise HCLIAuthenticationError(detail=msg)
+                raise AuthenticationError(detail=msg)
             else:
                 config.ServerContext.set_current_user(username)
 
@@ -94,20 +94,20 @@ class AuthenticationMiddleware:
                     msg = 'invalid credentials for keyid: ' + keyid + "."
                     self.log_failed_attempt(client_ip)
                     log.warning(msg)
-                    raise HCLIAuthenticationError(detail=msg)
+                    raise AuthenticationError(detail=msg)
                 else:
                     config.ServerContext.set_current_user(keyid)
             else:
                 msg = 'unknown authentication scheme.'
                 log.warning(msg)
                 self.log_failed_attempt(client_ip)
-                raise HCLIAuthenticationError(detail=msg)
+                raise AuthenticationError(detail=msg)
 
         else:
             msg = 'unknown authentication scheme.'
             log.warning(msg)
             self.log_failed_attempt(client_ip)
-            raise HCLIAuthenticationError(detail=msg)
+            raise AuthenticationError(detail=msg)
 
         return authenticated
 
@@ -144,7 +144,7 @@ class AuthorizationMiddleware:
         if not self.is_authorized(req, client_ip):
             command = urllib.parse.unquote(req.params.get('command', ''))
             username = config.ServerContext.get_current_user()
-            raise HCLIAuthorizationError(detail=f"{username} has insufficient permissions to execute {command}", instance=req.path)
+            raise AuthorizationError(detail=f"{username} has insufficient permissions to execute {command}", instance=req.path)
 
     def get_client_ip(self, req: falcon.Request):
         forwarded_for = req.get_header('X-FORWARDED-FOR')

@@ -44,7 +44,7 @@ class CLI:
             if self.inputstream is None:
                 msg = "no password provided."
                 log.error(msg)
-                raise HCLIBadRequestError(detail=msg)
+                raise BadRequestError(detail=msg)
 
             f = io.BytesIO()
             for chunk in iter(partial(self.inputstream.read, 16384), b''):
@@ -81,7 +81,7 @@ class CLI:
                 if self.inputstream is None:
                     msg = "no password provided."
                     log.error(msg)
-                    raise HCLIBadRequestError(detail=msg)
+                    raise BadRequestError(detail=msg)
 
                 f = io.BytesIO()
                 for chunk in iter(partial(self.inputstream.read, 16384), b''):
@@ -95,7 +95,7 @@ class CLI:
                 if self.inputstream is None:
                     msg = "no apikey provided."
                     log.error(msg)
-                    raise HCLIBadRequestError(detail=msg)
+                    raise BadRequestError(detail=msg)
 
                 f = io.BytesIO()
                 for chunk in iter(partial(self.inputstream.read, 16384), b''):

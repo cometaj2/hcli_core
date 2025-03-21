@@ -5,7 +5,7 @@ from hcli_core import logger
 from hcli_core import config
 
 from hcli_core.auth.cli import credential
-from hcli_core.error import *
+from hcli_problem_details import *
 
 from functools import wraps
 
@@ -22,7 +22,7 @@ def requires_auth(func):
         if not cfg.auth:
             msg = f"cannot interact with hco when authentication is disabled."
             log.warning(msg)
-            raise HCLIAuthenticationError(detail=msg)
+            raise AuthenticationError(detail=msg)
         return func(self, *args, **kwargs)
     return wrapper
 
@@ -49,14 +49,14 @@ class Service:
         if not password_stream:
             msg = "no password provided."
             log.error(msg)
-            raise HCLIBadRequestError(detail=msg)
+            raise BadRequestError(detail=msg)
 
         # Read password from stream
         password = password_stream.getvalue().decode().strip()
         if not password:
             msg = "empty password."
             log.error(msg)
-            raise HCLIBadRequestError(detail=msg)
+            raise BadRequestError(detail=msg)
 
         requesting_username = config.ServerContext.get_current_user()
         requesting_user_roles = self.cm.get_user_roles(requesting_username)
@@ -65,7 +65,7 @@ class Service:
         if requesting_username != username and 'admin' not in requesting_user_roles:
             msg = f"the password can only be updated for {requesting_username}."
             log.warning(msg)
-            raise HCLIAuthorizationError(detail=msg)
+            raise AuthorizationError(detail=msg)
 
         return self.cm.passwd(username, password)
 
@@ -92,7 +92,7 @@ class Service:
         if requesting_username != username and 'admin' not in requesting_user_roles:
             msg = f"cannot create api keys for {username} as {requesting_username}."
             log.warning(msg)
-            raise HCLIAuthorizationError(detail=msg)
+            raise AuthorizationError(detail=msg)
 
         return self.cm.create_key(username)
 
@@ -117,14 +117,14 @@ class Service:
         if not password_stream:
             msg = "no password provided."
             log.error(msg)
-            raise HCLIBadRequestError(detail=msg)
+            raise BadRequestError(detail=msg)
 
         # Read password from stream
         password = password_stream.getvalue().decode().strip()
         if not password:
             msg = "empty password."
             log.error(msg)
-            raise HCLIBadRequestError(detail=msg)
+            raise BadRequestError(detail=msg)
 
         requesting_username = config.ServerContext.get_current_user()
         requesting_user_roles = self.cm.get_user_roles(requesting_username)
@@ -132,7 +132,7 @@ class Service:
         if 'admin' not in requesting_user_roles and 'validator' not in requesting_user_roles:
             msg = f"{requesting_username} cannot validate credentials without the validator role."
             log.warning(msg)
-            raise HCLIAuthorizationError(detail=msg)
+            raise AuthorizationError(detail=msg)
 
         valid = self.cm.validate_basic(username, password)
         result = "invalid"
@@ -153,13 +153,13 @@ class Service:
         if not apikey_stream:
             msg = "no apikey provided."
             log.error(msg)
-            raise HCLIBadRequestError(detail=msg)
+            raise BadRequestError(detail=msg)
 
         apikey = apikey_stream.getvalue().decode().strip()
         if not apikey:
             msg = "empty apikey."
             log.error(msg)
-            raise HCLIBadRequestError(detail=msg)
+            raise BadRequestError(detail=msg)
 
         valid = self.cm.validate_hcoak(keyid, apikey)
         result = "invalid"
@@ -172,7 +172,7 @@ class Service:
         if 'admin' not in requesting_user_roles and 'validator' not in requesting_user_roles:
             msg = f"{requesting_username} cannot validate credentials without the validator role."
             log.warning(msg)
-            raise HCLIAuthorizationError(detail=msg)
+            raise AuthorizationError(detail=msg)
 
         msg = f"{requesting_username} is validating keyid {keyid} for HCLI Core API Key Authentication. {result}."
         if result == "valid":
