@@ -38,7 +38,7 @@ salt = *" > ./test_credentials
 
     gunicorn --workers=1 --threads=100 -b 0.0.0.0:18000 -b 0.0.0.0:19000 "hcli_core:connector(config_path=\\\"./test_credentials\\\")" --daemon --log-file=./gunicorn.log --error-logfile=./gunicorn-error.log --capture-output
 
-    sleep 2
+    sleep 4
 
     grep "Password:" ./gunicorn-error.log | awk '{print $8}' > ./password
     huckle cli install http://127.0.0.1:18000
