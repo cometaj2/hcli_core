@@ -29,20 +29,20 @@ def gunicorn_server_auth():
     echo "Setup a custom credentials file for the test run"
     echo -e "[config]
 core.auth = True
-mgmt.port = 19111
+mgmt.port = 19000
 
 [default]
 username = admin
 password = *
 salt = *" > ./test_credentials
 
-    gunicorn --workers=1 --threads=1 -b 0.0.0.0:18000 -b 0.0.0.0:19111 "hcli_core:connector(config_path=\\\"./test_credentials\\\")" --daemon --log-file=./gunicorn.log --error-logfile=./gunicorn-error.log --capture-output
+    gunicorn --workers=1 --threads=100 -b 0.0.0.0:18000 -b 0.0.0.0:19000 "hcli_core:connector(config_path=\\\"./test_credentials\\\")" --daemon --log-file=./gunicorn.log --error-logfile=./gunicorn-error.log --capture-output
 
     sleep 2
 
     grep "Password:" ./gunicorn-error.log | awk '{print $8}' > ./password
     huckle cli install http://127.0.0.1:18000
-    huckle cli install http://127.0.0.1:19111
+    huckle cli install http://127.0.0.1:19000
 
     echo "Setup bootstrap admin config and credentials for hco and jsonf..."
     cat ./password | huckle cli credential hco admin
@@ -101,9 +101,9 @@ salt = *" > ./remote_hco_test_credentials
 core.auth = True
 mgmt.credentials = remote" > ./remote_test_credentials
 
-    gunicorn --workers=1 --threads=1 -b 0.0.0.0:29000 "hcli_core:connector(config_path=\\\"./remote_hco_test_credentials\\\")" --daemon --log-file=./remote_hco_gunicorn.log --error-logfile=./remote_hco_gunicorn-error.log --capture-output
+    gunicorn --workers=1 --threads=100 -b 0.0.0.0:29000 "hcli_core:connector(config_path=\\\"./remote_hco_test_credentials\\\")" --daemon --log-file=./remote_hco_gunicorn.log --error-logfile=./remote_hco_gunicorn-error.log --capture-output
 
-    gunicorn --workers=1 --threads=1 -b 0.0.0.0:28000 "hcli_core:connector(config_path=\\\"./remote_test_credentials\\\")" --daemon --log-file=./remote_gunicorn.log --error-logfile=./remote_gunicorn-error.log --capture-output
+    gunicorn --workers=1 --threads=100 -b 0.0.0.0:28000 "hcli_core:connector(config_path=\\\"./remote_test_credentials\\\")" --daemon --log-file=./remote_gunicorn.log --error-logfile=./remote_gunicorn-error.log --capture-output
 
     sleep 2
 

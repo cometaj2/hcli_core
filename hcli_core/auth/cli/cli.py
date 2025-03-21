@@ -6,6 +6,7 @@ from hcli_core import logger
 from hcli_core.auth.cli import credential
 from hcli_core.auth.cli import service as s
 from hcli_core import config
+from hcli_problem_details import *
 
 log = logger.Logger("hcli_core")
 
