@@ -29,27 +29,27 @@ def gunicorn_server_auth():
     echo "Setup a custom credentials file for the test run"
     echo -e "[config]
 core.auth = True
-mgmt.port = 19000
+mgmt.port = 19090
 
 [default]
 username = admin
 password = *
 salt = *" > ./test_credentials
 
-    gunicorn --workers=1 --threads=100 -b 0.0.0.0:18000 -b 0.0.0.0:19000 "hcli_core:connector(config_path=\\\"./test_credentials\\\")" --daemon --log-file=./gunicorn.log --error-logfile=./gunicorn-error.log --capture-output
+    gunicorn --workers=1 --threads=100 -b 0.0.0.0:18080 -b 0.0.0.0:19090 "hcli_core:connector(config_path=\\\"./test_credentials\\\")" --daemon --log-file=./gunicorn.log --error-logfile=./gunicorn-error.log --capture-output
 
     sleep 2
 
     echo "Checking port status..."
-    netstat -tuln | grep 18000 || echo "Port 18000 not listening"
-    netstat -tuln | grep 19000 || echo "Port 19000 not listening"
+    netstat -tuln | grep 18080 || echo "Port 18080 not listening"
+    netstat -tuln | grep 19090 || echo "Port 19090 not listening"
     ps aux | grep '[g]unicorn' || echo "No gunicorn processes found"
     cat ./gunicorn-error.log
     cat ./gunicorn.log
 
     grep "Password:" ./gunicorn-error.log | awk '{print $8}' > ./password
-    huckle cli install http://127.0.0.1:18000
-    huckle cli install http://127.0.0.1:19000
+    huckle cli install http://127.0.0.1:18080
+    huckle cli install http://127.0.0.1:19090
 
     echo "Setup bootstrap admin config and credentials for hco and jsonf..."
     cat ./password | huckle cli credential hco admin
