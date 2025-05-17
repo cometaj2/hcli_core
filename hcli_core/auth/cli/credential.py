@@ -488,12 +488,6 @@ class CredentialManager:
         key = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, iterations=600000, dklen=32)
         return key.hex() == stored_hash
 
-    # Generate one-time setup password for the administrator
-    def generate_bootstrap_password(self):
-        raw_password = os.urandom(32)
-        password = base64.b64encode(os.urandom(32)).decode('utf-8')
-        return password
-
     @property
     def is_loaded(self):
         with self._lock:
@@ -532,13 +526,18 @@ class CredentialManager:
                 if stored_hash and stored_salt:
                     reset_state = (stored_hash == '*' and stored_salt == '*')
                     if reset_state:
-                        self._bootstrap_password = self.generate_bootstrap_password()
-                        log.critical("================================================")
-                        log.critical("HCLI INITIAL ADMIN PASSWORD (CHANGE IMMEDIATELY)")
-                        log.critical("Username: admin")
-                        log.critical(f"Password: {self._bootstrap_password}")
-                        log.critical("This password will only be shown once in logs")
-                        log.critical("================================================")
+                        self._bootstrap_password = os.getenv('HCLI_CORE_BOOTSTRAP_PASSWORD')
+                        log.warning("===============================================================")
+                        log.warning("HCLI BOOTSTRAP PASSWORD (CHANGE IMMEDIATELY AND STORE SECURELY)")
+                        log.warning("Username: admin")
+                        log.warning("Password: $HCLI_CORE_BOOTSTRAP_PASSWORD environment variable")
+                        log.warning("Read 'hcli_core help' documentation for more details")
+                        log.warning("This will only be shown in the logs once")
+                        log.warning("===============================================================")
+                        if not self._bootstrap_password:
+                            msg="Missing HCLI_CORE_BOOTSTRAP_PASSWORD environment variable. Unable to bootstrap administration."
+                            log.error(msg)
+                            return
                         self._bootstrap_passwd('admin', self._bootstrap_password)
                         self._bootstrap_password = None
                         return

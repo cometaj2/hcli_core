@@ -14,6 +14,7 @@ def gunicorn_server_auth():
     mkdir ~/.huckle_test
     export HUCKLE_HOME_TEST=$HUCKLE_HOME
     export HUCKLE_HOME=~/.huckle_test
+    export HCLI_CORE_BOOTSTRAP_PASSWORD=yehaw
     eval $(huckle env)
 
     echo "Cleanup preexisting huckle hcli installations..."
@@ -47,13 +48,12 @@ salt = *" > ./test_credentials
     cat ./gunicorn-error.log
     cat ./gunicorn.log
 
-    grep "Password:" ./gunicorn-error.log | awk '{print $8}' > ./password
     huckle cli install http://127.0.0.1:18080
     huckle cli install http://127.0.0.1:19090
 
     echo "Setup bootstrap admin config and credentials for hco and jsonf..."
-    cat ./password | huckle cli credential hco admin
-    cat ./password | huckle cli credential jsonf admin
+    huckle cli credential hco admin <<< $HCLI_CORE_BOOTSTRAP_PASSWORD
+    huckle cli credential jsonf admin <<< $HCLI_CORE_BOOTSTRAP_PASSWORD
 
     echo "Setting up basic auth config..."
     huckle cli config hco auth.mode basic
@@ -72,7 +72,6 @@ salt = *" > ./test_credentials
     # Verify setup worked
     assert os.path.exists('./gunicorn-error.log'), "gunicorn-error.log not found"
     assert os.path.exists('./test_credentials'), "test_credentials not found"
-    assert os.path.exists('./password'), "password not found"
 
 # bootstrap the test by starting an hcli server with mgmt config and fresh * admin creds
 @pytest.fixture(scope="module")
@@ -85,6 +84,7 @@ def gunicorn_server_remote_auth():
     rm -rf ~/.remote_huckle_test
     mkdir ~/.remote_huckle_test
     export HUCKLE_HOME=~/.remote_huckle_test
+    export HCLI_CORE_BOOTSTRAP_PASSWORD=yehaw
     eval $(huckle env)
 
     echo "Cleanup preexisting huckle hcli installations..."
@@ -120,13 +120,12 @@ mgmt.credentials = remote" > ./remote_test_credentials
 
     sleep 2
 
-    grep "Password:" ./remote_hco_gunicorn-error.log | awk '{print $8}' > ./remote_hco_password
     huckle cli install http://127.0.0.1:28000
     huckle cli install http://127.0.0.1:29000
 
     echo "Setup bootstrap admin config and credentials for hco and jsonf..."
-    cat ./remote_hco_password | huckle cli credential hco admin
-    cat ./remote_hco_password | huckle cli credential jsonf admin
+    huckle cli credential hco admin <<< $HCLI_CORE_BOOTSTRAP_PASSWORD
+    huckle cli credential jsonf admin <<< $HCLI_CORE_BOOTSTRAP_PASSWORD
 
     echo "Setting up basic auth config..."
     huckle cli config hco auth.mode basic
@@ -139,7 +138,6 @@ mgmt.credentials = remote" > ./remote_test_credentials
     # Verify setup worked
     assert os.path.exists('./remote_hco_gunicorn-error.log'), "remote_hco_gunicorn-error.log not found"
     assert os.path.exists('./remote_hco_test_credentials'), "remote_hco_test_credentials not found"
-    assert os.path.exists('./remote_hco_password'), "remote_hco_password not found"
     assert os.path.exists('./remote_gunicorn-error.log'), "remote_gunicorn-error.log not found"
     assert os.path.exists('./remote_test_credentials'), "remote_test_credentials not found"
 
@@ -176,8 +174,6 @@ def cleanup():
         os.remove('./test_credentials')
     if os.path.exists('./noauth_credentials'):
         os.remove('./noauth_credentials')
-    if os.path.exists('./password'):
-        os.remove('./password')
     if os.path.exists('./test_credentials.lock'):
         os.remove('./test_credentials.lock')
     if os.path.exists('./noauth_credentials.lock'):
@@ -190,8 +186,6 @@ def cleanup():
         os.remove('./remote_hco_test_credentials')
     if os.path.exists('./remote_test_credentials'):
         os.remove('./remote_test_credentials')
-    if os.path.exists('./remote_hco_password'):
-        os.remove('./remote_hco_password')
     if os.path.exists('./remote_hco_test_credentials.lock'):
         os.remove('./remote_hco_test_credentials.lock')
     if os.path.exists('./remote_test_credentials.lock'):
@@ -204,11 +198,9 @@ def cleanup():
     assert not os.path.exists('./test_credentials.lock'), "test_credentials.lock still exists"
     assert not os.path.exists('./noauth_credentials'), "test_credentials still exists"
     assert not os.path.exists('./noauth_credentials.lock'), "noauth_credentials.lock file still exists"
-    assert not os.path.exists('./password'), "password still exists"
     assert not os.path.exists('./remote_hco_gunicorn-error.log'), "gunicorn-error.log still exists"
     assert not os.path.exists('./remote_gunicorn-error.log'), "gunicorn-error.log still exists"
     assert not os.path.exists('./remote_hco_test_credentials'), "test_credentials still exists"
     assert not os.path.exists('./remote_hco_test_credentials.lock'), "test_credentials.lock still exists"
     assert not os.path.exists('./remote_test_credentials'), "test_credentials still exists"
     assert not os.path.exists('./remote_test_credentials.lock'), "test_credentials.lock still exists"
-    assert not os.path.exists('./remote_hco_password'), "password still exists"

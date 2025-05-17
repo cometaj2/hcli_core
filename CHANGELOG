@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.7.0]
+- Add HCLI_CORE_BOOTSTRAP_PASSWORD environment variable use to improve security on admin password bootstrap
+- Update hcli_core documentation
+- Update logs to warnings from critical for bootstrap password information
+- Update pyproject to meet the latest project license requirements
+- Remove extraneous date in LICENSE.txt
+- Fix extra line feed in hfm ls output
+
 ## [3.6.1]
 - Fix inconsistent problem detail titles to completely align to http spec reason phrases
 - Refactor the error handler to remove the falcon dependency from the error definitions

@@ -228,7 +228,7 @@ class Config:
         self.log.info(self.config_file_path)
 
         if not self.is_600(self.config_file_path):
-            self.log.critical("The credentials file's permissions should be set to 600 (e.g. chmod 600 credentials).")
+            self.log.warning("The credentials file's permissions SHOULD be set to 600 (e.g. chmod 600 credentials).")
 
     def parse_template(self, t):
         self.template = t

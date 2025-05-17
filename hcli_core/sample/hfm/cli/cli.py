@@ -29,13 +29,11 @@ class CLI:
         if self.commands[1] == "ls":
             content = bytearray(b'')
 
-            ls = subprocess.Popen(["ls", "-la", self.chroot.pwd], stdout=subprocess.PIPE,)
-            pipe = ls.stdout
+            ls = subprocess.Popen(["ls", "-la", self.chroot.pwd], stdout=subprocess.PIPE)
+            stdout, _ = ls.communicate()
+            stdout = stdout.rstrip(b'\n')
 
-            for line in pipe:
-                content.extend(line)
-
-            return io.BytesIO(content)
+            return io.BytesIO(stdout)
 
     def upload(self):
         unquoted = self.commands[3].replace("'", "").replace("\"", "")
