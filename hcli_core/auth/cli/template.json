@@ -90,12 +90,12 @@
                 },
                 {
                     "name": "description",
-                    "description": "The \"hco\" utility helps manage user credentials. It provides basic operations for adding users, removing users, managing passwords for HTTP Basic Authentication support, as well as key commands to help manage API keys for direct Bearer authentication support via HCLI Core API Key (HCOAK).\n\nThe expected HCOAK HTTP Authentication Bearer format is simply base64 encoded and colon separated 'keyid:hcoak' (i.e. Bearer base64(keyid:hcoak)). For example:\n\nkeyid = GJSLKO5Z5M\n\nhcoak = hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ\n\nbase64(GJSLKO5Z5M:hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ)"
+                    "description": "The \"hco\" utility helps manage user credentials. It provides basic operations for adding users, removing users, managing passwords for HTTP Basic Authentication support, as well as key commands to help manage API keys for direct Bearer authentication support via HCLI Core API Key (HCOAK).\\n\\nThe expected HCOAK HTTP Authentication Bearer format is simply base64 encoded and colon separated 'keyid:hcoak' (i.e. Bearer base64(keyid:hcoak)). For example:\\n\\nkeyid = GJSLKO5Z5M\\n\\nhcoak = hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ\\n\\nbase64(GJSLKO5Z5M:hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ)"
 
                 },
                 {
                     "name": "examples",
-                    "description": "hco useradd johndoe\n\ntr -d '\\(rsn' < somepasswordfile | hco passwd username\n\nhco userdel johndoe\n\nhco ls\n\nhco key johndoe\n\nhco key rotate GJSLKO5Z5M"
+                    "description": "hco useradd johndoe\\n\\nhco passwd johndoe <<< $PASSWORD\\n\\nhco userdel johndoe\\n\\nhco ls\\n\\nhco key johndoe\\n\\nhco key rotate GJSLKO5Z5M"
                 }
             ],
             "command": [
@@ -243,7 +243,7 @@
                 },
                 {
                     "name": "example",
-                    "description": "hco key johndoe\n\nGJSLKO5Z5M    hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ    2024-11-14T12:45:03.862520-08:00"
+                    "description": "hco key johndoe\\n\\nGJSLKO5Z5M    hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ    2024-11-14T12:45:03.862520-08:00"
                 }
             ],
             "command": [
