@@ -162,18 +162,22 @@ To Do
 
 - Automated tests for all bundled HCLI samples.
 - Separate out HCLI applications from HCLI Core to help avoid application dependencies bleeding onto HCLI Core.
-- Rate limiting.
+- Setup configurable rate limiting.
 - Lockout on multiple failed authentications.
+- Handle malformed base64 encoding in authenticator.
 - Better role handling for admin vs users for remote validation.
+- Setup HCLI_CORE_HOME support and hcli_core configuration file handling.
 - Better logging configuration support.
 - Role assignment for hco remote validation authorization.
+- Add personal access token (PAT) support under hco and as HTTP Basic for older clients (e.g. git)
+- Secure the authenticator against 3rd party HCLIs
 
 Bugs
 ----
 
 - No good handling of control over request and response in cli code which can lead to exceptions and empty response client side.
 - The hfm sample HCLI fails disgracefully when copying a remote file name that doesn't exist (server error).
-- Routing can ambiguous and fail if the 3rd party HCLI app's name start with hco in core.root aggregate configuration (template.py owns)
+- Routing can be ambiguous and fail if the 3rd party HCLI app's name start with hco in core.root aggregate configuration (template.py owns)
 
 .. |build status| image:: https://circleci.com/gh/cometaj2/hcli_core.svg?style=shield
    :target: https://circleci.com/gh/cometaj2/hcli_core

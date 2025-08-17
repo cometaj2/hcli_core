@@ -25,7 +25,7 @@ class AuthenticationMiddleware:
     def process_request(self, req: falcon.Request, resp: falcon.Response):
         if self.cfg.auth:
             client_ip = self.get_client_ip(req)
-            if not self.is_authenticated(req, client_ip):
+            if not self.is_authenticated(req, resp, client_ip):
                 resp.append_header('WWW-Authenticate', 'Basic realm="default"')
                 raise AuthenticationError(detail="invalid credentials provided", instance=req.path)
 
@@ -59,7 +59,7 @@ class AuthenticationMiddleware:
             log_message += f' (username: {username})'
         log.warning(log_message)
 
-    def is_authenticated(self, req: falcon.Request, client_ip) -> bool:
+    def is_authenticated(self, req: falcon.Request, resp: falcon.Response, client_ip) -> bool:
         authenticated = False
 
         auth_header = req.get_header('Authorization')
@@ -67,6 +67,7 @@ class AuthenticationMiddleware:
             msg = "no authorization header."
             self.log_failed_attempt(client_ip)
             log.warning(msg)
+            resp.append_header('WWW-Authenticate', 'Basic realm="default"')
             raise AuthenticationError(detail=msg)
 
         auth_type, auth_string = auth_header.split(' ', 1)
