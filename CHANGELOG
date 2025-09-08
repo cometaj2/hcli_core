@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [3.8.0]
 - Refactor to allow for custom 3rd party WSGI apps to be added to the lazy server manager
 - Update to more reliable pkill in pytest cleanup fixture
+- Update to output hcli_help as text in the terminal rather than a man page (like huckle)
 
 ## [3.7.3]
 - Fix default logging from DEBUG back to INFO

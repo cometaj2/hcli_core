@@ -3,41 +3,37 @@
 hcli_core \- An HCLI Connector that can be used to expose a REST API that behaves as a CLI, via hypertext command line interface (HCLI) semantics.
 .SH SYNOPSIS
 .B hcli_core
-[
-.I option
-|
-.I command
-]
+[ option | command ]
 .SH DESCRIPTION
 .B hcli_core
 is a Web Service Gateway Interface (WSGI; PEP 3333) application that provides a way for developers to expose a REST API as a CLI via HCLI v1.0 semantics.
 This enables immediate, dynamic and up to date in-band access to man page style API/CLI documentation.
-.PP
+.sp
 HCLI Core deploys with support for two distinct HCLI:
-.PP
+.sp
 - The user defined (3rd party) Core HCLI application provided as a plugin path.
 .br
 - The management HCLI application used to manage local credentials (hco), which can be interacted with using an HCLI client.
-.PP
+.sp
 .SH CONFIGURATION
 HCLI Core relies on the use of a configuration file. If none is provided as a file path, the default configuration included with hcli_core
 is used.
-.PP
+.sp
 The configuration file is expected to be formatted in the configparser format which defines sections and assigned name = value pairs. See
 the EXAMPLE section for details on how to submit a custom configuration file path to hcli_core at launch.
-.PP
+.sp
 The configuration supports enabling or disabling authentication for the Core HCLI application provided as a plugin path.
-.PP
+.sp
 If enabled, hco is used to manage credentials and authentication and client use
 .I always requires authentication.
-.PP
+.sp
 .SS CORE ROOT OVERRIDE
 In contexts where ports are not available for use, such as with serverless AWS Lambda, a core.root override configuration is possible to force the root of the service to behave in different ways. By default, only the 3rd Party HCLI app is presented if core.root is not configured. Otherwise:
-.PP
+.sp
 - aggregate - aggregates both the 3rd party HCLI app and hco under the root. See core.root under CONFIGURATION FILE FORMAT.
 .br
 - management - displaces the 3rd party HCLI app and ONLY presents hco under the root. See core.root under CONFIGURATION FILE FORMAT.
-.PP
+.sp
 .SS CONFIGURATION FILE FORMAT
 [config]
 .br
@@ -51,10 +47,10 @@ mgmt.credentials = <local | remote>
 .br
 .SH AUTHENTICATION
 If authentication is configured for an HCLI application, HCLI Core expects to be able to use a single combined configuration and credentials file.
-.PP
+.sp
 The default credentials file provided with HCLI Core SHOULD NOT be used but is included as an example, and sets a sensible and bare default configuration.
 A user managed configuration/credentials file path that looks something like the following configuration SHOULD instead be provided at startup:
-.PP
+.sp
 [config]
 .br
 core.auth = True
@@ -62,7 +58,7 @@ core.auth = True
 mgmt.port = 9000
 .br
 mgmt.credentials = local
-.PP
+.sp
 [default]
 .br
 username = admin
@@ -70,40 +66,40 @@ username = admin
 password = *
 .br
 salt = *
-.PP
+.sp
 The hco HCLI application is made available on the configured management port 'mgmt.port' to help manage user credentials and api keys for both hco and the Core HCLI application. The hco management HCLI app will not be made available unless the port is set in the configuration file and the corresponding port is bound at startup. See the EXAMPLE section for a multi port hcli_core launch.
-.PP
+.sp
 The default expected administrator is an 'admin' user set with '*' defaults for both the password and salt. On first startup with those defaults, HCLI Core will rely on the presence of an HCLI_CORE_BOOTSTRAP_PASSWORD environment variable which will be used to assign the initial admin user password. The password is immediately hashed and set in the credentials file. After the inceptive bootstrap, the HCLI_CORE_BOOTSTRAP_PASSWORD will no longer be used, and HCLI Core relies exclusively on the credentials file.
-.PP
+.sp
 .I The initial password SHOULD NOT be used permanently. It SHOULD be changed immediately (e.g. via huckle with keyring as credential manager) to help improve and maintain security.
-.PP
+.sp
 HCLI Core can function without any credentials listed in the credentials file but hco will not allow interaction without credentials.
-.PP
+.sp
 .SS HTTP BASIC AUTHENTICATION
 By default, usernames and passwords stored in the credentials file are expected to be used with HTTP Basic Authentication. Note that usernames and passwords can't contain a ':'.
-.PP
+.sp
 The credentials file MAY contain as many additional users as is desired; one globally unique named user per unique section name.
-.PP
+.sp
 HTTP Basic Authenthentication SHOULD NOT be used without HTTPS and SHOULD NOT generally be considered secure. This is provided as a bare convenience if basic authentication capabilities are found useful. However, authentication using HTTP Basic Authentication was also made slower by design to help improve security; its use SHOULD remain limited, and other authentication schemes should be preferred.
-.PP
+.sp
 .SS HCOAK (HCLI CORE API KEY) AUTHENTICATION
 API key IDs and API keys stored in the credentials file are expected to be used with the HCLI Core bundled 'hco' HCLI application generated API keys. Those API keys SHOULD make use of the HTTP Bearer authentication scheme.
-.PP
+.sp
 The expected HCOAK Bearer format is a base64 encoded and colon separated 'keyid:hcoak' (Bearer base64(keyid:hcoak)). For example:
-.PP
+.sp
 keyid = GJSLKO5Z5M
 .br
 hcoak = hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ
-.PP
+.sp
 Bearer base64(GJSLKO5Z5M:hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ)
-.PP
+.sp
 HCOAK SHOULD NOT be used without HTTPS and is primary intended to be used with 3rd party HCLI applications hosted on HCLI Core.
-.PP
+.sp
 .SS CENTRALIZED REMOTE AUTHENTICATION
 By its nature, HCLI is composable, so HCLI Core is also trivially configurable to forward authentication to a remote centralized hco via huckle (https://github.com/cometaj2/huckle). See mgmt.credentials under CONFIGURATION FILE FORMAT and AUTHENTICATION.
-.PP
+.sp
 Since HCLI Core uses hco to validate credentials, and since hco is configured via huckle, see huckle help for information on how to setup authentication for hco.
-.PP
+.sp
 .SS CREDENTIALS FILE FORMAT
 [default]
 .br
@@ -112,7 +108,7 @@ username = admin
 password = *
 .br
 salt = *
-.PP
+.sp
 [<someothersection>]
 .br
 username = <someotherusername>
@@ -122,7 +118,7 @@ password = <hashedpassword>
 salt = <salt>
 .br
 roles = role1,role2
-.PP
+.sp
 [<someapikeysection>]
 .br
 keyid = <someapikeyid>
@@ -134,20 +130,20 @@ apikey = <hashedapikeyid>
 created = <timestamp>
 .br
 status = <apikeystatus>
-.PP
+.sp
 .SH AUTHORIZATION
 hco authorization is always enabled, and HCLI Core will rely on the presence of permissions in the executable portion of the HCLI template for hco bundled with HCLI Core.
-.PP
+.sp
 All users are subject to permissions except the admin user, who can bypass all permissions and access any resource.
 .br
 Three user roles are made available for use under hco:
-.PP
+.sp
 - admin - The administrator role
 .br
 - user - A default generic user role for users created by the administrator; primarily used to authenticate against the user defined Core HCLI app.
 .br
 - validator - A validator role for use in validating other users' credentials (e.g. see CENTRALIZED REMOTE AUTHENTICATION)
-.PP
+.sp
 .SH COMMANDS
 .IP "path"
 Provides the installation path of hcli_core, which can be used to help locate the path of the WSGI app to use in a WSGI server.
@@ -167,19 +163,19 @@ This help file.
 version and the version of its dependencies.
 .SH EXAMPLE
 hcli_core path
-.PP
+.sp
 hcli_core --version
-.PP
+.sp
 gunicorn --workers=5 --threads=2 "hcli_core:connector()"
-.PP
+.sp
 gunicorn --workers=5 --threads=2 "hcli_core:connector(\\"`hcli_core sample hfm`\\")"
-.PP
+.sp
 gunicorn --workers=5 --threads=2 "hcli_core:connector(plugin_path=\\"`hcli_core sample hfm`\\", config_path=\\"./custom.config\\")"
-.PP
+.sp
 gunicorn --workers=1 --threads=10 -b 0.0.0.0:8000 -b 0.0.0.0:9000 "hcli_core:connector()"
-.PP
+.sp
 pip install huckle
-.PP
+.sp
 huckle cli install localhost:9000
-.PP
+.sp
 hco help

@@ -63,9 +63,9 @@ class Config:
                 with open(config_path, 'r') as config_file:
                     parser.read_file(config_file)
 
-                    if parser.has_section("config") and parser.has_option("config", "mgmt.port"):
+                    if parser.has_section("hco") and parser.has_option("hco", "hco.port"):
                         try:
-                            port = int(parser.get("config", "mgmt.port"))
+                            port = int(parser.get("hco", "hco.port"))
                             if 1 <= port <= 65536:
                                 return port
                             log.warning(f"Invalid management port value: {port}")
@@ -89,9 +89,9 @@ class Config:
                 with open(config_path, 'r') as config_file:
                     parser.read_file(config_file)
 
-                    if parser.has_section("config") and parser.has_option("config", "core.root"):
+                    if parser.has_section("core") and parser.has_option("core", "core.root"):
                         try:
-                            root = parser.get("config", "core.root")
+                            root = parser.get("core", "core.root")
                             if root == 'aggregate' or root == 'management':
                                 return root
                             log.warning(f"Invalid core root value: {root}")
@@ -157,14 +157,14 @@ class Config:
                 parser = ConfigParser(interpolation=None)
                 parser.read_file(config_file)
 
-                if not parser.has_section("config"):
-                    log.critical(f"No [config] section available in {self.config_file_path}")
+                if not parser.has_section("core"):
+                    log.critical(f"No [core] section available in {self.config_file_path}")
                     assert False
 
                 # Core authentication
                 if self.name == 'core':
-                    if parser.has_option("config", "core.auth"):
-                        value = parser.get("config", "core.auth")
+                    if parser.has_option("core", "core.auth"):
+                        value = parser.get("core", "core.auth")
                         if value.lower() in ('true', 'false'):
                             self.auth = value.lower() == 'true'
                             if not self.auth:
@@ -176,9 +176,9 @@ class Config:
 
                 # Management configuration
                 if self.name == 'management':
-                    if parser.has_option("config", "mgmt.port"):
+                    if parser.has_option("hco", "hco.port"):
                         try:
-                            port = int(parser.get("config", "mgmt.port"))
+                            port = int(parser.get("hco", "hco.port"))
                             if 1 <= port <= 65535:
                                 self.mgmt_port = port
                             else:
@@ -192,7 +192,7 @@ class Config:
                         log.info(f"Default Management Port: {self.mgmt_port}")
 
                 # Common configuration options
-                value = parser.get("config", "mgmt.credentials", fallback=None)
+                value = parser.get("hco", "hco.credentials", fallback=None)
                 if value is not None:
                     if value in ('local', 'remote'):
                         self.mgmt_credentials = value
@@ -201,7 +201,7 @@ class Config:
                         self.mgmt_credentials = 'local'
                     log.info(f"Credentials management: {self.mgmt_credentials}")
 
-                value = parser.get("config", "core.root", fallback=None)
+                value = parser.get("core", "core.root", fallback=None)
                 if value is not None:
                     if value in ('aggregate', 'management'):
                         self.core_root = value

@@ -28,9 +28,11 @@ def gunicorn_server_auth():
     rm -f ./password
 
     echo "Setup a custom credentials file for the test run"
-    echo -e "[config]
+    echo -e "[core]
 core.auth = True
-mgmt.port = 19090
+
+[hco]
+hco.port = 19090
 
 [default]
 username = admin
@@ -100,19 +102,23 @@ def gunicorn_server_remote_auth():
     rm -f ./remote_test_credentials
 
     echo "Setup a custom credentials file for the test run"
-    echo -e "[config]
+    echo -e "[core]
 core.auth = True
-mgmt.port = 29000
-mgmt.credentials = local
+
+[hco]
+hco.port = 29000
+hco.credentials = local
 
 [default]
 username = admin
 password = *
 salt = *" > ./remote_hco_test_credentials
 
-    echo -e "[config]
+    echo -e "[core]
 core.auth = True
-mgmt.credentials = remote" > ./remote_test_credentials
+
+[hco]
+hco.credentials = remote" > ./remote_test_credentials
 
     gunicorn --workers=1 --threads=100 -b 0.0.0.0:29000 "hcli_core:connector(config_path=\\\"./remote_hco_test_credentials\\\")" --daemon --log-file=./remote_hco_gunicorn.log --error-logfile=./remote_hco_gunicorn-error.log --capture-output
 
