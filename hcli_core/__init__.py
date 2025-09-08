@@ -4,7 +4,7 @@ import base64
 
 from hcli_core import logger
 from hcli_core.auth.cli import credential
-from hcli_core import hcliserver
+from hcli_core import server
 from hcli_core import config
 
 log = logger.Logger("hcli_core")
@@ -14,7 +14,7 @@ log.setLevel(logger.INFO)
 def connector(plugin_path=None, config_path=None):
 
     cm = credential.CredentialManager(config_path)
-    server_manager = hcliserver.LazyServerManager(plugin_path, config_path)
+    server_manager = server.LazyServerManager(plugin_path, config_path)
 
     # We select a response server based on port
     def port_router(environ, start_response):

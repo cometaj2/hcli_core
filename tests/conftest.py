@@ -157,9 +157,9 @@ def cleanup():
     export HUCKLE_HOME=$HUCKLE_HOME_TEST
 
     # Force kill any remaining processes
-    for pid in $(ps aux | grep '[g]unicorn' | awk '{print $2}'); do
-        kill -9 $pid 2>/dev/null || true
-    done
+
+    #ps aux | grep '[g]unicorn' | awk '{print $2}' | xargs pkill -9 -f
+    pkill -9 -f 'gunicorn.*hcli_core:connector'
     """
 
     # Run cleanup and capture output

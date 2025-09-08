@@ -24,7 +24,7 @@ from hcli_problem_details import ProblemDetail
 log = logger.Logger("hcli_core")
 
 
-class HCLIApp:
+class WSGIApp:
 
     def __init__(self, name, plugin_path, config_path):
         self.name = name
@@ -39,7 +39,17 @@ class HCLIApp:
         self.cfg.parse_template(template.Template(name))
 
     def server(self):
+        pass
 
+    def port(self):
+        pass
+
+class HCLIApp(WSGIApp):
+
+    def __init__(self, name, plugin_path, config_path):
+        super().__init__(name, plugin_path, config_path)
+
+    def server(self):
         server = None
 
         # We setup the HCLI Connector with the selective authentication for final execution only
