@@ -1,4 +1,4 @@
-.TH HCLI_CORE 1 "JUNE 2024" Linux "User Manuals"
+.TH HCLI_CORE 1 "JUNE 2017" Linux "User Manuals"
 .SH NAME
 hcli_core \- An HCLI Connector that can be used to expose a REST API that behaves as a CLI, via hypertext command line interface (HCLI) semantics.
 .SH SYNOPSIS
@@ -24,7 +24,7 @@ the EXAMPLE section for details on how to submit a custom configuration file pat
 .sp
 The configuration supports enabling or disabling authentication for the Core HCLI application provided as a plugin path.
 .sp
-If enabled, hco is used to manage credentials and authentication and client use
+If enabled, hco is used to manage credentials, authentication, and user roles.
 .I always requires authentication.
 .sp
 .SS CORE ROOT OVERRIDE
@@ -35,15 +35,17 @@ In contexts where ports are not available for use, such as with serverless AWS L
 - management - displaces the 3rd party HCLI app and ONLY presents hco under the root. See core.root under CONFIGURATION FILE FORMAT.
 .sp
 .SS CONFIGURATION FILE FORMAT
-[config]
+[core]
 .br
 core.auth = <True | False>
 .br
 core.root = <aggregate | management>
+.sp
+[hco]
 .br
-mgmt.port = <port>
+hco.port = <port>
 .br
-mgmt.credentials = <local | remote>
+hco.credentials = <local | remote>
 .br
 .SH AUTHENTICATION
 If authentication is configured for an HCLI application, HCLI Core expects to be able to use a single combined configuration and credentials file.
@@ -51,13 +53,15 @@ If authentication is configured for an HCLI application, HCLI Core expects to be
 The default credentials file provided with HCLI Core SHOULD NOT be used but is included as an example, and sets a sensible and bare default configuration.
 A user managed configuration/credentials file path that looks something like the following configuration SHOULD instead be provided at startup:
 .sp
-[config]
+[core]
 .br
 core.auth = True
+.sp
+[hco]
 .br
-mgmt.port = 9000
+hco.port = 9000
 .br
-mgmt.credentials = local
+hco.credentials = local
 .sp
 [default]
 .br

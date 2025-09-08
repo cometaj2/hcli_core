@@ -23,10 +23,12 @@ def write_requirements():
 def clean_credentials():
     config_path = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "hcli_core/auth/cli/credentials")
     with open(config_path, 'w') as f:
-        f.write('[config]\n')
+        f.write('[core]\n')
         f.write('core.auth = False\n')
-        f.write('mgmt.port = 9000\n')
-        f.write('mgmt.credentials = local\n')
+        f.write('\n')
+        f.write('[hco]\n')
+        f.write('hco.port = 9000\n')
+        f.write('hco.credentials = local\n')
     os.system(f'chmod 600 {config_path}')
 
 if sys.argv[-1] == 'write-requirements':
