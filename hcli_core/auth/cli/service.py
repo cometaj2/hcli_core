@@ -5,26 +5,11 @@ from hcli_core import logger
 from hcli_core import config
 
 from hcli_core.auth.cli import credential
+from hcli_core.auth.cli.authenticator import deny_disabled_authentication
 from hcli_problem_details import *
-
-from functools import wraps
 
 log = logger.Logger("hcli_core")
 
-
-# Additional authentication check on all service calls just in case authentication is somehow bypassed
-def requires_auth(func):
-    @wraps(func)
-    def wrapper(self, *args, **kwargs):
-        requesting_username = config.ServerContext.get_current_user()
-        cfg = self._cfg()
-
-        if not cfg.auth:
-            msg = f"cannot interact with hco when authentication is disabled."
-            log.warning(msg)
-            raise AuthenticationError(detail=msg)
-        return func(self, *args, **kwargs)
-    return wrapper
 
 # Simple RBAC controls for credentials update.
 # A user can update their own password only but the admin can update anything
@@ -33,17 +18,17 @@ class Service:
         self.cm = credential.CredentialManager()
         cfg = self._cfg()
 
-    @requires_auth
+    @deny_disabled_authentication
     def useradd(self, username):
         requesting_username = config.ServerContext.get_current_user()
         return self.cm.useradd(username)
 
-    @requires_auth
+    @deny_disabled_authentication
     def userdel(self, username):
         requesting_username = config.ServerContext.get_current_user()
         return self.cm.userdel(username)
 
-    @requires_auth
+    @deny_disabled_authentication
     def passwd(self, username, password_stream):
 
         if not password_stream:
@@ -69,7 +54,7 @@ class Service:
 
         return self.cm.passwd(username, password)
 
-    @requires_auth
+    @deny_disabled_authentication
     def ls(self):
         requesting_username = config.ServerContext.get_current_user()
 
@@ -83,7 +68,7 @@ class Service:
 
         return users.rstrip()
 
-    @requires_auth
+    @deny_disabled_authentication
     def key(self, username):
         requesting_username = config.ServerContext.get_current_user()
         requesting_user_roles = self.cm.get_user_roles(requesting_username)
@@ -96,22 +81,22 @@ class Service:
 
         return self.cm.create_key(username)
 
-    @requires_auth
+    @deny_disabled_authentication
     def key_rm(self, keyid):
         requesting_username = config.ServerContext.get_current_user()
         return self.cm.delete_key(requesting_username, keyid)
 
-    @requires_auth
+    @deny_disabled_authentication
     def key_rotate(self, keyid):
         requesting_username = config.ServerContext.get_current_user()
         return self.cm.rotate_key(requesting_username, keyid)
 
-    @requires_auth
+    @deny_disabled_authentication
     def key_ls(self):
         requesting_username = config.ServerContext.get_current_user()
         return self.cm.list_keys(requesting_username)
 
-    @requires_auth
+    @deny_disabled_authentication
     def validate_basic(self, username, password_stream):
 
         if not password_stream:
@@ -147,7 +132,7 @@ class Service:
 
         return result
 
-    @requires_auth
+    @deny_disabled_authentication
     def validate_hcoak(self, keyid, apikey_stream):
 
         if not apikey_stream:
@@ -182,15 +167,15 @@ class Service:
 
         return result
 
-    @requires_auth
+    @deny_disabled_authentication
     def role_add(self, username, role):
         return self.cm.add_user_role(username, role)
 
-    @requires_auth
+    @deny_disabled_authentication
     def role_rm(self, username, role):
         return self.cm.remove_user_role(username, role)
 
-    @requires_auth
+    @deny_disabled_authentication
     def role_ls(self):
         requesting_username = config.ServerContext.get_current_user()
 

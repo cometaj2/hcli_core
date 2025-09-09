@@ -55,7 +55,7 @@ class HCLIApp(WSGIApp):
         # We setup the HCLI Connector with the selective authentication for final execution only
         if self.name == 'management':
             server = falcon.App(middleware=[authenticator.SelectiveAuthenticationMiddleware(self.name),
-                                            authenticator.SelectiveAuthorizationMiddleware(self.name)])
+                                            authenticator.SelectiveHCLIAuthorizationMiddleware(self.name)])
         else:
             server = falcon.App(middleware=[authenticator.SelectiveAuthenticationMiddleware(self.name)])
 

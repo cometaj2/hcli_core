@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [4.0.0]
 - Add python 3.13 test coverage and official support
+- Refactor the hcli specific authorization middleware to allow for generic http authorization
 - Refactor to allow for custom 3rd party WSGI apps to be added to the lazy server manager
 - Update to more reliable pkill in pytest cleanup fixture
 - Update to output hcli_core help as text in the terminal rather than as a man page
