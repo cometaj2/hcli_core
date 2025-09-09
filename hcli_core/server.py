@@ -21,6 +21,8 @@ from hcli_core.auth.cli import authenticator
 from hcli_core.handler import HCLIErrorHandler
 from hcli_problem_details import ProblemDetail
 
+from typing import Type
+
 log = logger.Logger("hcli_core")
 
 
@@ -45,9 +47,6 @@ class WSGIApp:
         pass
 
 class HCLIApp(WSGIApp):
-
-    def __init__(self, name, plugin_path, config_path):
-        super().__init__(name, plugin_path, config_path)
 
     def server(self):
         server = None
@@ -105,23 +104,22 @@ class LazyServerManager:
                 log.info(f"Lazy initialization...")
                 self._initialized = True
 
-    def _get_mgmt_app(self):
-        if 'management' not in self.apps:
-            root_path = os.path.dirname(inspect.getfile(lambda: None))
-            mgmt_plugin_path = os.path.join(root_path, 'auth', 'cli')
+    def _get_app(self, name, app_class):
+        if not issubclass(app_class, WSGIApp):
+            log.critical(f"App class {app_class.__name__} must inherit from WSGIApp")
+            return None
+        if name not in self.apps:
+            plugin_path = None
+            if name == 'management':
+                root_path = os.path.dirname(inspect.getfile(lambda: None))
+                plugin_path = os.path.join(root_path, 'auth', 'cli')
+            else:
+                plugin_path = self.plugin_path
             log.info("================================================")
-            log.info(f"Initializing Management HCLI application:")
-            log.info(f"{mgmt_plugin_path}")
-            self.apps['management'] = HCLIApp("management", mgmt_plugin_path, self.config_path)
-        return self.apps['management']
-
-    def _get_core_app(self):
-        if 'core' not in self.apps:
-            log.info("================================================")
-            log.info(f"Initializing Core HCLI application:")
-            log.info(f"{self.plugin_path}")
-            self.apps['core'] = HCLIApp("core", self.plugin_path, self.config_path)
-        return self.apps['core']
+            log.info(f"Initializing " + name + " HCLI application:")
+            log.info(f"{plugin_path}")
+            self.apps[name] = app_class(name, plugin_path, self.config_path)
+        return self.apps[name]
 
     # Lazy initialize server for given port if it matches configuration.
     def get_server(self, port):
@@ -135,15 +133,15 @@ class LazyServerManager:
 
             # For management port, only initialize if it matches configured port or if we're aggregating the root
             if (self.mgmt_port and port == self.mgmt_port):
-                mgmtapp = self._get_mgmt_app()
-                server = mgmtapp.server()
+                app = self._get_app('management', HCLIApp)
+                server = app.server()
                 server.add_route(root.RootController.route, api.RootApi())
                 self.servers[port] = ('management', server)
 
             # For any other port, assume it's a core server port
             elif not self.mgmt_port or port != self.mgmt_port:
-                coreapp = self._get_core_app()
-                server = coreapp.server()
+                app = self._get_app('core', HCLIApp)
+                server = app.server()
                 server.add_route(root.RootController.route, api.RootApi())
                 self.servers[port] = ('core', server)
 
@@ -159,11 +157,11 @@ class LazyServerManager:
         templates = []
 
         if server_type == 'management' or self.core_root == 'management':
-            templates.append(self._get_mgmt_app().cfg.template)
+            templates.append(self._get_app('management', HCLIApp).cfg.template)
         else:  # Core server
-            templates.append(self._get_core_app().cfg.template)
+            templates.append(self._get_app('core', HCLIApp).cfg.template)
             if self.core_root == 'aggregate':
-                templates.append(self._get_mgmt_app().cfg.template)
+                templates.append(self._get_app('management', HCLIApp).cfg.template)
 
         server.add_route(root.RootController.route, api.RootApi(templates))
 
@@ -184,15 +182,15 @@ class LazyServerManager:
 
         # In aggregate mode on core port or in management mode on core port
         if self.core_root == 'management':
-            mgmtapp = self._get_mgmt_app()
-            server = mgmtapp.server()
+            app = self._get_app('management', HCLIApp)
+            server = app.server()
             return ('management', server)
         elif self.core_root == 'aggregate' and port != self.mgmt_port:
-            mgmtapp = self._get_mgmt_app()
+            app = self._get_app('management', HCLIApp)
 
-            # If path belongs to HCO, return management server
-            if mgmtapp.cfg.template.owns(path):
-                mgmt_server = mgmtapp.server()
-                return ('management', mgmt_server)
+            # If path belongs to hco, return management server
+            if app.cfg.template.owns(path):
+                server = app.server()
+                return ('management', server)
 
         return server_info
