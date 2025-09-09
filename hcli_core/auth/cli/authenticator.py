@@ -11,6 +11,16 @@ from hcli_problem_details import *
 
 log = logger.Logger("hcli_core")
 
+# Class decorator to mark classes that need authentication.
+# This allows us to navigate the HCLI API surface without authentication except for final execution.
+def requires_authentication(cls):
+    cls.requires_authentication = True
+    return cls
+
+# Class decorator to mark classes that need authorization.
+def requires_authorization(cls):
+    cls.requires_authorization = True
+    return cls
 
 class AuthenticationMiddleware:
     def __init__(self, name):

@@ -6,15 +6,8 @@ from hcli_core.hcli import option
 from hcli_core.hcli import execution
 from hcli_core.hcli import finalexecution
 from hcli_core.hcli import parameter
+from hcli_core.auth.cli.authenticator import requires_authentication, requires_authorization
 
-from functools import wraps
-
-# Class decorator to mark resources that need authentication or authorization.
-# This allows us to navigate the HCLI API surface without authentication except for final execution.
-def requires_auth(cls):
-    cls.requires_authentication = True
-    cls.requires_authorization = True
-    return cls
 
 class RootApi:
     def __init__(self, templates=None):
@@ -67,7 +60,8 @@ class ExecutionApi:
         resp.content_type = "application/hal+json"
         resp.text = execution.ExecutionController(uid, command).serialize()
 
-@requires_auth
+@requires_authentication
+@requires_authorization
 class FinalExecutionApi:
     def on_get(self, req, resp, uid):
         command = req.params['command']
