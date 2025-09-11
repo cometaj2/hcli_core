@@ -238,37 +238,6 @@ class Config:
             self.plugin_path = p
 
         try:
-            # Always ensure both paths are available
-            plugin_dir = os.path.dirname(self.plugin_path)
-            if plugin_dir not in sys.path:
-                sys.path.insert(0, plugin_dir)
-            if self.plugin_path not in sys.path:
-                sys.path.insert(0, self.plugin_path)
-
-            log.info(f"Loading CLI module for {self.name} from path: {self.plugin_path}.")
-
-            # Load the module
-            self._cli_module = importlib.import_module("cli", self.plugin_path)
-
-            # Verify CLI class exists
-            if not hasattr(self._cli_module, 'CLI'):
-                raise ImportError(f"No CLI class found in module for {self.name}.")
-
-            log.info(f"Successfully loaded CLI plugin for {self.name}.")
-
-            # Test instantiation
-            test_cli = self._cli_module.CLI(['test'], None)
-            log.info(f"Successfully verified CLI class instantiation for {self.name}.")
-
-        except Exception as e:
-            self.log.error(f"Failed to load CLI plugin from {self.plugin_path}: {str(e)}")
-            raise
-
-    def set_plugin_path(self, p):
-        if p is not None:
-            self.plugin_path = p
-
-        try:
             # Clear any existing 'cli' module from cache
             if 'cli' in sys.modules:
                 del sys.modules['cli']

@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Update to falcon 4.1.0 from 4.0.2
 - Update config file format ([core], [hco])
 - Update hcli_core documentation
+- Remove duplicate set_plugin_path in config
 
 ## [3.7.3]
 - Fix default logging from DEBUG back to INFO
