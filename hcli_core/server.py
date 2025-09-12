@@ -26,7 +26,7 @@ from typing import Type
 log = logger.Logger("hcli_core")
 
 
-class WSGIApp:
+class HCLICoreWSGIApp:
 
     def __init__(self, name, plugin_path, config_path):
         self.name = name
@@ -46,7 +46,10 @@ class WSGIApp:
     def port(self):
         pass
 
-class HCLIApp(WSGIApp):
+class HCLIApp(HCLICoreWSGIApp):
+
+    def __init__(self, name, plugin_path, config_path):
+        super().__init__(name, plugin_path, config_path)
 
     def server(self):
         server = None
@@ -105,8 +108,8 @@ class LazyServerManager:
                 self._initialized = True
 
     def _get_app(self, name, app_class):
-        if not issubclass(app_class, WSGIApp):
-            log.critical(f"App class {app_class.__name__} must inherit from WSGIApp")
+        if not issubclass(app_class, HCLICoreWSGIApp):
+            log.critical(f"WSGIApp class {app_class.__name__} must inherit from HCLICoreWSGIApp")
             return None
         if name not in self.apps:
             plugin_path = None
@@ -137,15 +140,25 @@ class LazyServerManager:
                 server = app.server()
                 server.add_route(root.RootController.route, api.RootApi())
                 self.servers[port] = ('management', server)
+                return self.servers[port]
+
+            self.wsgiapp_port = config.Config.get_wsgiapp_port(self.config_path)
+            if (self.wsgiapp_port and port == self.wsgiapp_port):
+                cfg = config.Config('wsgiapp')
+                cfg.set_wsgiapp_path(self.plugin_path)
+                WSGIApp = cfg.wsgiapp
+                app = self._get_app('wsgiapp', WSGIApp)
+                server = app.server()
+                self.servers[port] = ('wsgiapp', server)
+                return self.servers[port]
 
             # For any other port, assume it's a core server port
-            elif not self.mgmt_port or port != self.mgmt_port:
+            if not self.mgmt_port or port != self.mgmt_port:
                 app = self._get_app('core', HCLIApp)
                 server = app.server()
                 server.add_route(root.RootController.route, api.RootApi())
                 self.servers[port] = ('core', server)
-
-            return self.servers.get(port)
+                return self.servers[port]
 
     # Special case for root aggregation.
     def get_root(self, port):

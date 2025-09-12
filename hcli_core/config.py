@@ -3,19 +3,17 @@ import os
 import stat
 import importlib
 import inspect
-from configparser import ConfigParser
-from threading import Lock, local
-from hcli_core import logger
 import signal
 import atexit
 
-log = logger.Logger("hcli_core")
-
-
-class ServerContext:
-    _context = {}
+from configparser import ConfigParser
+from threading import Lock, local
+from hcli_core import logger
 
 from threading import local
+
+log = logger.Logger("hcli_core")
+
 
 class ServerContext:
     _context = local()
@@ -103,6 +101,32 @@ class Config:
                 log.warning(f"Error reading management root configuration: {e}")
                 return None
 
+    # Get custom wsgi app port from config file if explicitly configured, else None.
+    @classmethod
+    def get_wsgiapp_port(cls, config_path=None):
+        with cls._global_lock:
+            if not config_path:
+                config_path = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "auth/cli/credentials")
+
+            try:
+                parser = ConfigParser(interpolation=None)
+                with open(config_path, 'r') as config_file:
+                    parser.read_file(config_file)
+
+                    if parser.has_section("wsgiapp") and parser.has_option("wsgiapp", "wsgiapp.port"):
+                        try:
+                            port = int(parser.get("wsgiapp", "wsgiapp.port"))
+                            if 1 <= port <= 65536:
+                                return port
+                            log.warning(f"Invalid custom wsgi app port value: {port}")
+                        except ValueError:
+                            log.warning("Invalid custom wsgi app port configuration")
+
+                return None
+            except Exception as e:
+                log.warning(f"Error reading wsgiapp port configuration: {e}")
+                return None
+
     def __new__(cls, name=None):
         # If no name provided, get it from context
         if name is None:
@@ -137,6 +161,11 @@ class Config:
                     # management specific service value
                     if name == 'management':
                         instance.mgmt_port = 9000
+
+                    # core wsgiapp specific service value
+                    if name == 'wsgiapp':
+                        instance.wsgapp_port = None
+
                     cls._instances[name] = instance
 
         return cls._instances[name]
@@ -190,6 +219,23 @@ class Config:
                         log.info(f"Management Port: {self.mgmt_port}")
                     else:
                         log.info(f"Default Management Port: {self.mgmt_port}")
+
+                # WSGApp configuration
+                if self.name == 'wsgiapp':
+                    if parser.has_option("wsgiapp", "wsgiapp.port"):
+                        try:
+                            port = int(parser.get("wsgiapp", "wsgiapp.port"))
+                            if 1 <= port <= 65535:
+                                self.wsgiapp_port = port
+                            else:
+                                log.warning(f"Invalid wsgiapp port value: {port}.")
+                                self.wsgiapp_port = None
+                        except ValueError:
+                            log.warning(f"Invalid wsgiapp port value.")
+                            self.mgmt_port = None
+                        log.info(f"WSGIApp Port: {self.wsgiapp_port}")
+                    else:
+                        log.info(f"Default WSGIApp Port: {self.wsgiapp_port}")
 
                 # Common configuration options
                 value = parser.get("hco", "hco.credentials", fallback=None)
@@ -268,12 +314,55 @@ class Config:
             log.error(f"Failed to load CLI plugin from {self.plugin_path}: {str(e)}")
             raise
 
+    def set_wsgiapp_path(self, p):
+        if p is not None:
+            self.plugin_path = p
+
+        try:
+            # Clear any existing 'wsgiapp' module from cache
+            if 'wsgiapp' in sys.modules:
+                del sys.modules['wsgiapp']
+
+            plugin_dir = os.path.dirname(self.plugin_path)
+            if plugin_dir not in sys.path:
+                sys.path.insert(0, plugin_dir)
+            if self.plugin_path not in sys.path:
+                sys.path.insert(0, self.plugin_path)
+
+            log.debug(f"Loading WSGI App for {self.name}.")
+            log.debug(f"Plugin path: {self.plugin_path}.")
+            log.debug(f"sys.path: {sys.path}.")
+
+            # Use a unique module name for each WSGI App
+            module_name = f"wsgiapp_{self.name}"
+            wsgiapp_path = os.path.join(self.plugin_path, 'wsgiapp', 'wsgiapp.py')
+
+            log.debug(f"Loading from: {wsgiapp_path}")
+            spec = importlib.util.spec_from_file_location(module_name, wsgiapp_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            self._wsgiapp_module = module
+            log.debug(f"Loaded module from: {module.__file__}.")
+
+            log.info(f"Successfully loaded WSGI App plugin for {self.name}.")
+        except Exception as e:
+            log.error(f"Failed to load CLI plugin from {self.plugin_path}: {str(e)}")
+            raise
+
     # Return the CLI class itself, not the module
     @property
     def cli(self):
         if hasattr(self, '_cli_module'):
             if hasattr(self._cli_module, 'CLI'):
                 return getattr(self._cli_module, 'CLI')
+        return None
+
+    # Return the WSGIApp class itself, not the module
+    @property
+    def wsgiapp(self):
+        if hasattr(self, '_wsgiapp_module'):
+            if hasattr(self._wsgiapp_module, 'WSGIApp'):
+                return getattr(self._wsgiapp_module, 'WSGIApp')
         return None
 
     @cli.setter
