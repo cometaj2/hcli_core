@@ -15,7 +15,7 @@ from hcli_core import logger
 
 from threading import local
 
-home = os.getenv('HCLI_CORE') or os.path.expanduser("~")
+home = os.getenv('HCLI_CORE_HOME') or os.path.expanduser("~")
 dot_hcli_core = os.path.join(home, ".hcli_core")
 dot_hcli_core_var = os.path.join(dot_hcli_core + "/var")
 dot_hcli_core_var_log = os.path.join(dot_hcli_core_var + "/log")
@@ -419,7 +419,6 @@ def write_lock(file_path):
                 os.unlink(lockfile)
         except OSError:
             pass
-
 
 create_folder(home)
 create_folder(dot_hcli_core)
