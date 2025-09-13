@@ -5,12 +5,21 @@ import importlib
 import inspect
 import signal
 import atexit
+import portalocker
 
+from contextlib import contextmanager
+from pathlib import Path
 from configparser import ConfigParser
 from threading import Lock, local
 from hcli_core import logger
 
 from threading import local
+
+home = os.getenv('HCLI_CORE') or os.path.expanduser("~")
+dot_hcli_core = os.path.join(home, ".hcli_core")
+dot_hcli_core_var = os.path.join(dot_hcli_core + "/var")
+dot_hcli_core_var_log = os.path.join(dot_hcli_core_var + "/log")
+dot_hcli_core_config = os.path.join(dot_hcli_core + "/etc")
 
 log = logger.Logger("hcli_core")
 
@@ -384,3 +393,36 @@ class Config:
 
     def __str__(self):
         return f"{self.name}"
+
+# creates a folder at "path"
+def create_folder(path):
+
+    # Skip lock only if this is the actual user's home directory (not a custom HCLI_CORE_HOME)
+    if path == os.path.expanduser("~"):
+        if not os.path.exists(path):
+            os.makedirs(path)
+        return
+
+    with write_lock(path):
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+@contextmanager
+def write_lock(file_path):
+    lockfile = Path(file_path).with_suffix('.lock')
+    with portalocker.Lock(lockfile, timeout=10) as lock:
+        yield
+
+        # we cleanup the lock if successful.
+        try:
+            if lockfile.exists():
+                os.unlink(lockfile)
+        except OSError:
+            pass
+
+
+create_folder(home)
+create_folder(dot_hcli_core)
+create_folder(dot_hcli_core_config)
+create_folder(dot_hcli_core_var)
+create_folder(dot_hcli_core_var_log)

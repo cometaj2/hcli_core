@@ -9,23 +9,37 @@ hcli_core \- An HCLI Connector that can be used to expose a REST API that behave
 is a Web Service Gateway Interface (WSGI; PEP 3333) application that provides a way for developers to expose a REST API as a CLI via HCLI v1.0 semantics.
 This enables immediate, dynamic and up to date in-band access to man page style API/CLI documentation.
 .sp
-HCLI Core deploys with support for two distinct HCLI:
+HCLI Core support two distinct types of HCLI applications:
 .sp
-- The user defined (3rd party) Core HCLI application provided as a plugin path.
+- A user defined HCLI application provided as a plugin path.
 .br
-- The management HCLI application used to manage local credentials (hco), which can be interacted with using an HCLI client.
+- A management HCLI application (hco) used to manage local credentials.
+.sp
+HCLI Core also support an additional non-HCLI user defined WSGI application:
+.sp
+- A user defined non-HCLI WSGI application provided as a plugin path (the same plugin path as for a user defined HCLI application).
+.sp
+A user defined HCLI application and a user defined non-HCLI WSGI application can be commonly served as a single target plugin path and implementation, but be served each
+as a different service, on a different ports. This potentially allows for a distinctly served non-HCLI WSGI application to be interacted with via a corresponding user defined
+HCLI Core application.
+.sp
+For example:
+.sp
+- A git hosting service, managed via HCLI but allowing for standard git smart HTTP client interaction (i.e. like github, its cli, and git).
+.br
+- An Oauth2 Identity Provider managed via HCLI.
+.br
+- A WSGI hosted website managed via HCLI.
 .sp
 .SH CONFIGURATION
-HCLI Core relies on the use of a configuration file. If none is provided as a file path, the default configuration included with hcli_core
-is used.
+HCLI Core relies on the use of a configuration file. If none is provided as a file path, the default configuration included with HCLI Core is used.
 .sp
 The configuration file is expected to be formatted in the configparser format which defines sections and assigned name = value pairs. See
 the EXAMPLE section for details on how to submit a custom configuration file path to hcli_core at launch.
 .sp
 The configuration supports enabling or disabling authentication for the Core HCLI application provided as a plugin path.
 .sp
-If enabled, hco is used to manage credentials, authentication, and user roles.
-.I always requires authentication.
+If enabled, hco is used to help manage credentials, authentication, and user roles. hco always requires authentication and authorization to function, regardless of HCLI Core authentication configuration.
 .sp
 .SS CORE ROOT OVERRIDE
 In contexts where ports are not available for use, such as with serverless AWS Lambda, a core.root override configuration is possible to force the root of the service to behave in different ways. By default, only the 3rd Party HCLI app is presented if core.root is not configured. Otherwise:
@@ -46,9 +60,14 @@ core.root = <aggregate | management>
 hco.port = <port>
 .br
 hco.credentials = <local | remote>
+.sp
+[wsgiapp]
+.br
+wsgiapp.port = <port>
 .br
 .SH AUTHENTICATION
-If authentication is configured for an HCLI application, HCLI Core expects to be able to use a single combined configuration and credentials file.
+If authentication is configured for an HCLI application, or if HCLI Management is used, HCLI Core expects to be able to use a single combined
+configuration and credentials file.
 .sp
 The default credentials file provided with HCLI Core SHOULD NOT be used but is included as an example, and sets a sensible and bare default configuration.
 A user managed configuration/credentials file path that looks something like the following configuration SHOULD instead be provided at startup:
@@ -147,6 +166,9 @@ Three user roles are made available for use under hco:
 - user - A default generic user role for users created by the administrator; primarily used to authenticate against the user defined Core HCLI app.
 .br
 - validator - A validator role for use in validating other users' credentials (e.g. see CENTRALIZED REMOTE AUTHENTICATION)
+.SH ENVIRONMENT VARIABLES
+.sp
+- HCLI_CORE_BOOTSTRAP_PASSWORD (inceptive admin password; see AUTHENTICATION)
 .sp
 .SH COMMANDS
 .IP "path"

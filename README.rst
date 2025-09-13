@@ -1,4 +1,4 @@
-|pypi| |build status| |pyver| |huckle| |hc| |hg|
+|pypi| |build status| |pyver| |huckle| |hc| |hai|
 
 HCLI Core
 =========
@@ -41,9 +41,13 @@ Related HCLI Projects
 
 - hcli-hai, a python package wrapper for an HCLI (hai) that can interact with LLMs via terminal input and output streams. [6]
 
+- hcli-hag, a python package wrapper for an HCLI (hag) a simple git HTTP hosting service. [6]
+
 [5] https://github.com/cometaj2/hcli_hc
 
 [6] https://github.com/cometaj2/hcli_hai
+
+[7] https://github.com/cometaj2/hcli_hag
 
 Installation
 ------------
@@ -80,19 +84,17 @@ Note that no CLI is actually installed by Huckle. Huckle reads the HCLI semantic
 3rd Party HCLI Installation
 ---------------------------
 
-If you want to load a sample HCLI other than the default sample application, you can try loading one of the other sample HCLIs
-developped independently of HCLI Core. For example, the *hai* HCLI (hypertext LLM command line chat application).
+If you want to load a sample HCLI other than the default sample application, you can try loading one of the other sample HCLIs developped independently of HCLI Core. For example, the *hag* HCLI (hag is git's companion; a WSGI host service and HCLI to work with remote git repositories).
 
-A folder path to any other 3rd party HCLI can be provided in the same way to the HCLI Connector, provided the 3rd party HCLI meets
-CLI interface (cli.py) and HCLI template (template.json) requirements:
+A folder path to any other 3rd party HCLI can be provided in the same way to the HCLI Connector, provided the 3rd party HCLI meets CLI interface (cli.py) and HCLI template (template.json) requirements:
 
 .. code-block:: console
 
-    pip install hcli-hai
+    pip install hcli-hag
     pip install hcli-core
     pip install gunicorn
     pip install huckle
-    gunicorn --workers=1 --threads=2 "hcli_core:connector(\"`hcli_hai path`\")"
+    gunicorn --workers=1 --threads=100 -b 0.0.0.0:8000 -b 0.0.0.0:9000 -b 0.0.0.0:10000 "hcli_core:connector(plugin_path=\"`hcli_hag path`\", config_path=\"./credentials\")"
 
 3rd Party HCLI Usage
 --------------------
@@ -189,5 +191,5 @@ Bugs
    :target: https://pypi.org/project/huckle
 .. |hc| image:: https://img.shields.io/pypi/v/hcli-hc?label=hcli-hc
    :target: https://pypi.org/project/hcli-hc
-.. |hg| image:: https://img.shields.io/pypi/v/hcli-hg?label=hcli-hai
+.. |hai| image:: https://img.shields.io/pypi/v/hcli-hai?label=hcli-hai
    :target: https://pypi.org/project/hcli-hai
