@@ -11,7 +11,6 @@ from contextlib import contextmanager
 from pathlib import Path
 from configparser import ConfigParser
 from threading import Lock, local
-from hcli_core import logger
 
 from threading import local
 
@@ -20,8 +19,7 @@ dot_hcli_core = os.path.join(home, ".hcli_core")
 dot_hcli_core_var = os.path.join(dot_hcli_core + "/var")
 dot_hcli_core_var_log = os.path.join(dot_hcli_core_var + "/log")
 dot_hcli_core_config = os.path.join(dot_hcli_core + "/etc")
-
-log = logger.Logger("hcli_core")
+log_file_path = dot_hcli_core_var_log + "/hcli_core.log"
 
 
 class ServerContext:
@@ -425,3 +423,22 @@ create_folder(dot_hcli_core)
 create_folder(dot_hcli_core_config)
 create_folder(dot_hcli_core_var)
 create_folder(dot_hcli_core_var_log)
+
+# we load the logger after the configuration is in otherwise we get no logger
+from hcli_core import logger
+
+# Map string log levels to logger constants
+LOG_LEVELS = {
+    'debug': logger.DEBUG,
+    'info': logger.INFO,
+    'warning': logger.WARNING,
+    'error': logger.ERROR,
+    'critical' : logger.CRITICAL
+}
+
+log = 'log'
+log_level = 'INFO'
+log_level = LOG_LEVELS.get(log_level.lower(), logger.INFO)
+log = logger.Logger("hcli_core", log=log)
+log.setLevel(log_level)
+

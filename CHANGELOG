@@ -11,7 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Update to more reliable pkill in pytest cleanup fixture
 - Update to output hcli_core help as text in the terminal rather than as a man page
 - Update to falcon 4.1.0 from 4.0.2
-- Update config file format ([core], [hco])
+- Update to allow for logging to file
+- Update config file format ([default], [core], [hco], [wsgiapp])
 - Update hcli_core documentation
 - Remove duplicate set_plugin_path in config
 

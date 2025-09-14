@@ -5,6 +5,9 @@ import io
 import datetime
 import threading
 import collections
+from logging.handlers import RotatingFileHandler
+
+from hcli_core import config
 
 DEBUG = logging.DEBUG
 INFO = logging.INFO
@@ -33,34 +36,50 @@ class Logger:
     def __new__(cls, name=None, *args, **kwargs):
         with cls._lock:
             if name not in cls._instances:
-                instance = super().__new__(cls)
-                instance.init(name, *args, **kwargs)
+                instance = super(Logger, cls).__new__(cls)
                 cls._instances[name] = instance
             return cls._instances[name]
 
-    def init(self, name=None, *args, **kwargs):
-        self.name = name or __name__
-        self.instance = logging.getLogger(self.name)
+    def __init__(self, name=None, log=None, max_bytes=10485760, backup_count=5, *args, **kwargs):
+        with self._lock:
+            self.name = name or __name__
+            self.instance = logging.getLogger(self.name)
 
-        # Only add handlers if they haven't been added yet
-        if not self.instance.handlers:
-            date_format = "%Y-%m-%d %H:%M:%S %z"
-            message_format = "[%(asctime)s] [%(levelname)-8s] [%(name)s] [%(filename)13s:%(lineno)-3s] %(message)s"
-            formatter = logging.Formatter(fmt=message_format, datefmt=date_format)
+            # Only add handlers if they haven't been added yet
+            if not self.instance.handlers:
+                date_format = "%Y-%m-%d %H:%M:%S %z"
+                message_format = "[%(asctime)s] [%(levelname)-8s] [%(name)s] [%(filename)13s:%(lineno)-3s] %(message)s"
+                formatter = logging.Formatter(fmt=message_format, datefmt=date_format)
 
-            self.streamHandler = logging.StreamHandler()
-            self.streamHandler.setFormatter(formatter)
-            self.instance.addHandler(self.streamHandler)
+                self.streamHandler = logging.StreamHandler()
+                self.streamHandler.setFormatter(formatter)
+                self.instance.addHandler(self.streamHandler)
 
-            self.clientHandler = DequeHandler()
-            self.clientHandler.setFormatter(formatter)
-            self.instance.addHandler(self.clientHandler)
-        else:
-            # If handlers exist, get the existing ones
-            self.streamHandler = next((h for h in self.instance.handlers 
-                                    if isinstance(h, logging.StreamHandler)), None)
-            self.clientHandler = next((h for h in self.instance.handlers 
-                                    if isinstance(h, DequeHandler)), None)
+                self.clientHandler = DequeHandler()
+                self.clientHandler.setFormatter(formatter)
+                self.instance.addHandler(self.clientHandler)
+
+                # File handler (if log_file is provided)
+                # NullHandler otherwise to prevent any output
+                if log == 'log':
+                    log_file = config.log_file_path
+                    self.fileHandler = RotatingFileHandler(
+                        log_file,
+                        maxBytes=max_bytes,
+                        backupCount=backup_count,
+                        encoding='utf-8'
+                    )
+                    self.fileHandler.setFormatter(formatter)
+                    self.instance.addHandler(self.fileHandler)
+                else:
+                    self.instance.addHandler(logging.NullHandler())
+
+            else:
+                # If handlers exist, get the existing ones
+                self.streamHandler = next((h for h in self.instance.handlers 
+                                        if isinstance(h, logging.StreamHandler)), None)
+                self.clientHandler = next((h for h in self.instance.handlers 
+                                        if isinstance(h, DequeHandler)), None)
 
     def setLevel(self, level):
         self.instance.setLevel(level)

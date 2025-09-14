@@ -2,14 +2,11 @@ import os
 import inspect
 import base64
 
-from hcli_core import logger
+from hcli_core import config
 from hcli_core.auth.cli import credential
 from hcli_core import server
-from hcli_core import config
 
 log = logger.Logger("hcli_core")
-log.setLevel(logger.INFO)
-
 
 def connector(plugin_path=None, config_path=None):
 
