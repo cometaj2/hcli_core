@@ -15,23 +15,11 @@ WARNING = logging.WARNING
 ERROR = logging.ERROR
 CRITICAL = logging.CRITICAL
 
-class DequeHandler(logging.Handler):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.deque = collections.deque(maxlen=100)
-
-    def emit(self, record):
-        log_entry = self.format(record)
-        self.deque.append(log_entry)
-
-    def read_and_clear(self):
-        logs = list(self.deque)
-        self.deque.clear()
-        return logs
 
 class Logger:
     _instances = {}
     _lock = threading.Lock()
+    ROOT_LOGGER = "hcli_core"
 
     def __new__(cls, name=None, *args, **kwargs):
         with cls._lock:
@@ -46,7 +34,7 @@ class Logger:
             self.instance = logging.getLogger(self.name)
 
             # Only add handlers if they haven't been added yet
-            if not self.instance.handlers:
+            if not self.instance.handlers and name == self.ROOT_LOGGER:
                 date_format = "%Y-%m-%d %H:%M:%S %z"
                 message_format = "[%(asctime)s] [%(levelname)-8s] [%(name)s] [%(filename)13s:%(lineno)-3s] %(message)s"
                 formatter = logging.Formatter(fmt=message_format, datefmt=date_format)
@@ -54,10 +42,6 @@ class Logger:
                 self.streamHandler = logging.StreamHandler()
                 self.streamHandler.setFormatter(formatter)
                 self.instance.addHandler(self.streamHandler)
-
-                self.clientHandler = DequeHandler()
-                self.clientHandler.setFormatter(formatter)
-                self.instance.addHandler(self.clientHandler)
 
                 # File handler (if log_file is provided)
                 # NullHandler otherwise to prevent any output
@@ -78,8 +62,8 @@ class Logger:
                 # If handlers exist, get the existing ones
                 self.streamHandler = next((h for h in self.instance.handlers 
                                         if isinstance(h, logging.StreamHandler)), None)
-                self.clientHandler = next((h for h in self.instance.handlers 
-                                        if isinstance(h, DequeHandler)), None)
+                self.fileHandler = next((h for h in self.instance.handlers
+                                if isinstance(h, RotatingFileHandler)), None)
 
     def setLevel(self, level):
         self.instance.setLevel(level)
@@ -98,10 +82,3 @@ class Logger:
 
     def critical(self, msg, *args, **kwargs):
         self.instance.critical(msg, *args, stacklevel=2, **kwargs)
-
-    def tail(self):
-        log_entries = self.clientHandler.read_and_clear()
-        log_text = '\n'.join(log_entries)
-        if log_text:
-            log_text += '\n'  # Adds newline character at the end if there is some log_text
-        return log_text.encode('utf-8')
