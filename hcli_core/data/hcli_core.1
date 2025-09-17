@@ -13,19 +13,19 @@ HCLI Core support two distinct types of HCLI applications:
 .sp
 - A user defined HCLI application provided as a plugin path.
 .br
-- A management HCLI application (hco) used to manage local credentials.
+- A management HCLI application (hco) used to manage local credentials to access both hco and the user defined HCLI application.
 .sp
 HCLI Core also support an additional non-HCLI user defined WSGI application:
 .sp
 - A user defined non-HCLI WSGI application provided as a plugin path (the same plugin path as for a user defined HCLI application).
 .sp
 A user defined HCLI application and a user defined non-HCLI WSGI application can be commonly served as a single target plugin path and implementation, but be served each
-as a different service, on a different ports. This potentially allows for a distinctly served non-HCLI WSGI application to be interacted with via a corresponding user defined
-HCLI Core application.
+as a different service, on a different port. This potentially allows for a distinctly served non-HCLI WSGI application to be interacted with via a corresponding user defined
+HCLI Core application (see core.wsgiapp.port in CONFIGURATION FILE FORMAT).
 .sp
 For example:
 .sp
-- A git hosting service, managed via HCLI but allowing for standard git smart HTTP client interaction (i.e. like github, its cli, and git).
+- A git hosting service, managed via HCLI but allowing for direct standard git smart HTTP client interaction (i.e. like github, its cli, and git).
 .br
 - An Oauth2 Identity Provider managed via HCLI.
 .br
@@ -42,11 +42,11 @@ The configuration supports enabling or disabling authentication for the Core HCL
 If enabled, hco is used to help manage credentials, authentication, and user roles. hco always requires authentication and authorization to function, regardless of HCLI Core authentication configuration.
 .sp
 .SS CORE ROOT OVERRIDE
-In contexts where ports are not available for use, such as with serverless AWS Lambda, a core.root override configuration is possible to force the root of the service to behave in different ways. By default, only the 3rd Party HCLI app is presented if core.root is not configured. Otherwise:
+In contexts where ports are not available for use, such as with serverless AWS Lambda, a core.root override configuration is possible to force the root of the service to behave in different ways. By default, only the user defined HCLI application is presented if core.root is not configured. Otherwise:
 .sp
-- aggregate - aggregates both the 3rd party HCLI app and hco under the root. See core.root under CONFIGURATION FILE FORMAT.
+- aggregate - aggregates both the user defined HCLI application and hco under the root. See core.root under CONFIGURATION FILE FORMAT.
 .br
-- management - displaces the 3rd party HCLI app and ONLY presents hco under the root. See core.root under CONFIGURATION FILE FORMAT.
+- management - displaces the user defined HCLI application and ONLY presents hco under the root. See core.root under CONFIGURATION FILE FORMAT.
 .sp
 .SS CONFIGURATION FILE FORMAT
 [core]
@@ -54,6 +54,8 @@ In contexts where ports are not available for use, such as with serverless AWS L
 core.auth = <True | False>
 .br
 core.root = <aggregate | management>
+.br
+core.wsgiapp.port = <port>
 .sp
 [hco]
 .br
@@ -61,10 +63,6 @@ hco.port = <port>
 .br
 hco.credentials = <local | remote>
 .sp
-[wsgiapp]
-.br
-wsgiapp.port = <port>
-.br
 .SH AUTHENTICATION
 If authentication is configured for an HCLI application, or if HCLI Management is used, HCLI Core expects to be able to use a single combined
 configuration and credentials file.
@@ -90,9 +88,9 @@ password = *
 .br
 salt = *
 .sp
-The hco HCLI application is made available on the configured management port 'mgmt.port' to help manage user credentials and api keys for both hco and the Core HCLI application. The hco management HCLI app will not be made available unless the port is set in the configuration file and the corresponding port is bound at startup. See the EXAMPLE section for a multi port hcli_core launch.
+The hco HCLI application is made available on the configured management port 'hco.port' to help manage user credentials and api keys for both hco and the user defined HCLI application. The hco management HCLI application will not be made available unless the port is set in the configuration file and the corresponding port is bound at startup of the WSGI server. See the EXAMPLE section for a multi port hcli_core launch with gunicorn.
 .sp
-The default expected administrator is an 'admin' user set with '*' defaults for both the password and salt. On first startup with those defaults, HCLI Core will rely on the presence of an HCLI_CORE_BOOTSTRAP_PASSWORD environment variable which will be used to assign the initial admin user password. The password is immediately hashed and set in the credentials file. After the inceptive bootstrap, the HCLI_CORE_BOOTSTRAP_PASSWORD will no longer be used, and HCLI Core relies exclusively on the credentials file.
+The default expected administrator is an 'admin' user set with '*' for both the password and salt. On first startup with those defaults, HCLI Core will rely on the presence of an HCLI_CORE_BOOTSTRAP_PASSWORD environment variable which will be used to assign the initial admin user password. The password is immediately hashed and set in the credentials file. After the inceptive bootstrap, the HCLI_CORE_BOOTSTRAP_PASSWORD will no longer be used, and HCLI Core relies exclusively on the credentials file.
 .sp
 .I The initial password SHOULD NOT be used permanently. It SHOULD be changed immediately (e.g. via huckle with keyring as credential manager) to help improve and maintain security.
 .sp
@@ -116,10 +114,10 @@ hcoak = hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qn
 .sp
 Bearer base64(GJSLKO5Z5M:hcoak_FMn4dirl8kVoV1z96II84AeEDIbYyxTXZkMLllfgx8Deqwz0D1Rq88ObQBleUpN_Qncek8otlPx4ZaIYWtFWcQ)
 .sp
-HCOAK SHOULD NOT be used without HTTPS and is primary intended to be used with 3rd party HCLI applications hosted on HCLI Core.
+HCOAK SHOULD NOT be used without HTTPS and is primarily intended to be used with user defined HCLI applications hosted on HCLI Core.
 .sp
 .SS CENTRALIZED REMOTE AUTHENTICATION
-By its nature, HCLI is composable, so HCLI Core is also trivially configurable to forward authentication to a remote centralized hco via huckle (https://github.com/cometaj2/huckle). See mgmt.credentials under CONFIGURATION FILE FORMAT and AUTHENTICATION.
+By its nature, HCLI is composable, so HCLI Core is also trivially configurable to forward authentication to a remote centralized hco via huckle (https://github.com/cometaj2/huckle). See management credentials under CONFIGURATION FILE FORMAT and AUTHENTICATION.
 .sp
 Since HCLI Core uses hco to validate credentials, and since hco is configured via huckle, see huckle help for information on how to setup authentication for hco.
 .sp

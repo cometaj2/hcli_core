@@ -142,8 +142,8 @@ class LazyServerManager:
                 self.servers[port] = ('management', server)
                 return self.servers[port]
 
-            self.wsgiapp_port = config.Config.get_wsgiapp_port(self.config_path)
-            if (self.wsgiapp_port and port == self.wsgiapp_port):
+            self.core_wsgiapp_port = config.Config.get_core_wsgiapp_port(self.config_path)
+            if (self.core_wsgiapp_port and port == self.core_wsgiapp_port):
                 cfg = config.Config('wsgiapp')
                 cfg.set_wsgiapp_path(self.plugin_path)
                 WSGIApp = cfg.wsgiapp

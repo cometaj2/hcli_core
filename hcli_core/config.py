@@ -110,7 +110,7 @@ class Config:
 
     # Get custom wsgi app port from config file if explicitly configured, else None.
     @classmethod
-    def get_wsgiapp_port(cls, config_path=None):
+    def get_core_wsgiapp_port(cls, config_path=None):
         with cls._global_lock:
             if not config_path:
                 config_path = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "auth/cli/credentials")
@@ -120,18 +120,18 @@ class Config:
                 with open(config_path, 'r') as config_file:
                     parser.read_file(config_file)
 
-                    if parser.has_section("wsgiapp") and parser.has_option("wsgiapp", "wsgiapp.port"):
+                    if parser.has_section("core") and parser.has_option("core", "core.wsgiapp.port"):
                         try:
-                            port = int(parser.get("wsgiapp", "wsgiapp.port"))
+                            port = int(parser.get("core", "core.wsgiapp.port"))
                             if 1 <= port <= 65536:
                                 return port
-                            log.warning(f"Invalid custom wsgi app port value: {port}")
+                            log.warning(f"Invalid core wsgi app port value: {port}")
                         except ValueError:
-                            log.warning("Invalid custom wsgi app port configuration")
+                            log.warning("Invalid core wsgi app port configuration")
 
                 return None
             except Exception as e:
-                log.warning(f"Error reading wsgiapp port configuration: {e}")
+                log.warning(f"Error reading core wsgi app port configuration: {e}")
                 return None
 
     def __new__(cls, name=None):
@@ -229,20 +229,20 @@ class Config:
 
                 # WSGApp configuration
                 if self.name == 'wsgiapp':
-                    if parser.has_option("wsgiapp", "wsgiapp.port"):
+                    if parser.has_option("core", "core.wsgiapp.port"):
                         try:
-                            port = int(parser.get("wsgiapp", "wsgiapp.port"))
+                            port = int(parser.get("core", "core.wsgiapp.port"))
                             if 1 <= port <= 65535:
-                                self.wsgiapp_port = port
+                                self.core_wsgiapp_port = port
                             else:
-                                log.warning(f"Invalid wsgiapp port value: {port}.")
-                                self.wsgiapp_port = None
+                                log.warning(f"Invalid wsgi app port value: {port}.")
+                                self.core_wsgiapp_port = None
                         except ValueError:
-                            log.warning(f"Invalid wsgiapp port value.")
-                            self.mgmt_port = None
-                        log.info(f"WSGIApp Port: {self.wsgiapp_port}")
+                            log.warning(f"Invalid wsgi app port value.")
+                            self.core_wsgiapp_port = None
+                        log.info(f"Core WSGIApp Port: {self.core_wsgiapp_port}")
                     else:
-                        log.info(f"Default WSGIApp Port: {self.wsgiapp_port}")
+                        log.info(f"Default Core WSGIApp Port: {self.core_wsgiapp_port}")
 
                 # Common configuration options
                 value = parser.get("hco", "hco.credentials", fallback=None)
