@@ -2,7 +2,6 @@ import json
 import urllib
 import re
 
-from hcli_core import config
 
 class Template:
     hcliTemplateVersion = "1.0"
@@ -10,11 +9,9 @@ class Template:
     cli = []
 
     """ We load the template.json and populate available commands, executables directives and the template version """
-    def __init__(self, name):
-        cfg = config.Config(name)
-
+    def __init__(self, plugin_path):
         try:
-            with open(cfg.plugin_path + "/template.json", "r") as read_file:
+            with open(plugin_path + "/template.json", "r") as read_file:
                 data = json.load(read_file)	
 
             self.hcliTemplateVersion = data['hcliTemplateVersion']

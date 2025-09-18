@@ -38,7 +38,7 @@ class HCLICoreWSGIApp:
 
         # We load the HCLI template in memory to reduce disk io
         self.cfg.set_plugin_path(plugin_path)
-        self.cfg.parse_template(template.Template(name))
+        self.cfg.parse_template(template.Template(self.cfg.plugin_path))
 
     def server(self):
         pass
@@ -55,6 +55,7 @@ class HCLIApp(HCLICoreWSGIApp):
         server = None
 
         # We setup the HCLI Connector with the selective authentication for final execution only
+        # Both authentication and authorization is enforced for hco
         if self.name == 'management':
             server = falcon.App(middleware=[authenticator.SelectiveAuthenticationMiddleware(self.name),
                                             authenticator.SelectiveHCLIAuthorizationMiddleware(self.name)])

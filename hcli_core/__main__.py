@@ -9,48 +9,143 @@ from subprocess import call
 from hcli_core import package
 from hcli_core import config
 from hcli_core import hutils
+from hcli_core import template
+
+from contextlib import nullcontext
 
 cfg = config.Config()
 
+# helps with printing error messages to STDERR
+def eprint(*args, **kwargs):
+    msg = ' '.join(str(arg) for arg in args)
+    sys.stderr.write(msg)
+
+# prototype generator to identity generators as a type
+def generator():
+    yield
 
 def main():
+
+    # Only handle and consume -n for hcli_core commands to help work around terminal aesthetics
+    no_newline = False
+    if len(sys.argv) > 0 and (sys.argv[0] == "hcli_core" or 
+        (len(sys.argv) > 1 and sys.argv[0].endswith("hcli_core"))):
+        if '-n' in sys.argv:
+            no_newline = True
+            sys.argv.remove('-n')
+
+    try:
+        # Read from stdin if there's input available
+        input_data = None
+        if not sys.stdin.isatty():
+            input_data = sys.stdin.buffer.read()
+
+        output = None
+        with stdin(input_data) if input_data else nullcontext():
+            output = cli()
+
+        if output is None:
+            return
+
+        if isinstance(output, type(generator())):
+            dest = None
+            stdout_bytes_written = 0
+            stderr_bytes_written = 0
+            for dest, chunk in output:  # Now unpacking tuple of (dest, chunk)
+                stream = sys.stderr if dest == 'stderr' else sys.stdout
+                f = getattr(stream, 'buffer', stream)
+                if chunk:
+                    f.write(chunk)
+                    f.flush()
+
+                    # Track total bytes written to each stream
+                    if dest == 'stdout':
+                        stdout_bytes_written += len(chunk)
+                    else:
+                        stderr_bytes_written += len(chunk)
+
+                    if dest == 'stderr':
+                        try:
+                            error = chunk.decode('utf-8')
+                            eprint(error)
+                        except UnicodeDecodeError:
+                            eprint(chunk)
+
+                        # Add newline for stderr before exit if needed
+                        if stderr_bytes_written > 0 and not no_newline:
+                            sys.stderr.write('\n')
+                        sys.exit(1)
+
+            # Add newlines after all output so that other *nix tools will work correctly
+            if not no_newline:
+                if dest == 'stdout' and stdout_bytes_written > 0:
+                    sys.stdout.write('\n')
+                elif dest == 'stderr' and sterr_bytes_written > 0:
+                    eprint('\n')
+        else:
+            error = "hcli_core: unexpected non-generator type."
+            eprint(error)
+            if not no_newline:
+                eprint('\n')
+    except Exception as error:
+        eprint(error)
+        if not no_newline:
+            eprint('\n')
+        sys.exit(1)
+
+def cli():
     if len(sys.argv) == 2:
 
         if sys.argv[1] == "--version":
-            show_dependencies()
-            sys.exit(0)
+            return show_dependencies()
 
         elif sys.argv[1] == "help":
             help = display_man_page(cfg.hcli_core_manpage_path)
-            f = getattr(sys.stdout, 'buffer', sys.stdout)
-            f.write(help)
-            f.flush()
-            sys.exit(0)
+
+            def generator():
+                yield ('stdout', help)
+
+            return generator()
 
         elif sys.argv[1] == "path":
-            print(cfg.root)
-            sys.exit(0)
+
+            def generator():
+                yield ('stdout', (cfg.root).encode('utf-8'))
+
+            return generator()
 
         else:
-            hcli_core_help()
+            return hcli_core_help()
 
     elif len(sys.argv) == 3:
 
         if sys.argv[1] == "sample":
+            sample = None
             if sys.argv[2] == "hub":
-                print(cfg.sample + "/hub/cli")
+                sample = cfg.sample + "/hub/cli"
             elif sys.argv[2] == "hfm":
-                print(cfg.sample + "/hfm/cli")
+                sample = cfg.sample + "/hfm/cli"
             elif sys.argv[2] == "nw":
-                print(cfg.sample + "/nw/cli")
+                sample = cfg.sample + "/nw/cli"
             elif sys.argv[2] == "hptt":
-                print(cfg.sample + "/hptt/cli")
+                sample = cfg.sample + "/hptt/cli"
+            else:
+                return hcli_core_help()
 
-            sys.exit(0)
+            def generator():
+                yield ('stdout', sample.encode('utf-8'))
 
-    hcli_core_help()
+            return generator()
 
-# show version and version of dependencies
+    elif len(sys.argv) == 4:
+        if sys.argv[1] == "cli":
+            if sys.argv[2] == "install":
+                t = template.Template(sys.argv[3])
+                root = t.findRoot()
+                config.create_configuration(root["name"], cfg.plugin_path, root["section"][0]["description"])
+
+    return hcli_core_help()
+
 def show_dependencies():
     def parse_dependency(dep_string):
         # Common version specifiers
@@ -73,12 +168,14 @@ def show_dependencies():
         else:
             dependencies += f" {name}"
 
-    print(f"hcli_core/{package.__version__}{dependencies}")
+    def generator():
+        yield ('stdout', f"hcli_core/{package.__version__}{dependencies}".encode('utf-8'))
+
+    return generator()
 
 def hcli_core_help():
-    hutils.eprint("for help, use:\n")
-    hutils.eprint("  hcli_core help")
-    sys.exit(2)
+    error = "for help, use:\n\n  hcli_core help"
+    raise Exception(error)
 
 # displays a man page (file) located on a given path
 def display_man_page(path):

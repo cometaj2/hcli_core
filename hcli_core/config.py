@@ -7,6 +7,7 @@ import signal
 import atexit
 import portalocker
 
+from io import StringIO
 from contextlib import contextmanager
 from pathlib import Path
 from configparser import ConfigParser
@@ -391,6 +392,46 @@ class Config:
 
     def __str__(self):
         return f"{self.name}"
+
+# creates a configuration file for a named service
+def create_configuration(name, plugin_path, description):
+    config_file_folder = os.path.join(dot_hcli_core_config, name)
+    config_file = os.path.join(config_file_folder, "config")
+
+    try:
+        create_folder(config_file_folder)
+    except Exception as e:
+        error = repr(e)
+        log.error(error)
+
+    if not os.path.exists(config_file):
+        try:
+            init_configuration(name, plugin_path, description)
+        except Exception as e:
+            error = repr(e)
+            log.error(error)
+    else:
+        error = f"hcli_core: the configuration for {name} already exists. leaving the existing configuration untouched."
+        raise Exception(error)
+
+
+# initializes the configuration file of a given service name
+def init_configuration(name, plugin_path, description):
+
+    config_file_path = dot_hcli_core_config + "/" + name + "/config"
+    parser = ConfigParser()
+
+    parser.read_file(StringIO(u"[core]"))
+    parser.set("core", "core.plugin.path", plugin_path)
+    parser.set("core", "core.description", description)
+    parser.set("core", "core.auth", "False")
+
+    parser.read_file(StringIO(u"[hco]"))
+    parser.set("hco", "hco.port", "9000")
+    parser.set("hco", "hco.credentials", "local")
+
+    with open(config_file_path, "w") as config:
+        parser.write(config)
 
 # creates a folder at "path"
 def create_folder(path):
