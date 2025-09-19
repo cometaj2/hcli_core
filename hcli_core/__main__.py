@@ -142,7 +142,12 @@ def cli():
             if sys.argv[2] == "install":
                 t = template.Template(sys.argv[3])
                 root = t.findRoot()
-                config.create_configuration(root["name"], cfg.plugin_path, root["section"][0]["description"])
+                name = config.create_configuration(root["name"], cfg.plugin_path, root["section"][0]["description"])
+
+                def generator():
+                    yield ('stdout', name.encode('utf-8'))
+
+                return generator()
 
     return hcli_core_help()
 

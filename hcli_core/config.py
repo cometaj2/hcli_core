@@ -406,7 +406,7 @@ def create_configuration(name, plugin_path, description):
 
     if not os.path.exists(config_file):
         try:
-            init_configuration(name, plugin_path, description)
+            return init_configuration(name, plugin_path, description)
         except Exception as e:
             error = repr(e)
             log.error(error)
@@ -432,6 +432,8 @@ def init_configuration(name, plugin_path, description):
 
     with open(config_file_path, "w") as config:
         parser.write(config)
+
+    return name
 
 # creates a folder at "path"
 def create_folder(path):
