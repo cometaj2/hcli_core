@@ -149,6 +149,16 @@ def cli():
 
                 return generator()
 
+            elif sys.argv[2] == "config":
+                if len(sys.argv) == 4:
+                    return config.config_list(sys.argv[3])
+#                 elif len(argv) == 5:
+#                     return config.get_parameter(sys.argv[3], sys.argv[4])
+#                 elif len(argv) == 6:
+#                     return config.update_parameter(sys.argv[3], sys.argv[4], sys.argv[5])
+                else:
+                    return huckle_help()
+
     return hcli_core_help()
 
 def show_dependencies():

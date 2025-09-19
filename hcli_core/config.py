@@ -448,6 +448,40 @@ def create_folder(path):
         if not os.path.exists(path):
             os.makedirs(path)
 
+# lists all the configuration parameters of a named service
+def config_list(name):
+    config_file_path = dot_hcli_core_config + "/" + name + "/config"
+    parser = ConfigParser()
+    parser.read(config_file_path)
+
+    def generator():
+        try:
+            # Get all content first
+            all_lines = []
+            for section_name in parser.sections():
+                all_lines.append(f"[{section_name}]")
+                for name, value in parser.items(section_name):
+                    all_lines.append(f'{name} = {value}')
+
+            # Handle empty case
+            if not all_lines:
+                yield ('stdout', b'')
+                return
+
+            # Output all but last line with newlines
+            for line in all_lines[:-1]:
+                yield ('stdout', f"{line}\n".encode('utf-8'))
+
+            # Output last line without newline
+            if all_lines:
+                yield ('stdout', all_lines[-1].encode('utf-8'))
+
+        except Exception as error:
+            error = "huckle: unable to list configuration."
+            raise Exception(error)
+
+    return generator()
+
 @contextmanager
 def write_lock(file_path):
     lockfile = Path(file_path).with_suffix('.lock')
