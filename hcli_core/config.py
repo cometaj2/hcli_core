@@ -2,6 +2,7 @@ import sys
 import os
 import stat
 import importlib
+import shutil
 import inspect
 import signal
 import atexit
@@ -591,6 +592,20 @@ def list_clis():
 
         except Exception as e:
             error = f"hcli_core: error listing clis: {str(e)}"
+            raise Exception(error)
+
+    return generator()
+
+# remove a cli
+def remove_cli(name):
+    config_path = dot_hcli_core_config + "/" + name
+
+    def generator():
+        if path.exists(config_path):
+            shutil.rmtree(config_path)
+            yield ('stdout', b'')
+        else:
+            error = f"hcli_core: {name} is not installed."
             raise Exception(error)
 
     return generator()

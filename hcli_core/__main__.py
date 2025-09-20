@@ -158,8 +158,15 @@ def cli():
     elif sys.argv[1] == "cli" and sys.argv[2] == "ls":
         return config.list_clis()
 
+    elif sys.argv[1] == "cli" and sys.argv[2] == "rm":
+        if len(sys.argv) > 3:
+            return config.remove_cli(sys.argv[3])
+
+        else:
+            return hcli_core_help()
+
     else:
-        return huckle_help()
+        return hcli_core_help()
 
     return hcli_core_help()
 
