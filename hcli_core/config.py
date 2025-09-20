@@ -503,6 +503,25 @@ def get_parameter(name, parameter):
 
     return generator()
 
+# update a configured parameter to a new value
+def update_parameter(name, parameter, value):
+    config_file_path = dot_hcli_core_config + "/" + name + "/config"
+    parser = ConfigParser()
+    parser.read(config_file_path)
+
+    def generator():
+        try:
+            parser.set('default', parameter, value)
+            with write_lock(config_file_path):
+                with open(config_file_path, "w") as config:
+                    parser.write(config)
+            yield ('stdout', b'')
+        except Exception as error:
+            error = "hcli_core: unable to update configuration."
+            raise Exception(error)
+
+    return generator()
+
 @contextmanager
 def write_lock(file_path):
     lockfile = Path(file_path).with_suffix('.lock')

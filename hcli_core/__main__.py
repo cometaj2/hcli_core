@@ -150,14 +150,33 @@ def cli():
             return config.config_list(sys.argv[3])
         elif len(sys.argv) == 5:
             return config.get_parameter(sys.argv[3], sys.argv[4])
-#                 elif len(argv) == 6:
-#                     return config.update_parameter(sys.argv[3], sys.argv[4], sys.argv[5])
+        elif len(argv) == 6:
+            return config.update_parameter(sys.argv[3], sys.argv[4], sys.argv[5])
         else:
             return hcli_core_help()
     else:
         return huckle_help()
 
     return hcli_core_help()
+
+# update a configured parameter to a new value
+def update_parameter(name, parameter, value):
+    config_file_path = dot_hcli_core_config + "/" + name + "/config"
+    parser = ConfigParser()
+    parser.read(config_file_path)
+
+    def generator():
+        try:
+            parser.set('default', parameter, value)
+            with write_lock(config_file_path):
+                with open(config_file_path, "w") as config:
+                    parser.write(config)
+            yield ('stdout', b'')
+        except Exception as error:
+            error = "hcli_core: unable to update configuration."
+            raise Exception(error)
+
+    return generator()
 
 def show_dependencies():
     def parse_dependency(dep_string):
