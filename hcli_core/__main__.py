@@ -94,33 +94,28 @@ def main():
         sys.exit(1)
 
 def cli():
-    if len(sys.argv) == 2:
+    if sys.argv[1] == "--version":
+        return show_dependencies()
 
-        if sys.argv[1] == "--version":
-            return show_dependencies()
+    elif sys.argv[1] == "help":
+        help = display_man_page(cfg.hcli_core_manpage_path)
 
-        elif sys.argv[1] == "help":
-            help = display_man_page(cfg.hcli_core_manpage_path)
+        def generator():
+            yield ('stdout', help)
 
-            def generator():
-                yield ('stdout', help)
+        return generator()
 
-            return generator()
+    elif sys.argv[1] == "path":
 
-        elif sys.argv[1] == "path":
+        def generator():
+            yield ('stdout', (cfg.root).encode('utf-8'))
 
-            def generator():
-                yield ('stdout', (cfg.root).encode('utf-8'))
+        return generator()
 
-            return generator()
+    elif sys.argv[1] == "sample":
+        sample = None
+        if len(sys.argv) > 2:
 
-        else:
-            return hcli_core_help()
-
-    elif len(sys.argv) == 3:
-
-        if sys.argv[1] == "sample":
-            sample = None
             if sys.argv[2] == "hub":
                 sample = cfg.sample + "/hub/cli"
             elif sys.argv[2] == "hfm":
@@ -137,27 +132,30 @@ def cli():
 
             return generator()
 
-    elif len(sys.argv) == 4:
-        if sys.argv[1] == "cli":
-            if sys.argv[2] == "install":
-                t = template.Template(sys.argv[3])
-                root = t.findRoot()
-                name = config.create_configuration(root["name"], cfg.plugin_path, root["section"][0]["description"])
+    elif sys.argv[1] == "cli" and sys.argv[2] == "install":
+        if len(sys.argv) == 4:
+            t = template.Template(sys.argv[3])
+            root = t.findRoot()
+            name = config.create_configuration(root["name"], cfg.plugin_path, root["section"][0]["description"])
 
-                def generator():
-                    yield ('stdout', name.encode('utf-8'))
+            def generator():
+                yield ('stdout', name.encode('utf-8'))
 
-                return generator()
+            return generator()
+        else:
+            return hcli_core_help()
 
-            elif sys.argv[2] == "config":
-                if len(sys.argv) == 4:
-                    return config.config_list(sys.argv[3])
-#                 elif len(argv) == 5:
-#                     return config.get_parameter(sys.argv[3], sys.argv[4])
+    elif sys.argv[1] == "cli" and sys.argv[2] == "config":
+        if len(sys.argv) == 4:
+            return config.config_list(sys.argv[3])
+        elif len(sys.argv) == 5:
+            return config.get_parameter(sys.argv[3], sys.argv[4])
 #                 elif len(argv) == 6:
 #                     return config.update_parameter(sys.argv[3], sys.argv[4], sys.argv[5])
-                else:
-                    return huckle_help()
+        else:
+            return hcli_core_help()
+    else:
+        return huckle_help()
 
     return hcli_core_help()
 

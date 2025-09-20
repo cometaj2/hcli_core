@@ -482,6 +482,27 @@ def config_list(name):
 
     return generator()
 
+# get a configured parameter
+def get_parameter(name, parameter):
+    config_file_path = dot_hcli_core_config + "/" + name + "/config"
+    parser = ConfigParser()
+    parser.read(config_file_path)
+
+    found = None
+
+    def generator():
+        try:
+            for section in parser.sections():
+                if parser.has_option(section, parameter):
+                    found = parser.get(section, parameter)
+
+            yield ('stdout', found.encode('utf-8'))
+        except Exception as error:
+            error = "hcli_core: unable to retrieve configuration."
+            raise Exception(error)
+
+    return generator()
+
 @contextmanager
 def write_lock(file_path):
     lockfile = Path(file_path).with_suffix('.lock')
