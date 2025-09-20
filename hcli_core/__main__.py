@@ -154,6 +154,10 @@ def cli():
             return config.update_parameter(sys.argv[3], sys.argv[4], sys.argv[5])
         else:
             return hcli_core_help()
+
+    elif sys.argv[1] == "cli" and sys.argv[2] == "ls":
+        return config.list_clis()
+
     else:
         return huckle_help()
 

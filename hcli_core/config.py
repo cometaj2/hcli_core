@@ -10,6 +10,9 @@ import portalocker
 from io import StringIO
 from contextlib import contextmanager
 from pathlib import Path
+from os import listdir
+from os.path import isfile, join
+from os import path
 from configparser import ConfigParser
 from threading import Lock, local
 
@@ -518,6 +521,76 @@ def update_parameter(name, parameter, value):
             yield ('stdout', b'')
         except Exception as error:
             error = "hcli_core: unable to update configuration."
+            raise Exception(error)
+
+    return generator()
+
+def get_description(config_path):
+    parser = ConfigParser()
+    parser.read(config_path)
+
+    description = ""
+    for section in parser.sections():
+        if parser.has_option(section, "core.description"):
+            return parser.get(section, "core.description")
+
+    return ""
+
+# list all the named services
+def list_clis():
+    def generator():
+        try:
+            files = [f for f in listdir(dot_hcli_core_config)]
+
+            # Handle empty list case first
+            if not files:
+                yield ('stdout', b'')
+                return
+
+            # Find the longest CLI name for padding calculation
+            longest_name = max(len(f) for f in files) if files else 0
+            # Set column width with exactly 2 spaces after the longest name
+            column_width = longest_name + 2
+
+            # Calculate terminal width (fallback to 80 if can't determine)
+            terminal_width = 80
+            try:
+                import shutil
+                terminal_width = shutil.get_terminal_size().columns
+            except:
+                pass  # Use default 80 if we can't get the terminal width
+
+            # Leave some space for the HCLI column and spacing
+            desc_max_width = terminal_width - column_width - 2
+
+            # Format and output header
+            yield ('stdout', f"{'HCLI':<{column_width}}DESCRIPTION\n".encode('utf-8'))
+
+            # Output all but last item with newlines
+            for f in files[:-1]:
+                config_path = dot_hcli_core_config + "/" + f + "/config"
+                description = get_description(config_path)
+
+                # Truncate description if needed to fit in terminal
+                if desc_max_width > 10 and len(description) > desc_max_width:
+                    description = description[:desc_max_width-3] + "..."
+
+                yield ('stdout', f"{f:<{column_width}}{description}\n".encode('utf-8'))
+
+            # Last item without newline
+            if files:
+                f = files[-1]
+                config_path = dot_hcli_core_config + "/" + f + "/config"
+                description = get_description(config_path)
+
+                # Truncate description if needed to fit in terminal
+                if desc_max_width > 10 and len(description) > desc_max_width:
+                    description = description[:desc_max_width-3] + "..."
+
+                yield ('stdout', f"{f:<{column_width}}{description}".encode('utf-8'))
+
+        except Exception as e:
+            error = f"hcli_core: error listing clis: {str(e)}"
             raise Exception(error)
 
     return generator()
