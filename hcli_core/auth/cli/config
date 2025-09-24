@@ -1,0 +1,4 @@
+[default]
+core.auth = False
+hco.port = 9000
+hco.credentials = local

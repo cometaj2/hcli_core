@@ -3,7 +3,7 @@
 hcli_core \- An HCLI Connector that can be used to expose a REST API that behaves as a CLI, via hypertext command line interface (HCLI) semantics.
 .SH SYNOPSIS
 .B hcli_core
-[ option | command ]
+[--version] { cli { install <path> | rm <cliname> | ls | config <cliname> [<key> <value>]] | path | sample { hptt | hfm | hub | nw } | help }
 .SH DESCRIPTION
 .B hcli_core
 is a Web Service Gateway Interface (WSGI; PEP 3333) application that provides a way for developers to expose a REST API as a CLI via HCLI v1.0 semantics.
@@ -191,6 +191,14 @@ version and the version of its dependencies.
 hcli_core path
 .sp
 hcli_core --version
+.sp
+hcli_core cli install `hcli_hag path`
+.sp
+hcli_core cli rm hag
+.sp
+hcli_core cli config hag
+.sp
+hcli_core cli config hag hco.port 10000
 .sp
 gunicorn --workers=5 --threads=2 "hcli_core:connector()"
 .sp

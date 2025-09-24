@@ -66,16 +66,16 @@ class Config:
     def get_management_port(cls, config_path=None):
         with cls._global_lock:
             if not config_path:
-                config_path = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "auth/cli/credentials")
+                config_path = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "auth/cli/config")
 
             try:
                 parser = ConfigParser(interpolation=None)
                 with open(config_path, 'r') as config_file:
                     parser.read_file(config_file)
 
-                    if parser.has_section("hco") and parser.has_option("hco", "hco.port"):
+                    if parser.has_section("default") and parser.has_option("default", "hco.port"):
                         try:
-                            port = int(parser.get("hco", "hco.port"))
+                            port = int(parser.get("default", "hco.port"))
                             if 1 <= port <= 65536:
                                 return port
                             log.warning(f"Invalid management port value: {port}")
@@ -92,16 +92,16 @@ class Config:
     def get_core_root(cls, config_path=None):
         with cls._global_lock:
             if not config_path:
-                config_path = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "auth/cli/credentials")
+                config_path = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "auth/cli/config")
 
             try:
                 parser = ConfigParser(interpolation=None)
                 with open(config_path, 'r') as config_file:
                     parser.read_file(config_file)
 
-                    if parser.has_section("core") and parser.has_option("core", "core.root"):
+                    if parser.has_section("default") and parser.has_option("default", "core.root"):
                         try:
-                            root = parser.get("core", "core.root")
+                            root = parser.get("default", "core.root")
                             if root == 'aggregate' or root == 'management':
                                 return root
                             log.warning(f"Invalid core root value: {root}")
@@ -118,16 +118,16 @@ class Config:
     def get_core_wsgiapp_port(cls, config_path=None):
         with cls._global_lock:
             if not config_path:
-                config_path = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "auth/cli/credentials")
+                config_path = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "auth/cli/config")
 
             try:
                 parser = ConfigParser(interpolation=None)
                 with open(config_path, 'r') as config_file:
                     parser.read_file(config_file)
 
-                    if parser.has_section("core") and parser.has_option("core", "core.wsgiapp.port"):
+                    if parser.has_section("default") and parser.has_option("default", "core.wsgiapp.port"):
                         try:
-                            port = int(parser.get("core", "core.wsgiapp.port"))
+                            port = int(parser.get("default", "core.wsgiapp.port"))
                             if 1 <= port <= 65536:
                                 return port
                             log.warning(f"Invalid core wsgi app port value: {port}")
@@ -163,7 +163,7 @@ class Config:
                     instance.template = None
                     instance.plugin_path = instance.root + "/cli"
                     instance.cli = None
-                    instance.default_config_file_path = instance.root + "/auth/cli/credentials"
+                    instance.default_config_file_path = instance.root + "/auth/cli/config"
                     instance.config_file_path = None
                     instance.auth = True
                     instance.log = logger.Logger(f"hcli_core")
@@ -198,14 +198,14 @@ class Config:
                 parser = ConfigParser(interpolation=None)
                 parser.read_file(config_file)
 
-                if not parser.has_section("core"):
-                    log.critical(f"No [core] section available in {self.config_file_path}")
+                if not parser.has_section("default"):
+                    log.critical(f"No [default] section available in {self.config_file_path}")
                     assert False
 
                 # Core authentication
                 if self.name == 'core':
-                    if parser.has_option("core", "core.auth"):
-                        value = parser.get("core", "core.auth")
+                    if parser.has_option("default", "core.auth"):
+                        value = parser.get("default", "core.auth")
                         if value.lower() in ('true', 'false'):
                             self.auth = value.lower() == 'true'
                             if not self.auth:
@@ -217,9 +217,9 @@ class Config:
 
                 # Management configuration
                 if self.name == 'management':
-                    if parser.has_option("hco", "hco.port"):
+                    if parser.has_option("default", "hco.port"):
                         try:
-                            port = int(parser.get("hco", "hco.port"))
+                            port = int(parser.get("default", "hco.port"))
                             if 1 <= port <= 65535:
                                 self.mgmt_port = port
                             else:
@@ -234,9 +234,9 @@ class Config:
 
                 # WSGApp configuration
                 if self.name == 'wsgiapp':
-                    if parser.has_option("core", "core.wsgiapp.port"):
+                    if parser.has_option("default", "core.wsgiapp.port"):
                         try:
-                            port = int(parser.get("core", "core.wsgiapp.port"))
+                            port = int(parser.get("default", "core.wsgiapp.port"))
                             if 1 <= port <= 65535:
                                 self.core_wsgiapp_port = port
                             else:
@@ -250,7 +250,7 @@ class Config:
                         log.info(f"Default Core WSGIApp Port: {self.core_wsgiapp_port}")
 
                 # Common configuration options
-                value = parser.get("hco", "hco.credentials", fallback=None)
+                value = parser.get("default", "hco.credentials", fallback=None)
                 if value is not None:
                     if value in ('local', 'remote'):
                         self.mgmt_credentials = value
@@ -259,7 +259,7 @@ class Config:
                         self.mgmt_credentials = 'local'
                     log.info(f"Credentials management: {self.mgmt_credentials}")
 
-                value = parser.get("core", "core.root", fallback=None)
+                value = parser.get("default", "core.root", fallback=None)
                 if value is not None:
                     if value in ('aggregate', 'management'):
                         self.core_root = value
@@ -401,6 +401,7 @@ class Config:
 def create_configuration(name, plugin_path, description):
     config_file_folder = os.path.join(dot_hcli_core_config, name)
     config_file = os.path.join(config_file_folder, "config")
+    credentials_file = os.path.join(config_file_folder, "credentials")
 
     try:
         create_folder(config_file_folder)
@@ -408,8 +409,18 @@ def create_configuration(name, plugin_path, description):
         error = repr(e)
         log.error(error)
 
+    if not os.path.exists(credentials_file):
+        try:
+            init_credentials(name, plugin_path)
+        except Exception as e:
+            error = repr(e)
+            log.error(error)
+    else:
+        pass
+
     if not os.path.exists(config_file):
         try:
+            init_credentials(name, plugin_path)
             return init_configuration(name, plugin_path, description)
         except Exception as e:
             error = repr(e)
@@ -418,26 +429,39 @@ def create_configuration(name, plugin_path, description):
         error = f"hcli_core: the configuration for {name} already exists. leaving the existing configuration untouched."
         raise Exception(error)
 
-
 # initializes the configuration file of a given service name
 def init_configuration(name, plugin_path, description):
 
     config_file_path = dot_hcli_core_config + "/" + name + "/config"
     parser = ConfigParser()
 
-    parser.read_file(StringIO(u"[core]"))
-    parser.set("core", "core.plugin.path", plugin_path)
-    parser.set("core", "core.description", description)
-    parser.set("core", "core.auth", "False")
-
-    parser.read_file(StringIO(u"[hco]"))
-    parser.set("hco", "hco.port", "9000")
-    parser.set("hco", "hco.credentials", "local")
+    parser.read_file(StringIO(u"[default]"))
+    parser.set("default", "core.plugin.path", plugin_path)
+    parser.set("default", "core.description", description)
+    parser.set("default", "core.auth", "False")
+    parser.set("default", "hco.port", "9000")
+    parser.set("default", "hco.credentials", "local")
 
     with open(config_file_path, "w") as config:
         parser.write(config)
 
     return name
+
+# initializes the credentials file of a given service name
+def init_credentials(name, plugin_path):
+
+    credentials_file_path = dot_hcli_core_config + "/" + name + "/credentials"
+    parser = ConfigParser()
+
+    parser.read_file(StringIO(u"[default]"))
+    parser.set("default", "username", "admin")
+    parser.set("default", "password", "*")
+    parser.set("default", "salt", "*")
+
+    with open(credentials_file_path, "w") as credentials:
+        parser.write(credentials)
+
+    return ""
 
 # creates a folder at "path"
 def create_folder(path):

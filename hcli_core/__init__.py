@@ -10,8 +10,13 @@ log = logger.Logger("hcli_core")
 
 def connector(plugin_path=None, config_path=None):
 
-    cm = credential.CredentialManager(config_path)
-    server_manager = server.LazyServerManager(plugin_path, config_path)
+    absolute_plugin_path = None
+    if(plugin_path is not None):
+        absolute_plugin_path = os.path.abspath(plugin_path)
+    absolute_config_path = os.path.abspath(config_path)
+    absolute_credentials_path = os.path.join(os.path.dirname(absolute_config_path), "credentials")
+    cm = credential.CredentialManager(absolute_credentials_path)
+    server_manager = server.LazyServerManager(absolute_plugin_path, absolute_config_path)
 
     # We select a response server based on port
     def port_router(environ, start_response):

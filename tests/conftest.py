@@ -24,22 +24,20 @@ def gunicorn_server_auth():
 
     echo "Cleanup old run data..."
     rm -f ./gunicorn-error.log
-    rm -f ./test_credentials
+    rm -f ./test_config
     rm -f ./password
 
-    echo "Setup a custom credentials file for the test run"
-    echo -e "[core]
+    echo "Setup a custom config file for the test run"
+    echo -e "[default]
 core.auth = True
+hco.port = 19090" > ./test_config
 
-[hco]
-hco.port = 19090
-
-[default]
+    echo -e "[default]
 username = admin
 password = *
-salt = *" > ./test_credentials
+salt = *" > ./credentials
 
-    gunicorn --workers=1 --threads=100 -b 0.0.0.0:18080 -b 0.0.0.0:19090 "hcli_core:connector(config_path=\\\"./test_credentials\\\")" --daemon --log-file=./gunicorn.log --error-logfile=./gunicorn-error.log --capture-output
+    gunicorn --workers=1 --threads=100 -b 0.0.0.0:18080 -b 0.0.0.0:19090 "hcli_core:connector(config_path=\\\"./test_config\\\")" --daemon --log-file=./gunicorn.log --error-logfile=./gunicorn-error.log --capture-output
 
     sleep 2
 
@@ -73,7 +71,7 @@ salt = *" > ./test_credentials
 
     # Verify setup worked
     assert os.path.exists('./gunicorn-error.log'), "gunicorn-error.log not found"
-    assert os.path.exists('./test_credentials'), "test_credentials not found"
+    assert os.path.exists('./test_config'), "test_config not found"
 
 # bootstrap the test by starting an hcli server with mgmt config and fresh * admin creds
 @pytest.fixture(scope="module")
@@ -96,33 +94,29 @@ def gunicorn_server_remote_auth():
 
     echo "Cleanup old run data..."
     rm -f ./remote_hco_gunicorn-error.log
-    rm -f ./remote_hco_test_credentials
+    rm -f ./remote_hco_test_config
     rm -f ./remote_hco_password
     rm -f ./remote_gunicorn-error.log
-    rm -f ./remote_test_credentials
+    rm -f ./remote_test_config
 
-    echo "Setup a custom credentials file for the test run"
-    echo -e "[core]
+    echo "Setup a custom config file for the test run"
+    echo -e "[default]
 core.auth = True
-
-[hco]
 hco.port = 29000
-hco.credentials = local
+hco.credentials = local" > ./remote_hco_test_config
 
-[default]
+    echo -e "[default]
 username = admin
 password = *
-salt = *" > ./remote_hco_test_credentials
+salt = *" > ./credentials
 
-    echo -e "[core]
+    echo -e "[default]
 core.auth = True
+hco.credentials = remote" > ./remote_test_config
 
-[hco]
-hco.credentials = remote" > ./remote_test_credentials
+    gunicorn --workers=1 --threads=100 -b 0.0.0.0:29000 "hcli_core:connector(config_path=\\\"./remote_hco_test_config\\\")" --daemon --log-file=./remote_hco_gunicorn.log --error-logfile=./remote_hco_gunicorn-error.log --capture-output
 
-    gunicorn --workers=1 --threads=100 -b 0.0.0.0:29000 "hcli_core:connector(config_path=\\\"./remote_hco_test_credentials\\\")" --daemon --log-file=./remote_hco_gunicorn.log --error-logfile=./remote_hco_gunicorn-error.log --capture-output
-
-    gunicorn --workers=1 --threads=100 -b 0.0.0.0:28000 "hcli_core:connector(config_path=\\\"./remote_test_credentials\\\")" --daemon --log-file=./remote_gunicorn.log --error-logfile=./remote_gunicorn-error.log --capture-output
+    gunicorn --workers=1 --threads=100 -b 0.0.0.0:28000 "hcli_core:connector(config_path=\\\"./remote_test_config\\\")" --daemon --log-file=./remote_gunicorn.log --error-logfile=./remote_gunicorn-error.log --capture-output
 
     sleep 2
 
@@ -143,9 +137,9 @@ hco.credentials = remote" > ./remote_test_credentials
 
     # Verify setup worked
     assert os.path.exists('./remote_hco_gunicorn-error.log'), "remote_hco_gunicorn-error.log not found"
-    assert os.path.exists('./remote_hco_test_credentials'), "remote_hco_test_credentials not found"
+    assert os.path.exists('./remote_hco_test_config'), "remote_hco_test_config not found"
     assert os.path.exists('./remote_gunicorn-error.log'), "remote_gunicorn-error.log not found"
-    assert os.path.exists('./remote_test_credentials'), "remote_test_credentials not found"
+    assert os.path.exists('./remote_test_config'), "remote_test_config not found"
 
 @pytest.fixture(scope="module")
 def cleanup():
@@ -176,37 +170,43 @@ def cleanup():
         os.remove('./gunicorn-error.log')
     if os.path.exists('./gunicorn-noauth-error.log'):
         os.remove('./gunicorn-noauth-error.log')
-    if os.path.exists('./test_credentials'):
-        os.remove('./test_credentials')
-    if os.path.exists('./noauth_credentials'):
-        os.remove('./noauth_credentials')
-    if os.path.exists('./test_credentials.lock'):
-        os.remove('./test_credentials.lock')
-    if os.path.exists('./noauth_credentials.lock'):
-        os.remove('./noauth_credentials.lock')
+    if os.path.exists('./test_config'):
+        os.remove('./test_config')
+    if os.path.exists('./noauth_config'):
+        os.remove('./noauth_config')
+    if os.path.exists('./test_config.lock'):
+        os.remove('./test_config.lock')
+    if os.path.exists('./noauth_config.lock'):
+        os.remove('./noauth_config.lock')
     if os.path.exists('./remote_hco_gunicorn-error.log'):
         os.remove('./remote_hco_gunicorn-error.log')
     if os.path.exists('./remote_gunicorn-error.log'):
         os.remove('./remote_gunicorn-error.log')
-    if os.path.exists('./remote_hco_test_credentials'):
-        os.remove('./remote_hco_test_credentials')
-    if os.path.exists('./remote_test_credentials'):
-        os.remove('./remote_test_credentials')
-    if os.path.exists('./remote_hco_test_credentials.lock'):
-        os.remove('./remote_hco_test_credentials.lock')
-    if os.path.exists('./remote_test_credentials.lock'):
-        os.remove('./remote_test_credentials.lock')
+    if os.path.exists('./remote_hco_test_config'):
+        os.remove('./remote_hco_test_config')
+    if os.path.exists('./remote_test_config'):
+        os.remove('./remote_test_config')
+    if os.path.exists('./remote_hco_test_config.lock'):
+        os.remove('./remote_hco_test_config.lock')
+    if os.path.exists('./remote_test_config.lock'):
+        os.remove('./remote_test_config.lock')
+    if os.path.exists('./credentials'):
+        os.remove('./credentials')
+    if os.path.exists('./credentials.lock'):
+        os.remove('./credentials.lock')
 
     # Verify files are gone
     assert not os.path.exists('./gunicorn-error.log'), "gunicorn-error.log still exists"
     assert not os.path.exists('./gunicorn-noauth-error.log'), "gunicorn-noauth-error.log still exists"
-    assert not os.path.exists('./test_credentials'), "test_credentials still exists"
-    assert not os.path.exists('./test_credentials.lock'), "test_credentials.lock still exists"
-    assert not os.path.exists('./noauth_credentials'), "test_credentials still exists"
-    assert not os.path.exists('./noauth_credentials.lock'), "noauth_credentials.lock file still exists"
+    assert not os.path.exists('./test_config'), "test_config still exists"
+    assert not os.path.exists('./test_config.lock'), "test_config.lock still exists"
+    assert not os.path.exists('./noauth_config'), "test_config still exists"
+    assert not os.path.exists('./noauth_config.lock'), "noauth_config.lock file still exists"
     assert not os.path.exists('./remote_hco_gunicorn-error.log'), "gunicorn-error.log still exists"
     assert not os.path.exists('./remote_gunicorn-error.log'), "gunicorn-error.log still exists"
-    assert not os.path.exists('./remote_hco_test_credentials'), "test_credentials still exists"
-    assert not os.path.exists('./remote_hco_test_credentials.lock'), "test_credentials.lock still exists"
-    assert not os.path.exists('./remote_test_credentials'), "test_credentials still exists"
-    assert not os.path.exists('./remote_test_credentials.lock'), "test_credentials.lock still exists"
+    assert not os.path.exists('./remote_hco_test_config'), "remote_hco_test_config still exists"
+    assert not os.path.exists('./remote_hco_test_config.lock'), "remote_hco_test_config.lock still exists"
+    assert not os.path.exists('./remote_test_config'), "remote_test_config still exists"
+    assert not os.path.exists('./remote_test_config.lock'), "remote_test_config.lock still exists"
+    assert not os.path.exists('./credentials'), "credentials still exists"
+    assert not os.path.exists('./credentials.lock'), "credentials.lock still exists"
