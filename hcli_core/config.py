@@ -1,3 +1,4 @@
+import errno
 import sys
 import os
 import stat
@@ -278,14 +279,14 @@ class Config:
 
     def set_config_path(self, config_path):
         if config_path:
-            self.config_file_path = config_path
+            self.config_file_path = os.path.abspath(config_path)
             self.log.info(f"Custom configuration for '{self.name}':")
         else:
             self.config_file_path = self.default_config_file_path
             self.log.warning(f"Default configuration for '{self.name}':")
         self.log.info(self.config_file_path)
 
-        if not self.is_600(self.config_file_path):
+        if not self.is_600(os.path.join(os.path.dirname(self.config_file_path), "credentials")):
             self.log.warning("The credentials file's permissions SHOULD be set to 600 (e.g. chmod 600 credentials).")
 
     def parse_template(self, t):
@@ -439,8 +440,7 @@ def init_configuration(name, plugin_path, description):
     parser.set("default", "core.plugin.path", plugin_path)
     parser.set("default", "core.description", description)
     parser.set("default", "core.auth", "False")
-    parser.set("default", "hco.port", "9000")
-    parser.set("default", "hco.credentials", "local")
+    parser.set("default", "core.port", "8000")
 
     with open(config_file_path, "w") as config:
         parser.write(config)
@@ -458,8 +458,19 @@ def init_credentials(name, plugin_path):
     parser.set("default", "password", "*")
     parser.set("default", "salt", "*")
 
-    with open(credentials_file_path, "w") as credentials:
-        parser.write(credentials)
+    flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY
+
+    try:
+        file_handle = os.open(credentials_file_path, flags, 0o0600)
+    except OSError as e:
+        if e.errno == errno.EEXIST:  # Failed since the file already exists.
+            pass
+        else:
+            raise
+    else:
+        with os.fdopen(file_handle, 'w') as credentials:
+            parser.write(credentials)
+            credentials.close
 
     return ""
 
@@ -622,12 +633,65 @@ def list_clis():
 
 # remove a cli
 def remove_cli(name):
-    config_path = dot_hcli_core_config + "/" + name
+    config_path = os.path.join(dot_hcli_core_config, name)
 
     def generator():
         if path.exists(config_path):
             shutil.rmtree(config_path)
             yield ('stdout', b'')
+        else:
+            error = f"hcli_core: {name} is not installed."
+            raise Exception(error)
+
+    return generator()
+
+# run a previously installed cli
+def run_cli(name):
+
+    parser = ConfigParser()
+    config_path = os.path.join(dot_hcli_core_config, name, "config")
+    parser.read(config_path)
+
+    plugin_path = None
+    for section in parser.sections():
+        if parser.has_option(section, "core.plugin.path"):
+            plugin_path = parser.get(section, "core.plugin.path")
+
+    core_port = None
+    for section in parser.sections():
+        if parser.has_option(section, "core.port"):
+            core_port = parser.get(section, "core.port")
+
+    hco_port = None
+    for section in parser.sections():
+        if parser.has_option(section, "hco.port"):
+            hco_port = parser.get(section, "hco.port")
+
+    core_wsgiapp_port = None
+    for section in parser.sections():
+        if parser.has_option(section, "core.wsgiapp.port"):
+            core_wsgiapp_port = parser.get(section, "core.wsgiapp.port")
+
+    gunicorn_command = f'gunicorn --workers=1 --threads=100 '
+    core_port_command = f'-b 0.0.0.0:{core_port} '
+    hco_port_command = f'-b 0.0.0.0:{hco_port} '
+    core_wsgiapp_port_command = f'-b 0.0.0.0:{core_wsgiapp_port} '
+    hcli_core_command = f'"hcli_core:connector(plugin_path=\\"{plugin_path}\\", config_path=\\"{config_path}\\")"'
+
+    command = gunicorn_command
+    if core_port is not None:
+        command = command + core_port_command
+
+    if hco_port is not None:
+        command = command + hco_port_command
+
+    if core_wsgiapp_port is not None:
+        command = command + core_wsgiapp_port_command
+    command = command + hcli_core_command
+
+    def generator():
+        if path.exists(config_path):
+            yield ('stdout', command.encode('utf-8'))
         else:
             error = f"hcli_core: {name} is not installed."
             raise Exception(error)

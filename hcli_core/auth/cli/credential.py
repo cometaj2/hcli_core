@@ -25,26 +25,26 @@ class CredentialManager:
     _initialized = False
     _lock = threading.RLock()
 
-    def __new__(cls, config_file_path=None):
+    def __new__(cls, credentials_file_path=None):
         with cls._lock:
             if cls._instance is None:
                 cls._instance = super().__new__(cls)
-                cls._instance.__init__(config_file_path)
+                cls._instance.__init__(credentials_file_path)
             return cls._instance
 
-    # The config here is biased but so happens to be the same for config_file_path for both core and management
+    # The config here is biased but so happens to be the same for credentials_file_path for both core and management
     # This is not a good implementation and should be fixed.
     # Only initialize once
-    def __init__(self, config_file_path=None):
+    def __init__(self, credentials_file_path=None):
         if not CredentialManager._initialized:
             with self._lock:
                 if not CredentialManager._initialized:
                     self._credentials = None
 
-                    if not config_file_path:
-                        self.config_file_path = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "credentials")
+                    if not credentials_file_path:
+                        self.credentials_file_path = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "credentials")
                     else:
-                        self.config_file_path = config_file_path
+                        self.credentials_file_path = credentials_file_path
 
                     self._last_refresh = 0
                     self._credentials_ttl = 5  # Eventually consistent every 5 seconds
@@ -71,7 +71,7 @@ class CredentialManager:
 
     @contextmanager 
     def _write_lock(self):
-        lockfile = Path(self.config_file_path).with_suffix('.lock')
+        lockfile = Path(self.credentials_file_path).with_suffix('.lock')
         with portalocker.Lock(lockfile, timeout=10) as lock:
             yield
 
@@ -87,16 +87,21 @@ class CredentialManager:
     def _parse_credentials(self):
         with self._lock:
             try:
-                with open(self.config_file_path, 'r') as cred_file:
+                if not os.path.exists(self.credentials_file_path):
+                    msg = f"no credentials file available."
+                    log.warning(msg)
+                    return
+
+                with open(self.credentials_file_path, 'r') as cred_file:
                     parser = ConfigParser(interpolation=None)
                     log.debug("Loading credentials:")
-                    log.debug(self.config_file_path)
+                    log.debug(self.credentials_file_path)
                     parser.read_file(cred_file)
 
                     # Check if we have a default section for the admin user
                     if not parser.has_section("default"):
                         msg1 = f"No [default] admin credential available:"
-                        msg2 = f"{self.config_file_path}"
+                        msg2 = f"{self.credentials_file_path}"
                         log.info(msg1)
                         log.info(msg2)
                         self._credentials = None
@@ -104,7 +109,7 @@ class CredentialManager:
                     # Check if we have a default admin username and password
                     elif not parser.has_option("default", "username") or parser.get("default", "username") != "admin" or not parser.has_option("default", "password"):
                         msg1 = f"Invalid or missing admin username or password in [default] section:"
-                        msg2 = f"{self.config_file_path}"
+                        msg2 = f"{self.credentials_file_path}"
                         log.warning(msg1)
                         log.warning(msg2)
                         self._credentials = None
@@ -112,7 +117,7 @@ class CredentialManager:
                     # Check if we have a salt
                     elif not parser.has_option("default", "salt"):
                         msg1 = f"Invalid or missing salt in [default] section:"
-                        msg2 = f"{self.config_file_path}"
+                        msg2 = f"{self.credentials_file_path}"
                         log.warning(msg1)
                         log.warning(msg2)
                         self._credentials = None
@@ -123,7 +128,7 @@ class CredentialManager:
                         if parser.has_option(section, "username"):
                             username = parser.get(section, "username")
                             if username in usernames:
-                                msg = f"Duplicate username '{username}' found in {self.config_file_path}."
+                                msg = f"Duplicate username '{username}' found in {self.credentials_file_path}."
                                 log.critical(msg)
                                 self._credentials = None
                             usernames.add(username)
@@ -149,7 +154,7 @@ class CredentialManager:
     def useradd(self, username):
         with self._lock:
             try:
-                with open(self.config_file_path, 'r') as cred_file:
+                with open(self.credentials_file_path, 'r') as cred_file:
                     parser = ConfigParser(interpolation=None)
                     parser.read_file(cred_file)
 
@@ -171,7 +176,7 @@ class CredentialManager:
 
                 # Write back to file
                 with self._write_lock():
-                    with open(self.config_file_path, 'w') as cred_file:
+                    with open(self.credentials_file_path, 'w') as cred_file:
                         parser.write(cred_file)
                         cred_file.flush()
                         os.fsync(cred_file.fileno())
@@ -191,7 +196,7 @@ class CredentialManager:
     def passwd(self, username, password):
         with self._lock:
             try:
-                with open(self.config_file_path, 'r') as cred_file:
+                with open(self.credentials_file_path, 'r') as cred_file:
                     parser = ConfigParser(interpolation=None)
                     parser.read_file(cred_file)
 
@@ -217,7 +222,7 @@ class CredentialManager:
 
                 # Write back to file
                 with self._write_lock():
-                    with open(self.config_file_path, 'w') as cred_file:
+                    with open(self.credentials_file_path, 'w') as cred_file:
                         parser.write(cred_file)
                         cred_file.flush()
                         os.fsync(cred_file.fileno())
@@ -238,7 +243,7 @@ class CredentialManager:
     def _bootstrap_passwd(self, username, password):
         with self._lock:
             try:
-                with open(self.config_file_path, 'r') as cred_file:
+                with open(self.credentials_file_path, 'r') as cred_file:
                     parser = ConfigParser(interpolation=None)
                     parser.read_file(cred_file)
 
@@ -262,7 +267,7 @@ class CredentialManager:
                         log.warning(msg)
                         raise NotFoundError(detail=msg)
 
-                with open(self.config_file_path, 'w') as cred_file:
+                with open(self.credentials_file_path, 'w') as cred_file:
                     parser.write(cred_file)
                     cred_file.flush()
                     os.fsync(cred_file.fileno())
@@ -283,7 +288,7 @@ class CredentialManager:
         with self._lock:
             try:
                 # Read current configuration
-                with open(self.config_file_path, 'r') as cred_file:
+                with open(self.credentials_file_path, 'r') as cred_file:
                     parser = ConfigParser(interpolation=None)
                     parser.read_file(cred_file)
 
@@ -304,7 +309,7 @@ class CredentialManager:
 
                 # Write back to file
                 with self._write_lock():
-                    with open(self.config_file_path, 'w') as cred_file:
+                    with open(self.credentials_file_path, 'w') as cred_file:
                         parser.write(cred_file)
                         cred_file.flush()
                         os.fsync(cred_file.fileno())
@@ -527,15 +532,15 @@ class CredentialManager:
                     reset_state = (stored_hash == '*' and stored_salt == '*')
                     if reset_state:
                         self._bootstrap_password = os.getenv('HCLI_CORE_BOOTSTRAP_PASSWORD')
-                        log.warning("===============================================================")
-                        log.warning("HCLI BOOTSTRAP PASSWORD (CHANGE IMMEDIATELY AND STORE SECURELY)")
+                        log.warning("====================================================================")
+                        log.warning("HCLI CORE BOOTSTRAP PASSWORD (CHANGE IMMEDIATELY AND STORE SECURELY)")
                         log.warning("Username: admin")
                         log.warning("Password: $HCLI_CORE_BOOTSTRAP_PASSWORD environment variable")
                         log.warning("Read 'hcli_core help' documentation for more details")
                         log.warning("This will only be shown in the logs once")
-                        log.warning("===============================================================")
+                        log.warning("====================================================================")
                         if not self._bootstrap_password:
-                            msg="Missing HCLI_CORE_BOOTSTRAP_PASSWORD environment variable. Unable to bootstrap administration."
+                            msg="Missing HCLI_CORE_BOOTSTRAP_PASSWORD environment variable. Unable to bootstrap administration credentials."
                             log.error(msg)
                             return
                         self._bootstrap_passwd('admin', self._bootstrap_password)
@@ -547,7 +552,7 @@ class CredentialManager:
     def create_key(self, username):
         with self._lock:
             try:
-                with open(self.config_file_path, 'r') as cred_file:
+                with open(self.credentials_file_path, 'r') as cred_file:
                     parser = ConfigParser(interpolation=None)
                     parser.read_file(cred_file)
 
@@ -587,7 +592,7 @@ class CredentialManager:
 
                 # Write back to file
                 with self._write_lock():
-                    with open(self.config_file_path, 'w') as cred_file:
+                    with open(self.credentials_file_path, 'w') as cred_file:
                         parser.write(cred_file)
                         cred_file.flush()
                         os.fsync(cred_file.fileno())
@@ -607,7 +612,7 @@ class CredentialManager:
     def delete_key(self, username, keyid):
         with self._lock:
             try:
-                with open(self.config_file_path, 'r') as cred_file:
+                with open(self.credentials_file_path, 'r') as cred_file:
                     parser = ConfigParser(interpolation=None)
                     parser.read_file(cred_file)
 
@@ -638,7 +643,7 @@ class CredentialManager:
 
                     # Write back to file
                     with self._write_lock():
-                        with open(self.config_file_path, 'w') as cred_file:
+                        with open(self.credentials_file_path, 'w') as cred_file:
                             parser.write(cred_file)
                             cred_file.flush()
                             os.fsync(cred_file.fileno())
@@ -658,7 +663,7 @@ class CredentialManager:
     def rotate_key(self, username, keyid):
         with self._lock:
             try:
-                with open(self.config_file_path, 'r') as cred_file:
+                with open(self.credentials_file_path, 'r') as cred_file:
                     parser = ConfigParser(interpolation=None)
                     parser.read_file(cred_file)
 
@@ -692,7 +697,7 @@ class CredentialManager:
 
                     # Write back to file
                     with self._write_lock():
-                        with open(self.config_file_path, 'w') as cred_file:
+                        with open(self.credentials_file_path, 'w') as cred_file:
                             parser.write(cred_file)
                             cred_file.flush()
                             os.fsync(cred_file.fileno())
@@ -712,7 +717,7 @@ class CredentialManager:
     def list_keys(self, username):
         with self._lock:
             try:
-                with open(self.config_file_path, 'r') as cred_file:
+                with open(self.credentials_file_path, 'r') as cred_file:
                     parser = ConfigParser(interpolation=None)
                     parser.read_file(cred_file)
 
@@ -810,7 +815,7 @@ class CredentialManager:
     def add_user_role(self, username, role):
         with self._lock:
             try:
-                with open(self.config_file_path, 'r') as cred_file:
+                with open(self.credentials_file_path, 'r') as cred_file:
                     parser = ConfigParser(interpolation=None)
                     parser.read_file(cred_file)
 
@@ -849,7 +854,7 @@ class CredentialManager:
 
                     # Write back to file
                     with self._write_lock():
-                        with open(self.config_file_path, 'w') as cred_file:
+                        with open(self.credentials_file_path, 'w') as cred_file:
                             parser.write(cred_file)
                             cred_file.flush()
                             os.fsync(cred_file.fileno())
@@ -869,7 +874,7 @@ class CredentialManager:
     def remove_user_role(self, username, role):
         with self._lock:
             try:
-                with open(self.config_file_path, 'r') as cred_file:
+                with open(self.credentials_file_path, 'r') as cred_file:
                     parser = ConfigParser(interpolation=None)
                     parser.read_file(cred_file)
 
@@ -909,7 +914,7 @@ class CredentialManager:
 
                     # Write back to file
                     with self._write_lock():
-                        with open(self.config_file_path, 'w') as cred_file:
+                        with open(self.credentials_file_path, 'w') as cred_file:
                             parser.write(cred_file)
                             cred_file.flush()
                             os.fsync(cred_file.fileno())

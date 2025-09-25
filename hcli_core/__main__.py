@@ -136,7 +136,7 @@ def cli():
         if len(sys.argv) == 4:
             t = template.Template(sys.argv[3])
             root = t.findRoot()
-            name = config.create_configuration(root["name"], cfg.plugin_path, root["section"][0]["description"])
+            name = config.create_configuration(root["name"], sys.argv[3], root["section"][0]["description"])
 
             def generator():
                 yield ('stdout', name.encode('utf-8'))
@@ -164,6 +164,10 @@ def cli():
 
         else:
             return hcli_core_help()
+
+    elif sys.argv[1] == "cli" and sys.argv[2] == "run":
+        if len(sys.argv) > 3:
+            return config.run_cli(sys.argv[3])
 
     else:
         return hcli_core_help()
