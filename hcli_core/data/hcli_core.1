@@ -3,7 +3,7 @@
 hcli_core \- An HCLI Connector that can be used to expose a REST API that behaves as a CLI, via hypertext command line interface (HCLI) semantics.
 .SH SYNOPSIS
 .B hcli_core
-[--version] { cli { install <path> | rm <cliname> | ls | config <cliname> [<key> <value>]] | path | sample { hptt | hfm | hub | nw } | help }
+[--version] { cli { install <path> | rm <cli> | ls | config <cliname> [--unset <key> | <key> | <key> <value>]] | run <cli> } | path | sample { hptt | hfm | hub | nw } | help }
 .SH DESCRIPTION
 .B hcli_core
 is a Web Service Gateway Interface (WSGI; PEP 3333) application that provides a way for developers to expose a REST API as a CLI via HCLI v1.0 semantics.
@@ -49,15 +49,13 @@ In contexts where ports are not available for use, such as with serverless AWS L
 - management - displaces the user defined HCLI application and ONLY presents hco under the root. See core.root under CONFIGURATION FILE FORMAT.
 .sp
 .SS CONFIGURATION FILE FORMAT
-[core]
+[default]
 .br
 core.auth = <True | False>
 .br
 core.root = <aggregate | management>
 .br
 core.wsgiapp.port = <port>
-.sp
-[hco]
 .br
 hco.port = <port>
 .br
@@ -79,14 +77,6 @@ core.auth = True
 hco.port = 9000
 .br
 hco.credentials = local
-.sp
-[default]
-.br
-username = admin
-.br
-password = *
-.br
-salt = *
 .sp
 The hco HCLI application is made available on the configured management port 'hco.port' to help manage user credentials and api keys for both hco and the user defined HCLI application. The hco management HCLI application will not be made available unless the port is set in the configuration file and the corresponding port is bound at startup of the WSGI server. See the EXAMPLE section for a multi port hcli_core launch with gunicorn.
 .sp
@@ -171,6 +161,22 @@ Three user roles are made available for use under hco:
 - HCLI_CORE_BOOTSTRAP_PASSWORD - Inceptive admin password; see AUTHENTICATION.
 .sp
 .SH COMMANDS
+.IP "cli install <clipath>"
+Installs a cli service per standard hcli template found at the root of the cli path.
+.IP "cli ls"
+Lists all installed cli services installed.
+.IP "cli rm <cli>"
+Removes an installed cli service.
+.IP "cli config <cli>"
+Shows an installed cli's configuration.
+.IP "cli config <cli> <key>"
+Shows the value of a key contained in an installed cli's configuration.
+.IP "cli config <cli> --unset <key>"
+Removes the key/value pair if contained in an installed cli's configuration.
+.IP "cli config <cli> <key> <value>"
+Sets the value of a key contained in an installed cli's configuration.
+.IP "cli run <cli>"
+Returns a ready to execute gunicorn command making use of the installed service's configuration.
 .IP "path"
 Provides the installation path of hcli_core, which can be used to help locate the path of the WSGI app to use in a WSGI server.
 .IP "sample hub"
@@ -198,7 +204,13 @@ hcli_core cli rm hag
 .sp
 hcli_core cli config hag
 .sp
+hcli_core cli config hag hco.port
+.sp
 hcli_core cli config hag hco.port 10000
+.sp
+hcli_core cli config hag --unset hco.port
+.sp
+hcli_core cli run hag
 .sp
 gunicorn --workers=5 --threads=2 "hcli_core:connector()"
 .sp

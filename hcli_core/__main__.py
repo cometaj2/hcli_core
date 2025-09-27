@@ -151,7 +151,10 @@ def cli():
         elif len(sys.argv) == 5:
             return config.get_parameter(sys.argv[3], sys.argv[4])
         elif len(sys.argv) == 6:
-            return config.update_parameter(sys.argv[3], sys.argv[4], sys.argv[5])
+            if sys.argv[4] == "--unset":
+                return config.unset_parameter(sys.argv[3], sys.argv[5])
+            else:
+                return config.update_parameter(sys.argv[3], sys.argv[4], sys.argv[5])
         else:
             return hcli_core_help()
 

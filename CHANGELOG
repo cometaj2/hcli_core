@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add huckle like cli commands to help with installation and configuration of user defined HCLIs
 - Refactor the hcli specific authorization middleware to allow for generic http authorization
 - Refactor to allow for custom 3rd party WSGI apps to be added to the lazy server manager
+- Refactor tests to make use of hcli_core cli commands to configure services
 - Update to more reliable pkill in pytest cleanup fixture
 - Update to output hcli_core help as text in the terminal rather than as a man page
 - Update to falcon 4.1.0 from 4.0.2

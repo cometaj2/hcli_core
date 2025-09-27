@@ -561,6 +561,26 @@ def update_parameter(name, parameter, value):
 
     return generator()
 
+# unset a configured parameter
+def unset_parameter(name, parameter):
+    config_file_path = dot_hcli_core_config + "/" + name + "/config"
+    parser = ConfigParser()
+    parser.read(config_file_path)
+
+    def generator():
+        try:
+            if parser.has_section('default') and parser.has_option('default', parameter):
+                parser.remove_option('default', parameter)
+            with write_lock(config_file_path):
+                with open(config_file_path, "w") as config:
+                    parser.write(config)
+            yield ('stdout', b'')
+        except Exception as error:
+            error = "hcli_core: unable to update configuration."
+            raise Exception(error)
+
+    return generator()
+
 def get_description(config_path):
     parser = ConfigParser()
     parser.read(config_path)

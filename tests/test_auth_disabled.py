@@ -6,20 +6,16 @@ def test_hfm_cp(cleanup):
     setup = """
     #!/bin/bash
     set -x
+    export NOTIFY_SOCKET=
 
     export HUCKLE_HOME=~/.huckle_test
     eval $(huckle env)
 
-    # we setup a custom credentials file for the test run
-    echo -e "[default]
-core.auth = False" > ./noauth_config
+    hcli_core cli install `hcli_core sample hfm`
+    hcli_core cli config hfm core.port 18000
+    hcli_core cli config hfm core.auth False
 
-    echo -e "[default]
-username = admin
-password = *
-salt = *" > ./credentials
-
-    gunicorn --workers=1 --threads=1 -b 0.0.0.0:18000 "hcli_core:connector(plugin_path=\\\"`hcli_core sample hfm`\\\", config_path=\\\"./noauth_config\\\")" --daemon --log-file=./gunicorn-noauth.log --error-logfile=./gunicorn-noauth-error.log --capture-output
+    echo "$(hcli_core cli run hfm) --daemon --log-file=./gunicorn-noauth.log --error-logfile=./gunicorn-noauth-error.log --capture-output" | bash
 
     cat ./gunicorn-noauth.log
     cat ./gunicorn-noauth-error.log

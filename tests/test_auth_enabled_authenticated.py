@@ -275,15 +275,6 @@ def test_hco_userdel_hello_as_hello_user_role(gunicorn_server_auth, cleanup):
 
     assert ('hello has insufficient permissions to execute hco userdel "hello"\n' in error)
 
-
-
-
-
-
-
-
-
-
 def test_hco_validate_basic_hello_as_hello_admin_role(gunicorn_server_auth, cleanup):
     hello = """
     #!/bin/bash

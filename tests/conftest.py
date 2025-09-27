@@ -9,9 +9,14 @@ def gunicorn_server_auth():
     setup = """
     #!/bin/bash
     set -x
+    export NOTIFY_SOCKET=
 
     rm -rf ~/.huckle_test
     mkdir ~/.huckle_test
+    rm -rf ~/.hcli_core_test
+    mkdir ~/.hcli_core_test
+    export HCLI_CORE_HOME_TEST=$HCLI_CORE_HOME
+    export HCLI_CORE_HOME=~/.hcli_core_test
     export HUCKLE_HOME_TEST=$HUCKLE_HOME
     export HUCKLE_HOME=~/.huckle_test
     export HCLI_CORE_BOOTSTRAP_PASSWORD=yehaw
@@ -24,20 +29,14 @@ def gunicorn_server_auth():
 
     echo "Cleanup old run data..."
     rm -f ./gunicorn-error.log
-    rm -f ./test_config
-    rm -f ./password
 
-    echo "Setup a custom config file for the test run"
-    echo -e "[default]
-core.auth = True
-hco.port = 19090" > ./test_config
+    hcli_core cli install `hcli_core path`/cli
+    hcli_core cli config jsonf core.port 18080
+    hcli_core cli config jsonf core.auth True
+    hcli_core cli config jsonf hco.port 19090
+    hcli_core cli config jsonf hco.credentials local
 
-    echo -e "[default]
-username = admin
-password = *
-salt = *" > ./credentials
-
-    gunicorn --workers=1 --threads=100 -b 0.0.0.0:18080 -b 0.0.0.0:19090 "hcli_core:connector(config_path=\\\"./test_config\\\")" --daemon --log-file=./gunicorn.log --error-logfile=./gunicorn-error.log --capture-output
+    echo "$(hcli_core cli run jsonf) --daemon --log-file=./gunicorn.log --error-logfile=./gunicorn-error.log --capture-output" | bash
 
     sleep 2
 
@@ -71,7 +70,6 @@ salt = *" > ./credentials
 
     # Verify setup worked
     assert os.path.exists('./gunicorn-error.log'), "gunicorn-error.log not found"
-    assert os.path.exists('./test_config'), "test_config not found"
 
 # bootstrap the test by starting an hcli server with mgmt config and fresh * admin creds
 @pytest.fixture(scope="module")
@@ -80,9 +78,13 @@ def gunicorn_server_remote_auth():
     setup = """
     #!/bin/bash
     set -x
+    export NOTIFY_SOCKET=
 
     rm -rf ~/.remote_huckle_test
     mkdir ~/.remote_huckle_test
+    rm -rf ~/.hcli_core_test
+    mkdir ~/.hcli_core_test
+    export HCLI_CORE_HOME=~/.hcli_core_test
     export HUCKLE_HOME=~/.remote_huckle_test
     export HCLI_CORE_BOOTSTRAP_PASSWORD=yehaw
     eval $(huckle env)
@@ -94,29 +96,24 @@ def gunicorn_server_remote_auth():
 
     echo "Cleanup old run data..."
     rm -f ./remote_hco_gunicorn-error.log
-    rm -f ./remote_hco_test_config
-    rm -f ./remote_hco_password
     rm -f ./remote_gunicorn-error.log
-    rm -f ./remote_test_config
 
-    echo "Setup a custom config file for the test run"
-    echo -e "[default]
-core.auth = True
-hco.port = 29000
-hco.credentials = local" > ./remote_hco_test_config
+    hcli_core cli install `hcli_core path`/cli
+    hcli_core cli config jsonf --unset core.port
+    hcli_core cli config jsonf core.auth True
+    hcli_core cli config jsonf hco.port 29000
+    hcli_core cli config jsonf hco.credentials local
 
-    echo -e "[default]
-username = admin
-password = *
-salt = *" > ./credentials
+    echo "$(hcli_core cli run jsonf) --daemon --log-file=./remote_hco_gunicorn.log --error-logfile=./remote_hco_gunicorn-error.log --capture-output" | bash
 
-    echo -e "[default]
-core.auth = True
-hco.credentials = remote" > ./remote_test_config
+    export HCLI_CORE_HOME=~/.hcli_core_remote_test
+    hcli_core cli install `hcli_core path`/cli
+    hcli_core cli config jsonf core.port 28000
+    hcli_core cli config jsonf core.auth True
+    hcli_core cli config jsonf --unset hco.port
+    hcli_core cli config jsonf hco.credentials remote
 
-    gunicorn --workers=1 --threads=100 -b 0.0.0.0:29000 "hcli_core:connector(config_path=\\\"./remote_hco_test_config\\\")" --daemon --log-file=./remote_hco_gunicorn.log --error-logfile=./remote_hco_gunicorn-error.log --capture-output
-
-    gunicorn --workers=1 --threads=100 -b 0.0.0.0:28000 "hcli_core:connector(config_path=\\\"./remote_test_config\\\")" --daemon --log-file=./remote_gunicorn.log --error-logfile=./remote_gunicorn-error.log --capture-output
+    echo "$(hcli_core cli run jsonf) --daemon --log-file=./remote_gunicorn.log --error-logfile=./remote_gunicorn-error.log --capture-output" | bash
 
     sleep 2
 
@@ -137,9 +134,7 @@ hco.credentials = remote" > ./remote_test_config
 
     # Verify setup worked
     assert os.path.exists('./remote_hco_gunicorn-error.log'), "remote_hco_gunicorn-error.log not found"
-    assert os.path.exists('./remote_hco_test_config'), "remote_hco_test_config not found"
     assert os.path.exists('./remote_gunicorn-error.log'), "remote_gunicorn-error.log not found"
-    assert os.path.exists('./remote_test_config'), "remote_test_config not found"
 
 @pytest.fixture(scope="module")
 def cleanup():
@@ -150,11 +145,15 @@ def cleanup():
     # Enhanced cleanup with verification
     cleanup_script = """
     #!/bin/bash
-    set -x  # Print commands as they execute
+    set -x
+    export NOTIFY_SOCKET=
 
     rm -rf ~/.huckle_test
     rm -rf ~/.remote_huckle_test
+    rm -rf ~/.hcli_core_test
+    rm -rf ~/.hcli_core_remote_test
     export HUCKLE_HOME=$HUCKLE_HOME_TEST
+    export HCLI_CORE_HOME=$HCLI_CORE_HOME_TEST
 
     # Force kill any remaining processes
 
