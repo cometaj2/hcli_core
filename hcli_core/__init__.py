@@ -11,10 +11,13 @@ log = logger.Logger("hcli_core")
 def connector(plugin_path=None, config_path=None):
 
     absolute_plugin_path = None
+    absolute_config_path = None
+    absolute_credentials_path = None
     if(plugin_path is not None):
         absolute_plugin_path = os.path.abspath(plugin_path)
-    absolute_config_path = os.path.abspath(config_path)
-    absolute_credentials_path = os.path.join(os.path.dirname(absolute_config_path), "credentials")
+    if(config_path is not None):
+        absolute_config_path = os.path.abspath(config_path)
+        absolute_credentials_path = os.path.join(os.path.dirname(absolute_config_path), "credentials")
     cm = credential.CredentialManager(absolute_credentials_path)
     server_manager = server.LazyServerManager(absolute_plugin_path, absolute_config_path)
 

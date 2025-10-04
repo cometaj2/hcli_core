@@ -26,7 +26,7 @@ def generator():
 
 def main():
 
-    # Only handle and consume -n for hcli_core commands to help work around terminal aesthetics
+    # Only handle and consume -n for huckle commands to help work around terminal aesthetics
     no_newline = False
     if len(sys.argv) > 0 and (sys.argv[0] == "hcli_core" or 
         (len(sys.argv) > 1 and sys.argv[0].endswith("hcli_core"))):
@@ -94,6 +94,9 @@ def main():
         sys.exit(1)
 
 def cli():
+    if len(sys.argv) == 1:
+        return hcli_core_help()
+
     if sys.argv[1] == "--version":
         return show_dependencies()
 

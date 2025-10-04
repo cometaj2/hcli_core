@@ -3,7 +3,7 @@
 hcli_core \- An HCLI Connector that can be used to expose a REST API that behaves as a CLI, via hypertext command line interface (HCLI) semantics.
 .SH SYNOPSIS
 .B hcli_core
-[--version] { cli { install <path> | rm <cli> | ls | config <cliname> [--unset <key> | <key> | <key> <value>]] | run <cli> } | path | sample { hptt | hfm | hub | nw } | help }
+[--version | -n] { cli { install <path> | rm <cli> | ls | config <cliname> [--unset <key> | <key> | <key> <value>]] | run <cli> } | path | sample { hptt | hfm | hub | nw } | help }
 .SH DESCRIPTION
 .B hcli_core
 is a Web Service Gateway Interface (WSGI; PEP 3333) application that provides a way for developers to expose a REST API as a CLI via HCLI v1.0 semantics.
@@ -68,11 +68,9 @@ configuration and credentials file.
 The default credentials file provided with HCLI Core SHOULD NOT be used but is included as an example, and sets a sensible and bare default configuration.
 A user managed configuration/credentials file path that looks something like the following configuration SHOULD instead be provided at startup:
 .sp
-[core]
+[default]
 .br
 core.auth = True
-.sp
-[hco]
 .br
 hco.port = 9000
 .br
@@ -198,9 +196,9 @@ hcli_core path
 .sp
 hcli_core --version
 .sp
-hcli_core cli install `hcli_hag path`
+pip install hcli_hag
 .sp
-hcli_core cli rm hag
+hcli_core cli install `hcli_hag path`
 .sp
 hcli_core cli config hag
 .sp
@@ -212,11 +210,15 @@ hcli_core cli config hag --unset hco.port
 .sp
 hcli_core cli run hag
 .sp
-gunicorn --workers=5 --threads=2 "hcli_core:connector()"
+hcli_core cli run hag | bash
 .sp
-gunicorn --workers=5 --threads=2 "hcli_core:connector(\\"`hcli_core sample hfm`\\")"
+hcli_core cli rm hag
 .sp
-gunicorn --workers=5 --threads=2 "hcli_core:connector(plugin_path=\\"`hcli_core sample hfm`\\", config_path=\\"./custom.config\\")"
+gunicorn --workers=1 --threads=10 "hcli_core:connector()"
+.sp
+gunicorn --workers=1 --threads=10 "hcli_core:connector(\\"`hcli_core sample hfm`\\")"
+.sp
+gunicorn --workers=1 --threads=10 "hcli_core:connector(plugin_path=\\"`hcli_core sample hfm`\\", config_path=\\"./custom.config\\")"
 .sp
 gunicorn --workers=1 --threads=10 -b 0.0.0.0:8000 -b 0.0.0.0:9000 "hcli_core:connector()"
 .sp

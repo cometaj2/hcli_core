@@ -532,15 +532,15 @@ class CredentialManager:
                     reset_state = (stored_hash == '*' and stored_salt == '*')
                     if reset_state:
                         self._bootstrap_password = os.getenv('HCLI_CORE_BOOTSTRAP_PASSWORD')
-                        log.warning("====================================================================")
-                        log.warning("HCLI CORE BOOTSTRAP PASSWORD (CHANGE IMMEDIATELY AND STORE SECURELY)")
+                        log.warning("====================================================")
+                        log.warning("CHANGE IMMEDIATELY AND STORE SECURELY")
                         log.warning("Username: admin")
-                        log.warning("Password: $HCLI_CORE_BOOTSTRAP_PASSWORD environment variable")
+                        log.warning("Password: $HCLI_CORE_BOOTSTRAP_PASSWORD")
                         log.warning("Read 'hcli_core help' documentation for more details")
                         log.warning("This will only be shown in the logs once")
-                        log.warning("====================================================================")
+                        log.warning("====================================================")
                         if not self._bootstrap_password:
-                            msg="Missing HCLI_CORE_BOOTSTRAP_PASSWORD environment variable. Unable to bootstrap administration credentials."
+                            msg="Missing HCLI_CORE_BOOTSTRAP_PASSWORD. Unable to bootstrap administration credentials."
                             log.error(msg)
                             return
                         self._bootstrap_passwd('admin', self._bootstrap_password)

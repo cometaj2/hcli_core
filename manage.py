@@ -19,17 +19,18 @@ def write_requirements():
         for dep in package.dependencies:
             f.write(f"{dep}\n")
 
-# Clean up credentials by overwriting with default values
-def clean_credentials():
-    config_path = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "hcli_core/auth/cli/credentials")
+# Clean up config and credentials by overwriting with default values
+def clean_config():
+    config_path = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "hcli_core/auth/cli/config")
     with open(config_path, 'w') as f:
-        f.write('[core]\n')
+        f.write('[default]\n')
         f.write('core.auth = False\n')
-        f.write('\n')
-        f.write('[hco]\n')
         f.write('hco.port = 9000\n')
         f.write('hco.credentials = local\n')
-    os.system(f'chmod 600 {config_path}')
+    credentials_path = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "hcli_core/auth/cli/credentials")
+    with open(credentials_path, 'w') as f:
+        pass
+    os.system(f'chmod 600 {credentials_path}')
 
 if sys.argv[-1] == 'write-requirements':
     branch = subprocess.check_output('git rev-parse --abbrev-ref HEAD', shell=True).strip().decode("utf-8")
@@ -44,7 +45,7 @@ if sys.argv[-1] == 'dry-run':
     os.system("pip uninstall -y hcli_core")
     os.system("rm -rf requirements.txt")
     write_requirements()
-    clean_credentials()
+    clean_config()
     os.system("rm -rf hcli_core.egg-info")
     os.system("rm -rf build")
     os.system("rm -rf dist")
@@ -60,7 +61,7 @@ if sys.argv[-1] == 'publish':
     os.system("pip uninstall -y hcli_core")
     os.system("rm -rf requirements.txt")
     write_requirements()
-    clean_credentials()
+    clean_config()
     os.system("rm -rf hcli_core.egg-info")
     os.system("rm -rf build")
     os.system("rm -rf dist")
