@@ -7,6 +7,9 @@ workflows:
   main:
     jobs:
       - test:
+          name: "Python 3.14"
+          v: "3.14"
+      - test:
           name: "Python 3.13"
           v: "3.13"
       - test:
@@ -43,4 +46,4 @@ jobs:
 
       - run:
           name: Run tox for this Python version
-          command: tox -e py${<< parameters.v >>//./}
+          command: tox -e py<< parameters.v >>
