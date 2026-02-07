@@ -9,6 +9,7 @@ chroot/
 *.egg
 *.py[cod]
 *.pyc
+*.error.log
 __pycache__/
 *.so
 *~

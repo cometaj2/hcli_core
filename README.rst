@@ -136,6 +136,7 @@ Supports
 - Credentials Management via the hco HCLI.
 - Centralized remote authentication support via hco for HCLI Core services configured for remote credential management.
 - Serverless deployment (i.e. AWS Lambda).
+- HCLI_CORE_HOME setup support.
 
 Authentication
 --------------
@@ -168,8 +169,7 @@ To Do
 - Lockout on multiple failed authentications.
 - Handle malformed base64 encoding in authenticator.
 - Better role handling for admin vs users for remote validation.
-- Setup HCLI_CORE_HOME support and hcli_core configuration file handling.
-- Better logging configuration support.
+- Better hcli_core general configuration and logging configuration support.
 - Role assignment for hco remote validation authorization.
 - Add personal access token (PAT) support under hco and as HTTP Basic for older clients (e.g. git)
 - Secure the authenticator against 3rd party HCLIs

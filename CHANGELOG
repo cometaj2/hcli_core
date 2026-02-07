@@ -5,7 +5,7 @@ The format is loosely based on [Keep a Changelog](http://keepachangelog.com/en/1
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [4.0.0]
-- Add python 3.13 test coverage and official support
+- Add python 3.13 and 3.14 test coverage and official support
 - Add huckle like cli commands to help with installation and configuration of user defined HCLIs
 - Refactor the hcli specific authorization middleware to allow for generic http authorization
 - Refactor to allow for custom 3rd party WSGI apps to be added to the lazy server manager
@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Update config file format and split config and credentials
 - Update hcli_core documentation
 - Remove duplicate set_plugin_path in config
+- Remove support for python 3.8
 
 ## [3.7.3]
 - Fix default logging from DEBUG back to INFO
