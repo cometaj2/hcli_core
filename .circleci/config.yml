@@ -35,7 +35,7 @@ jobs:
         type: string
         default: "latest"
     docker:
-      - image: cimg/python:3.14
+      - image: cimg/python:<< parameters.v >>
     steps: &steps
       - checkout
       - run:

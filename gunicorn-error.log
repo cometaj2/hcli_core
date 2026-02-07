@@ -1,0 +1,33 @@
+[2026-02-07 09:52:32 -0800] [213823] [INFO] Starting gunicorn 23.0.0
+[2026-02-07 09:52:32 -0800] [213823] [INFO] Listening at: http://0.0.0.0:18080,http://0.0.0.0:19090 (213823)
+[2026-02-07 09:52:32 -0800] [213823] [INFO] Using worker: gthread
+[2026-02-07 09:52:32 -0800] [213826] [INFO] Booting worker with pid: 213826
+[2026-02-07 09:52:32 -0800] [WARNING ] [hcli_core] [credential.py:535] ====================================================
+[2026-02-07 09:52:32 -0800] [WARNING ] [hcli_core] [credential.py:536] CHANGE IMMEDIATELY AND STORE SECURELY
+[2026-02-07 09:52:32 -0800] [WARNING ] [hcli_core] [credential.py:537] Username: admin
+[2026-02-07 09:52:32 -0800] [WARNING ] [hcli_core] [credential.py:538] Password: $HCLI_CORE_BOOTSTRAP_PASSWORD
+[2026-02-07 09:52:32 -0800] [WARNING ] [hcli_core] [credential.py:539] Read 'hcli_core help' documentation for more details
+[2026-02-07 09:52:32 -0800] [WARNING ] [hcli_core] [credential.py:540] This will only be shown in the logs once
+[2026-02-07 09:52:32 -0800] [WARNING ] [hcli_core] [credential.py:541] ====================================================
+[2026-02-07 09:52:32 -0800] [INFO    ] [hcli_core] [credential.py:277] credentials updated for user admin.
+[2026-02-07 09:52:32 -0800] [INFO    ] [hcli_core] [    server.py:108] Lazy initialization...
+[2026-02-07 09:52:34 -0800] [INFO    ] [hcli_core] [    server.py:122] ================================================
+[2026-02-07 09:52:34 -0800] [INFO    ] [hcli_core] [    server.py:123] Initializing core HCLI application:
+[2026-02-07 09:52:34 -0800] [INFO    ] [hcli_core] [    server.py:124] /home/jeff/Documents/workspace/hcli/hcli_core/hcli_core/cli
+[2026-02-07 09:52:34 -0800] [INFO    ] [hcli_core] [    config.py:283] Custom configuration for 'core':
+[2026-02-07 09:52:34 -0800] [INFO    ] [hcli_core] [    config.py:287] /home/jeff/.hcli_core_test/.hcli_core/etc/jsonf/config
+[2026-02-07 09:52:34 -0800] [INFO    ] [hcli_core] [    config.py:390] Credentials file permissions (octal): 0o600
+[2026-02-07 09:52:34 -0800] [INFO    ] [hcli_core] [    config.py:217] Core Authentication: True
+[2026-02-07 09:52:34 -0800] [INFO    ] [hcli_core] [    config.py:261] Credentials management: local
+[2026-02-07 09:52:34 -0800] [INFO    ] [hcli_core] [    config.py:325] Successfully loaded CLI plugin for core.
+[2026-02-07 09:52:34 -0800] [INFO    ] [hcli_core] [    server.py:122] ================================================
+[2026-02-07 09:52:34 -0800] [INFO    ] [hcli_core] [    server.py:123] Initializing management HCLI application:
+[2026-02-07 09:52:34 -0800] [INFO    ] [hcli_core] [    server.py:124] /home/jeff/Documents/workspace/hcli/hcli_core/hcli_core/auth/cli
+[2026-02-07 09:52:34 -0800] [INFO    ] [hcli_core] [    config.py:283] Custom configuration for 'management':
+[2026-02-07 09:52:34 -0800] [INFO    ] [hcli_core] [    config.py:287] /home/jeff/.hcli_core_test/.hcli_core/etc/jsonf/config
+[2026-02-07 09:52:34 -0800] [INFO    ] [hcli_core] [    config.py:390] Credentials file permissions (octal): 0o600
+[2026-02-07 09:52:34 -0800] [INFO    ] [hcli_core] [    config.py:232] Management Port: 19090
+[2026-02-07 09:52:34 -0800] [INFO    ] [hcli_core] [    config.py:261] Credentials management: local
+[2026-02-07 09:52:34 -0800] [INFO    ] [hcli_core] [    config.py:274] Management Auth: True
+[2026-02-07 09:52:34 -0800] [INFO    ] [hcli_core] [    config.py:325] Successfully loaded CLI plugin for management.
+[2026-02-07 09:52:35 -0800] [INFO    ] [hcli_core] [credential.py:602] api key YT5WS3KY2M created for user admin.
