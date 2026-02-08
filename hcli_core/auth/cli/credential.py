@@ -7,6 +7,9 @@ import threading
 import time
 import portalocker
 
+from argon2 import PasswordHasher
+from argon2 import low_level, Type
+
 from datetime import datetime, timezone, timedelta
 from configparser import ConfigParser
 from contextlib import suppress, contextmanager
@@ -24,6 +27,17 @@ class CredentialManager:
     _instance = None
     _initialized = False
     _lock = threading.RLock()
+
+    # Create one PasswordHasher instance (recommended: reuse it!)
+    # These parameters aim for about 400-800 ms verification time on typical 2025-2026 server/laptop hardware
+    # This follows OWASP Cheat Sheet guidance (minimum 19 MiB, but we go higher for better protection)
+    ph = PasswordHasher(
+        time_cost=3,            # iterations / passes (t)
+        memory_cost=64 * 1024,  # 64 MiB (very reasonable in 2026; OWASP min is 19 MiB, 46-128 MiB common)
+        parallelism=4,          # lanes / threads (p)
+        hash_len=32,            # output length in bytes (256 bits)
+        type=Type.ID            # Argon2id, the hybrid everyone recommends
+    )
 
     def __new__(cls, credentials_file_path=None):
         with cls._lock:
@@ -114,14 +128,6 @@ class CredentialManager:
                         log.warning(msg2)
                         self._credentials = None
 
-                    # Check if we have a salt
-                    elif not parser.has_option("default", "salt"):
-                        msg1 = f"Invalid or missing salt in [default] section:"
-                        msg2 = f"{self.credentials_file_path}"
-                        log.warning(msg1)
-                        log.warning(msg2)
-                        self._credentials = None
-
                     # Check for unique usernames across all sections
                     usernames = set()
                     for section in parser.sections():
@@ -172,7 +178,6 @@ class CredentialManager:
                         parser.add_section(section_name)
                         parser.set(section_name, "username", username)
                         parser.set(section_name, "password", "*")
-                        parser.set(section_name, "salt", "*")
 
                 # Write back to file
                 with self._write_lock():
@@ -204,8 +209,7 @@ class CredentialManager:
                     found = False
                     for section in parser.sections():
                         if parser.has_option(section, "username") and parser.get(section, "username") == username:
-                            (password_hash, salt) = self.hash_password(password)
-                            parser.set(section, "salt", salt)
+                            password_hash = self.hash_password(password)
                             parser.set(section, "password", password_hash)
 
                             # We reset the special admin bootstrap case
@@ -251,8 +255,7 @@ class CredentialManager:
                     found = False
                     for section in parser.sections():
                         if parser.has_option(section, "username") and parser.get(section, "username") == username:
-                            (password_hash, salt) = self.hash_password(password)
-                            parser.set(section, "salt", salt)
+                            password_hash = self.hash_password(password)
                             parser.set(section, "password", password_hash)
 
                             # We reset the special admin bootstrap case
@@ -388,11 +391,10 @@ class CredentialManager:
 
                         if cred_dict.get('username') == username:
                             stored_hash = cred_dict.get('password')
-                            stored_salt = cred_dict.get('salt')
 
-                            if stored_hash and stored_salt and not stored_hash == '*' and not stored_salt == '*':
-                                return self.verify_password(password, stored_hash, stored_salt)
-                            break  # Found username but or missing hash/salt or bootstrap hash/salt
+                            if stored_hash and not stored_hash == '*':
+                                return self.verify_password(password, stored_hash)
+                            break  # Found username but missing hash or bootstrap hash
 
                     return False
 
@@ -476,22 +478,25 @@ class CredentialManager:
                 log.error(msg)
                 raise InternalServerError(detail=msg)
 
-    # Hash password using 600000 (1Password/LastPass) iterations of PBKDF2-SHA256 with 32 bit salt.
-    # dklen of 32 for sha256, 64 for sha512
-    def hash_password(self, password):
-        salt = os.urandom(32)
-        key = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, iterations=600000, dklen=32)
-        return key.hex(), salt.hex()
-
     def hash_apikey(self, apikey):
         return hashlib.sha256(apikey.encode()).hexdigest()
 
-    # Verify password against stored hash and salt (both in hex format).
-    # dklen of 32 for sha256, 64 for sha512
-    def verify_password(self, password, stored_hash, salt_hex):
-        salt = bytes.fromhex(salt_hex)
-        key = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, iterations=600000, dklen=32)
-        return key.hex() == stored_hash
+    # Hash a password using Argon2id.
+    # Returns a single string in PHC format (e.g. $argon2id$v=19$m=65536,t=3,p=4$... )
+    # This includes version, params, salt, and hash; no need for separate salt field!
+    def hash_password(self, password):
+        # Argon2-cffi automatically generates a cryptographically secure random salt
+        return self.ph.hash(password.encode('utf-8'))
+
+    # Verify a password against a stored Argon2id hash (PHC string format).
+    # Returns True if correct, False otherwise.
+    # Handles parameter changes gracefully if you upgrade params later.
+    def verify_password(self, password, stored_hash):
+        try:
+            self.ph.verify(stored_hash, password.encode('utf-8'))
+            return True
+        except Exception as e:
+            return False
 
     @property
     def is_loaded(self):
@@ -510,10 +515,9 @@ class CredentialManager:
 
             if cred_dict.get('username') == 'admin':
                 stored_hash = cred_dict.get('password')
-                stored_salt = cred_dict.get('salt')
 
-                if stored_hash and stored_salt:
-                    reset_state = (stored_hash == '*' and stored_salt == '*')
+                if stored_hash:
+                    reset_state = (stored_hash == '*')
                     return reset_state
                 break
 
@@ -526,10 +530,9 @@ class CredentialManager:
 
             if cred_dict.get('username') == 'admin':
                 stored_hash = cred_dict.get('password')
-                stored_salt = cred_dict.get('salt')
 
-                if stored_hash and stored_salt:
-                    reset_state = (stored_hash == '*' and stored_salt == '*')
+                if stored_hash:
+                    reset_state = (stored_hash == '*')
                     if reset_state:
                         self._bootstrap_password = os.getenv('HCLI_CORE_BOOTSTRAP_PASSWORD')
                         log.warning("====================================================")

@@ -135,8 +135,9 @@ Supports
 - Support HTTP API Problem Details [RFC9457] per spec to help with client-side STDERR output.
 - Credentials Management via the hco HCLI.
 - Centralized remote authentication support via hco for HCLI Core services configured for remote credential management.
+- NIST recommended memory hardened password hash storage with Argon2id for improved security
 - Serverless deployment (i.e. AWS Lambda).
-- HCLI_CORE_HOME setup support.
+- HCLI_CORE_HOME setup support to support multiple distinct hcli_core configurations.
 
 Authentication
 --------------
@@ -163,6 +164,7 @@ HCLI Core implements a trusted integration model. In other words, 3rd party HCLI
 To Do
 -----
 
+- Add global pepper for hash creation/validation to improve security
 - Automated tests for all bundled HCLI samples.
 - Separate out HCLI applications from HCLI Core to help avoid application dependencies bleeding onto HCLI Core.
 - Setup configurable rate limiting.

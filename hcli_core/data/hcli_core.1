@@ -78,7 +78,7 @@ hco.credentials = local
 .sp
 The hco HCLI application is made available on the configured management port 'hco.port' to help manage user credentials and api keys for both hco and the user defined HCLI application. The hco management HCLI application will not be made available unless the port is set in the configuration file and the corresponding port is bound at startup of the WSGI server. See the EXAMPLE section for a multi port hcli_core launch with gunicorn.
 .sp
-The default expected administrator is an 'admin' user set with '*' for both the password and salt. On first startup with those defaults, HCLI Core will rely on the presence of an HCLI_CORE_BOOTSTRAP_PASSWORD environment variable which will be used to assign the initial admin user password. The password is immediately hashed and set in the credentials file. After the inceptive bootstrap, the HCLI_CORE_BOOTSTRAP_PASSWORD will no longer be used, and HCLI Core relies exclusively on the credentials file.
+The default expected administrator is an 'admin' user set with '*' for the password. On first startup with those defaults, HCLI Core will rely on the presence of an HCLI_CORE_BOOTSTRAP_PASSWORD environment variable which will be used to assign the initial admin user password. The password is immediately hashed and set in the credentials file. After the inceptive bootstrap, the HCLI_CORE_BOOTSTRAP_PASSWORD will no longer be used, and HCLI Core relies exclusively on the credentials file.
 .sp
 .I The initial password SHOULD NOT be used permanently. It SHOULD be changed immediately (e.g. via huckle with keyring as credential manager) to help improve and maintain security.
 .sp
@@ -115,16 +115,12 @@ Since HCLI Core uses hco to validate credentials, and since hco is configured vi
 username = admin
 .br
 password = *
-.br
-salt = *
 .sp
 [<someothersection>]
 .br
 username = <someotherusername>
 .br
 password = <hashedpassword>
-.br
-salt = <salt>
 .br
 roles = role1,role2
 .sp

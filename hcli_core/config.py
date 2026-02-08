@@ -456,7 +456,6 @@ def init_credentials(name, plugin_path):
     parser.read_file(StringIO(u"[default]"))
     parser.set("default", "username", "admin")
     parser.set("default", "password", "*")
-    parser.set("default", "salt", "*")
 
     flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY
 
