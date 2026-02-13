@@ -42,6 +42,7 @@ if sys.argv[-1] == 'dry-run':
     branch = subprocess.check_output('git rev-parse --abbrev-ref HEAD', shell=True).strip().decode("utf-8")
     if branch != "master":
         sys.exit("dry-run from a branch other than master is disallowed.")
+    os.system("pip install --upgrade pip setuptools wheel build twine")
     os.system("pip uninstall -y hcli_core")
     os.system("rm -rf requirements.txt")
     write_requirements()
@@ -58,6 +59,7 @@ if sys.argv[-1] == 'publish':
     branch = subprocess.check_output('git rev-parse --abbrev-ref HEAD', shell=True).strip()
     if branch.decode('ASCII') != "master":
         sys.exit("publishing from a branch other than master is disallowed.")
+    os.system("pip install --upgrade pip setuptools wheel build twine")
     os.system("pip uninstall -y hcli_core")
     os.system("rm -rf requirements.txt")
     write_requirements()
