@@ -36,10 +36,10 @@ jobs:
     steps: &steps
       - checkout
       - run:
-          name: Install tox + docker (if needed)
+          name: Install tox
           command: |
             pip install --upgrade pip
-            pip install tox tox-docker
+            pip install tox
 
       - run:
           name: Run tox for this Python version
