@@ -127,6 +127,8 @@ def cli():
                 sample = cfg.sample + "/nw/cli"
             elif sys.argv[2] == "hptt":
                 sample = cfg.sample + "/hptt/cli"
+            elif sys.argv[2] == "jsonf":
+                sample = cfg.root + "/cli"
             else:
                 return hcli_core_help()
 

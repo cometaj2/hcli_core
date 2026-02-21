@@ -51,22 +51,42 @@ In contexts where ports are not available for use, such as with serverless AWS L
 .SS CONFIGURATION FILE FORMAT
 [default]
 .br
+core.plugin.path = <filepath>
+.br
+core.description = <service description>
+.br
 core.auth = <True | False>
 .br
-core.root = <aggregate | management>
+core.port = <port>
 .br
-core.wsgiapp.port = <port>
+core.root = <aggregate | management> - optional
 .br
-hco.port = <port>
+core.wsgiapp.port = <port> - optional
 .br
-hco.credentials = <local | remote>
+hco.port = <port> - optional
+.br
+hco.credentials = <local | remote> - optional
+.sp
+.SH INSTALLATION
+If HCLI Core installation used to install a service (i.e. hcli_core cli install `hcli_core sample jsonf`, which is recommended, a default configuration and credentials file will be created under $HCLI_CORE_HOME/.hcli_core/etc/<cli>/ with something like the following default configuration (e.g. for the bundled jsonf sample HCLI Core application):
+.sp
+[default]
+.br
+core.plugin.path = /home/user/Documents/workspace/hcli/hcli_core/hcli_core/cli
+.br
+core.description = jsonf - a simple formatter for JSON
+.br
+core.auth = False
+.br
+core.port = 8000
+.br
+hco.port = 9000
 .sp
 .SH AUTHENTICATION
-If authentication is configured for an HCLI application, or if HCLI Management is used, HCLI Core expects to be able to use a single combined
-configuration and credentials file.
+If authentication is configured for an HCLI application, or if HCLI Management is used, HCLI Core expects to be able two files; a configuration file and a credentials file located in the same file path as the configuration file.
 .sp
-The default credentials file provided with HCLI Core SHOULD NOT be used but is included as an example, and sets a sensible and bare default configuration.
-A user managed configuration/credentials file path that looks something like the following configuration SHOULD instead be provided at startup:
+The default credentials file provided with HCLI Core SHOULD NOT be used but is included as an example.
+A user managed configuration file that looks something like the following configuration SHOULD instead be provided at startup:
 .sp
 [default]
 .br
