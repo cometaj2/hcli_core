@@ -30,7 +30,7 @@ def gunicorn_server_auth():
     echo "Cleanup old run data..."
     rm -f ./gunicorn-error.log
 
-    hcli_core cli install `hcli_core path`/cli
+    hcli_core cli install `hcli_core sample jsonf`
     hcli_core cli config jsonf core.port 18080
     hcli_core cli config jsonf core.auth True
     hcli_core cli config jsonf hco.port 19090
