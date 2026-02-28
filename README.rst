@@ -164,7 +164,7 @@ HCLI Core implements a trusted integration model. In other words, 3rd party HCLI
 To Do
 -----
 
-- Add global pepper for hash creation/validation to improve security
+- Add global pepper for hash creation/validation to improve security.
 - Automated tests for all bundled HCLI samples.
 - Separate out HCLI applications from HCLI Core to help avoid application dependencies bleeding onto HCLI Core.
 - Setup configurable rate limiting.
@@ -173,8 +173,9 @@ To Do
 - Better role handling for admin vs users for remote validation.
 - Better hcli_core general configuration and logging configuration support.
 - Role assignment for hco remote validation authorization.
-- Add personal access token (PAT) support under hco and as HTTP Basic for older clients (e.g. git)
+- Add personal access token (PAT) support under hco and as HTTP Basic for older clients (e.g. git).
 - Secure the authenticator against 3rd party HCLIs
+- Add MFA (e.g. yubikey) and OAuth 2.0 device code flow support.
 
 Bugs
 ----
