@@ -193,6 +193,8 @@ def cleanup():
         os.remove('./credentials')
     if os.path.exists('./credentials.lock'):
         os.remove('./credentials.lock')
+    if os.path.exists('./gunicorn.ctl'):
+        os.remove('./gunicorn.ctl')
 
     # Verify files are gone
     assert not os.path.exists('./gunicorn-error.log'), "gunicorn-error.log still exists"
@@ -209,3 +211,4 @@ def cleanup():
     assert not os.path.exists('./remote_test_config.lock'), "remote_test_config.lock still exists"
     assert not os.path.exists('./credentials'), "credentials still exists"
     assert not os.path.exists('./credentials.lock'), "credentials.lock still exists"
+    assert not os.path.exists('./gunicorn.ctl'), "gunicorn.ctl still exists"
