@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [4.0.1]
 - Add keyrings.alt to tox tests to prevent keyrings test failure when a backend isn't available
+- Fix tox test to lock in to gunicorn v23 since v25 is unstable in docker containers
 
 ## [4.0.0]
 - Add python 3.13 and 3.14 test coverage and official support
