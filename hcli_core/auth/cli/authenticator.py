@@ -30,7 +30,8 @@ def deny_disabled_authentication(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         requesting_username = config.ServerContext.get_current_user()
-        cfg = self._cfg()
+        context = config.ServerContext.get_current_server()
+        cfg = config.Config(context)
 
         if not cfg.auth:
             msg = f"cannot interact with hcli when authentication is disabled."
