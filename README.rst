@@ -176,6 +176,7 @@ To Do
 - Add personal access token (PAT) support under hco and as HTTP Basic for older clients (e.g. git).
 - Secure the authenticator against 3rd party HCLIs
 - Add MFA (e.g. yubikey) and OAuth 2.0 device code flow support.
+- Add configuration for the HCLI surface to be either public or locked behind auth.
 
 Bugs
 ----

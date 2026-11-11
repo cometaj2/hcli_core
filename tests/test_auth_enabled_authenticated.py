@@ -222,7 +222,7 @@ def test_hco_validate_basic_hello_as_hello_user_role(gunicorn_server_auth, clean
     result = out.decode('utf-8')
     error = err.decode('utf-8')
 
-    assert('hello has insufficient permissions to execute hco validate basic "hello"\n' == error)
+    assert('hco: hello has insufficient permissions to execute hco validate basic "hello"\n' == error)
 
 def test_hco_ls_as_hello_user(gunicorn_server_auth, cleanup):
     hello = """
@@ -239,7 +239,7 @@ def test_hco_ls_as_hello_user(gunicorn_server_auth, cleanup):
     result = out.decode('utf-8')
     error = err.decode('utf-8')
 
-    assert ('hello has insufficient permissions to execute hco ls\n' in error)
+    assert ('hco: hello has insufficient permissions to execute hco ls\n' in error)
 
 def test_hco_useradd_yehaw_as_hello_user_role(gunicorn_server_auth, cleanup):
     hello = """
